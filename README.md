@@ -204,7 +204,7 @@ import { EmptyState, ErrorState, LoadingState } from "official-uikit-iimp"
 
 ## 4. Theming (opcional)
 
-Por defecto el kit usa el preset de shadcn `b1aIuQ2XC` (estilo luma, radio `0.875rem`, fuente Raleway, iconos Remix) con los colores de IIMP: primary `#092042`, secondary `#f2e8dd` con texto `#c09153`. Los tamaños (alturas, texto, espaciado) son los de shadcn.
+Por defecto el kit usa el preset de shadcn `b1aIuQ2XC` (estilo luma, radio `0.875rem`, iconos Remix) con los colores de IIMP (primary `#092042`, secondary `#f2e8dd` con texto `#c09153`) y tipografía Apple: **SF Pro Text** para texto (mínimo 13px, base 14px) y **SF Pro Display** para títulos (mínimo 20px). SF solo existe en dispositivos Apple; en otros sistemas cae a Segoe UI / Roboto.
 
 Para cambiar colores o radio por vertical, envuelve la app:
 
@@ -230,7 +230,7 @@ import { IimpThemeProvider } from "official-uikit-iimp"
 
 ### Densidad y números
 
-El kit fija `html { font-size: 112.5% }` (root de 18px) para que todo, que está en `rem`, se vea ~12% más grande que el preset base sin perder proporciones. Para cambiarlo, define `--iimp-root-font-size` (ej. `100%` para el tamaño original de shadcn). Los números salen con cifras alineadas a la línea base (`lining-nums`) y las tablas con `tabular-nums`, porque Raleway usa por defecto cifras de texto.
+Todo el kit está en `rem` con raíz de 16px (tamaño original de shadcn). Para escalarlo, define `--iimp-root-font-size` (ej. `106%`). Los números salen con cifras alineadas a la línea base (`lining-nums`) y las tablas con `tabular-nums`.
 
 ### Fondos y líneas
 

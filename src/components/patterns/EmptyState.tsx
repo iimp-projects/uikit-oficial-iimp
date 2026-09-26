@@ -33,7 +33,7 @@ function EmptyState({
     >
       {media ? <div className="text-muted-foreground">{media}</div> : null}
       <div className="flex flex-col gap-1">
-        <h3 className="font-heading text-base font-semibold">{title}</h3>
+        <h3 className="font-heading text-xl font-semibold">{title}</h3>
         {description ? (
           <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
         ) : null}

@@ -1,6 +1,12 @@
 /* official-uikit-iimp tokens for Tailwind v4 (preset shadcn luma). Import after `@import "tailwindcss"` in the consumer app. */
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  /* Minimum UI text size is 13px (shadcn text-xs is 12px). */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
+}
+
 @theme inline {
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

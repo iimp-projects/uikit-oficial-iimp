@@ -12,7 +12,7 @@ function FormSection({ title, description, children, className }: FormSectionPro
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       <div className="flex flex-col gap-1">
-        <h3 className="font-heading text-base font-semibold">{title}</h3>
+        <h3 className="font-heading text-xl font-semibold">{title}</h3>
         {description ? (
           <p className="text-sm text-muted-foreground">{description}</p>
         ) : null}

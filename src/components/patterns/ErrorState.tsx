@@ -31,7 +31,7 @@ function ErrorState({
         className
       )}
     >
-      <h3 className={cn("font-heading font-semibold", variant === "page" ? "text-base" : "text-sm")}>
+      <h3 className={cn("font-heading font-semibold", variant === "page" ? "text-xl" : "text-base")}>
         {title}
       </h3>
       {description ? (

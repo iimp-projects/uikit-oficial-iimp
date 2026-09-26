@@ -106,7 +106,7 @@ Deben explicar:
 
 ## Base visual: preset shadcn `b1aIuQ2XC` (v0.4)
 
-El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, radio `large` = 0.875rem, fuente Raleway, iconos Remix) **sin modificar tamaños**: alturas, tipografía y espaciado son los de shadcn. Lo único propio de IIMP:
+El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, radio `large` = 0.875rem, iconos Remix; tipografía Apple: SF Pro Text mínimo 13px y SF Pro Display en títulos, mínimo 20px) **sin modificar tamaños**: alturas, tipografía y espaciado son los de shadcn. Lo único propio de IIMP:
 
 - `primary` `#092042` y `secondary` `#f2e8dd` con texto `#c09153` (contraste bajo, ~2.4:1: úsalo en texto grande o con icono).
 - Charts y `sidebar-primary` derivan de esos dos colores.
