@@ -75,6 +75,7 @@ export * from "./components/patterns/PageHeader"
 export * from "./components/patterns/SearchField"
 export * from "./components/patterns/FilterBar"
 export * from "./components/patterns/DataTable"
+export * from "./components/patterns/DataCard"
 
 export * from "./theme/IimpThemeProvider"
 

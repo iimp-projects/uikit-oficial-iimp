@@ -88,6 +88,16 @@
   }
   html {
     @apply font-sans;
+    /* One knob for the whole kit density: everything is rem-based. 112.5% = 16px root (text ~15.75px). */
+    font-size: var(--iimp-root-font-size, 112.5%);
+  }
+  body {
+    /* Raleway defaults to old-style digits (3, 4, 9 drop below the baseline); financial data needs lining figures. */
+    font-variant-numeric: lining-nums;
+  }
+  table,
+  [data-slot="table"] {
+    font-variant-numeric: lining-nums tabular-nums;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {

@@ -43,7 +43,10 @@ function DataTable<TData extends Record<string, unknown>>({
       <TableHeader>
         <TableRow>
           {columns.map((column) => (
-            <TableHead key={column.key} className={column.className}>
+            <TableHead
+              key={column.key}
+              className={cn("h-12 text-xs font-semibold tracking-wider text-muted-foreground uppercase", column.className)}
+            >
               {column.header}
             </TableHead>
           ))}

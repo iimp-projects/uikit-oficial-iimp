@@ -1,5 +1,7 @@
 import * as React from "react"
 import { cn } from "../../lib/utils"
+import { Card } from "../ui/card"
+import { Badge } from "../ui/badge"
 
 type StatCardTrend = {
   value: string
@@ -10,36 +12,33 @@ type StatCardProps = {
   label: string
   value: string
   trend?: StatCardTrend
+  /** Short text under the value (e.g. "Auditados y trazables"). */
+  hint?: React.ReactNode
   icon?: React.ReactNode
   className?: string
 }
 
-function StatCard({ label, value, trend, icon, className }: StatCardProps) {
+function StatCard({ label, value, trend, hint, icon, className }: StatCardProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-2 rounded-lg border border-border bg-card p-4 text-card-foreground",
-        className
-      )}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm text-muted-foreground">{label}</span>
-        {icon ? <span className="text-muted-foreground">{icon}</span> : null}
-      </div>
-      <div className="flex items-baseline gap-2">
-        <span className="font-heading text-2xl font-semibold">{value}</span>
-        {trend ? (
-          <span
-            className={cn(
-              "text-sm font-medium",
-              trend.direction === "up" ? "text-success" : "text-destructive"
-            )}
-          >
-            {trend.direction === "up" ? "↑" : "↓"} {trend.value}
+    <Card className={cn("gap-3 rounded-2xl", className)}>
+      <div className="flex items-start justify-between gap-3 px-(--card-spacing)">
+        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        {icon ? (
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground [&_svg]:size-5">
+            {icon}
           </span>
         ) : null}
       </div>
-    </div>
+      <div className="flex flex-col items-start gap-2 px-(--card-spacing)">
+        <span className="font-heading text-2xl font-semibold tracking-tight whitespace-nowrap text-foreground">{value}</span>
+        {trend ? (
+          <Badge variant={trend.direction === "up" ? "success" : "destructive"}>
+            {trend.direction === "up" ? "↑" : "↓"} {trend.value}
+          </Badge>
+        ) : null}
+        {hint ? <span className="text-sm text-muted-foreground">{hint}</span> : null}
+      </div>
+    </Card>
   )
 }
 

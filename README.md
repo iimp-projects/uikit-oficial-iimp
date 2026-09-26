@@ -69,8 +69,9 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 | `FormSection` | Agrupar campos relacionados bajo un título. |
 | `SearchField` | Búsqueda con debounce (300 ms por defecto). |
 | `FilterBar` | Barra de filtros con contador de filtros activos y botón "Limpiar filtros". |
+| `DataCard` | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho. |
 | `DataTable` | Tabla de datos con carga (skeleton), estado vacío y click en fila. |
-| `StatCard` | Métrica con valor, tendencia (`up`/`down`) e icono. |
+| `StatCard` | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono. |
 | `StatusBadge` | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`. |
 | `EmptyState` | Cuando no hay datos: título, descripción y hasta dos acciones. |
 | `ErrorState` | Error de página (`page`) o de bloque (`inline`) con botón de reintento. |
@@ -226,6 +227,10 @@ import { IimpThemeProvider } from "official-uikit-iimp"
 - Si no envías un foreground, se calcula automáticamente por contraste (blanco u oscuro, el de mayor ratio). Si cambias `secondary` y quieres conservar el texto `#c09153`, pásalo explícitamente.
 - **Accesibilidad:** el par de marca `#c09153` sobre `#f2e8dd` tiene un contraste de ~2.4:1 y no cumple WCAG AA (4.5:1) para texto normal. Úsalo en texto grande o acompañado de icono/borde.
 - No hardcodees colores de marca (`#hex`, `rgb()`) ni escribas reglas por vertical (`if (vertical === "perumin")`): todo pasa por el `theme`.
+
+### Densidad y números
+
+El kit fija `html { font-size: 112.5% }` (root de 18px) para que todo, que está en `rem`, se vea ~12% más grande que el preset base sin perder proporciones. Para cambiarlo, define `--iimp-root-font-size` (ej. `100%` para el tamaño original de shadcn). Los números salen con cifras alineadas a la línea base (`lining-nums`) y las tablas con `tabular-nums`, porque Raleway usa por defecto cifras de texto.
 
 ### Fondos y líneas
 
