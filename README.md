@@ -191,7 +191,7 @@ import { EmptyState, ErrorState, LoadingState } from "official-uikit-iimp"
 
 ## 4. Theming (opcional)
 
-Por defecto el kit usa los tokens de IIMP: primary `#092042`, secondary `#f2e8dd` con texto `#c09153`, radio `10px`, tipografía `system-ui` (cuerpo 14px/24px peso 400; títulos 600, `h1` de 30px/36px).
+Por defecto el kit usa los tokens de IIMP: primary `#092042`, secondary `#f2e8dd` con texto `#c09153`, radio `10px`, tipografía `system-ui` (cuerpo 16px/24px peso 400, mínimo 16px en todo el kit; inputs de 50px de alto; títulos 600, `h1` de 30px/36px).
 
 Para cambiar colores o radio por vertical, envuelve la app:
 
@@ -213,7 +213,18 @@ import { IimpThemeProvider } from "official-uikit-iimp"
 - `primary` y `secondary` son obligatorios dentro de `theme`; `radius`, `primaryForeground` y `secondaryForeground` son opcionales.
 - Si no envías un foreground, se calcula automáticamente por contraste (blanco u oscuro, el de mayor ratio). Si cambias `secondary` y quieres conservar el texto `#c09153`, pásalo explícitamente.
 - **Accesibilidad:** el par de marca `#c09153` sobre `#f2e8dd` tiene un contraste de ~2.4:1 y no cumple WCAG AA (4.5:1) para texto normal. Úsalo en texto grande o acompañado de icono/borde.
+- Iconos: 24px por defecto (`sm` 20px, `lg` 28px).
 - No hardcodees colores de marca (`#hex`, `rgb()`) ni escribas reglas por vertical (`if (vertical === "perumin")`): todo pasa por el `theme`.
+
+### Fondos y líneas
+
+Los componentes (Input, Select, Card, Popover…) traen **fondo blanco sólido** por defecto. Para cambiarlo pasa `className`:
+
+```tsx
+<Card className="bg-muted">…</Card>
+```
+
+Para separar secciones usa `<Separator />` o la clase `border-border` (línea fina de 1px). Si en tu app escribes `border-b` a secas, Tailwind lo pinta con el color del texto (negro). Añade siempre `border-border`.
 
 ## 5. Guardrails de ESLint (recomendado)
 
@@ -227,7 +238,20 @@ export default [
 ]
 ```
 
-Bloquea `<button>`, `<input>`, `<select>` y `<textarea>` nativos, y los imports directos de Radix / Base UI o de rutas internas del paquete.
+El maquetado se hace **siempre con el componente equivalente del kit** (shadcn/ui), no con HTML nativo. El linter falla y te dice cuál usar:
+
+| En vez de | Usa |
+|---|---|
+| `<button>` | `Button` |
+| `<input>` / `<select>` / `<textarea>` | `Input` / `Select` / `Textarea` |
+| `<label>` | `Label` o `FormField` |
+| `<table>`, `<tr>`, `<td>`… | `Table` o `DataTable` |
+| `<hr>` | `Separator` |
+| `<progress>` | `Progress` |
+| `<dialog>` | `Dialog`, `ConfirmDialog`, `FormDialog` |
+| `<details>` | `Accordion` / `Collapsible` |
+
+Además bloquea `className` con bordes sin color (`border-b` a secas se pinta negro; usa `border-border` o `Separator`) y los imports directos de Radix, Base UI, shadcn o rutas internas del paquete.
 
 ## Contribuir
 

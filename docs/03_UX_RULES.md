@@ -24,14 +24,14 @@ Recomendación inicial:
 
 | Control | Tamaño |
 |---|---:|
-| Button default | 44px alto |
-| Button large | 48px alto |
-| Button small | 36px, desktop compacto |
-| Icon button | 44x44px target |
-| Input | 44px alto |
-| Select trigger | 44px alto |
-| Combobox | 44px alto |
-| Date trigger | 44px alto |
+| Button default | 50px alto |
+| Button large | 56px alto |
+| Button small | 40px, desktop compacto |
+| Icon button | 50x50px target (icon-sm 40) |
+| Input | 50px alto fijo, texto 16px, fondo blanco sólido |
+| Select trigger | 50px alto |
+| Combobox | 50px alto |
+| Date trigger | 50px alto |
 
 No todo elemento visual debe medir 44px; el **target interactivo** sí debe cumplir el estándar elegido.
 
@@ -112,3 +112,13 @@ Deben explicar:
 - confirmación proporcional al riesgo;
 - texto específico: "Eliminar participante" mejor que "Aceptar";
 - no usar confirmación destructiva para operaciones triviales.
+
+## Actualización visual (v0.2)
+
+- **Fuente mínima: 16px.** `text-xs` y `text-sm` resuelven a 16px/24px en el tema. Jerarquía por peso y color, no por tamaño.
+- **Superficies sólidas.** Inputs, selects, cards y popovers usan fondo blanco opaco (`--background`, `--card`, `--popover`). Para cambiarlo, pasa `className` (ej. `<Card className="bg-muted">`).
+- **Iconos:** 24px por defecto (20px en tamaño `sm`, 28px en `lg`).
+- **Líneas:** 1px con `--border` (slate claro). Nunca negro. Usa `<Separator />` o `border-border`.
+- **Tabs:** alto 44px; variante `line` con subrayado primary de 2px.
+- **Checkbox/Radio 20px, Switch 48x28**, todos con área de clic de 44px+.
+- Items de menús abiertos: 44px de alto.

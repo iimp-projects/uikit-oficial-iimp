@@ -47,6 +47,13 @@ test("all primitive/pattern interactive targets meet size rules", async ({ page,
         })
         .filter((x) => x.w > 1 && x.h > 1 && !x.inline && !x.inert)
     )
+    const small = await page.$$eval("#storybook-root *", (els) =>
+      els
+        .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent?.trim()))
+        .map((el) => ({ tag: el.tagName, fs: parseFloat(getComputedStyle(el).fontSize), t: el.textContent?.trim().slice(0, 20) }))
+        .filter((x) => x.fs < 16)
+    )
+    for (const x of small) violations.push(`${id}: text "${x.t}" ${x.fs}px (min 16px)`)
     for (const x of found) {
       const min = x.tiny ? COMPACT_INSIDE_CONTROL_MIN : x.compact ? COMPACT_MIN : MIN
       if (x.h < min || x.w < min) violations.push(`${id}: ${x.name} ${x.w}x${x.h} (min ${min})`)
@@ -132,8 +139,25 @@ test("body and heading typography follow brand spec", async ({ page }) => {
     }
     return { p: mk("p"), h1: mk("h1") }
   })
-  expect(t.p).toMatchObject({ fw: "400", fs: "14px", lh: "24px" })
+  expect(t.p).toMatchObject({ fw: "400", fs: "16px", lh: "24px" })
   expect(t.p.ff).toContain("system-ui")
   expect(t.h1).toMatchObject({ fw: "600", fs: "30px", lh: "36px" })
   expect(t.h1.ff).toContain("system-ui")
+})
+
+test("inputs are 50px tall with 16px text and solid white background", async ({ page }) => {
+  await page.goto("/iframe.html?id=primitives-input--default&viewMode=story")
+  const c = await page.locator("[data-slot=input]").first().evaluate((el) => {
+    const s = getComputedStyle(el)
+    return { h: el.getBoundingClientRect().height, fs: s.fontSize, bg: s.backgroundColor }
+  })
+  expect(c.h).toBe(50)
+  expect(c.fs).toBe("16px")
+  expect(["rgb(255, 255, 255)", "oklch(1 0 0)"]).toContain(c.bg)
+})
+
+test("card is solid white by default", async ({ page }) => {
+  await page.goto("/iframe.html?id=primitives-card--default&viewMode=story")
+  const bg = await page.locator("[data-slot=card]").first().evaluate((el) => getComputedStyle(el).backgroundColor)
+  expect(["rgb(255, 255, 255)", "oklch(1 0 0)"]).toContain(bg)
 })

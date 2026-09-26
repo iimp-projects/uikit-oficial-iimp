@@ -27,14 +27,24 @@ Antes de crear UI:
 
 ## Prohibido
 
-No usar controles nativos directamente cuando exista equivalente:
+**Todo maquetado se hace con el componente equivalente de `official-uikit-iimp` (basado en shadcn/ui).** No se arma UI con HTML nativo ni con estilos propios que dupliquen un componente. Equivalencias:
 
-```tsx
-<button />
-<input />
-<select />
-<textarea />
-```
+| Nativo / maquetado manual | Usar |
+|---|---|
+| `<button>` | `Button` |
+| `<input>` | `Input` (`Checkbox`, `RadioGroup`, `Switch`, `Slider` según el tipo) |
+| `<select>` | `Select` / `NativeSelect` |
+| `<textarea>` | `Textarea` |
+| `<label>` | `Label` / `FormField` |
+| `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` | `Table` / `DataTable` |
+| `<hr>`, `border-b` a secas | `Separator` o `border-b border-border` |
+| `<progress>` | `Progress` |
+| `<dialog>` | `Dialog`, `AlertDialog`, `ConfirmDialog`, `FormDialog` |
+| `<details>` / `<summary>` | `Accordion` / `Collapsible` |
+| `<kbd>` | `Kbd` |
+| card, badge, alert, tabs armados con `div` | `Card`, `Badge`, `Alert`, `Tabs` |
+
+Esto lo hace cumplir `iimpGuardrails` (`official-uikit-iimp/eslint`): el linter falla y nombra el componente a usar.
 
 No importar la capa interna de accesibilidad/primitives directamente desde aplicaciones consumidoras.
 
