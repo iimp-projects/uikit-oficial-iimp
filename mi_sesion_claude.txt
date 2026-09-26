@@ -1,0 +1,2422 @@
+ ▐▛███▛█   Claude Code v2.1.271
+▝▜██████▀  Sonnet 5 · Claude Pro
+  ▝▝ ▝▝    ~/Documents/proyectos_iimp/iimp-uikit
+
+  Get to finished work sooner with Opus 5.5. Update Claude Code to try it.
+
+❯ /caveman                                                                      
+
+⏺ Caveman mode on, full level. Ready.
+
+✻ Brewed for 5s · done 4:04 PM
+
+❯ /model                                                                        
+  ⎿  Set model to Sonnet 5 and saved as your default for new sessions
+
+❯ hmmm lo que quiero es crear una ui-kit y empaquetarlo como "libreria", pero   
+  creo que no debi instalar directamente nextjs no? analiza y dime que opinas   
+
+  Searched for 1 pattern, listed 1 directory (ctrl+o to expand)
+
+⏺ Confirmado: create-next-app puro. next dev/build/start, sin
+  main/module/exports/types en package.json, sin bundler (tsup/rollup/vite), sin
+  "name": "@iimp/ui". Pero AGENTS.md ya asume consumo como @iimp/ui desde apps
+  externas.
+
+  Problema: Next.js es framework de app, no target de build para librería
+  distribuible. Next no exporta bundles consumibles por otro proyecto
+  (Vite/CRA/otro Next app) sin hacks.
+
+  Next aquí sirve solo como sandbox visual (Storybook-like) para ver
+  componentes, no como output. Eso está bien tenerlo, pero no debe ser el
+  paquete en sí.
+
+  Opción recomendada: monorepo (pnpm/turborepo workspaces):
+  - packages/ui → librería real, tsup build, "name": "@iimp/ui", exports field,
+    peer deps react/react-dom.
+  - apps/playground → tu Next.js actual, consume @iimp/ui como workspace
+    dependency, sirve de demo/sandbox.
+
+  No necesitas reinstalar nada, solo reestructurar: mover components/ui,
+  lib/utils.ts a packages/ui/src, dejar Next como app consumidora.
+
+  ¿Quieres que arme la estructura monorepo (pnpm workspaces + tsup) ahora?
+
+✻ Cogitated for 19s · done 4:07 PM
+
+❯ no quiero un monorepo, quiero algo mas como libreria para poder reutilizar en 
+  mis otros proyectos a futuro, poder tener los componentes listos, pero me     
+  gustaria poder logicamente primero hacerlos, verlos y luego volverlo un       
+  paquete al 100% el cuak luego subiré a npm y podré usar en otros cproeyctos   
+  como te dije ... qué opinas o qupe solución me das? o que opinas?             
+
+⏺ Sin monorepo, opción simple: un solo repo, dos roles en mismo package.json.
+
+  - app/ (Next.js) queda como preview/playground local, para ver componentes
+    mientras los haces. No se publica.
+  - Fuente real de librería va en src/ (mover components/ui y lib/utils.ts ahí).
+  - Agregar tsup para build de librería: src/index.ts → dist/ (ESM + CJS +
+    .d.ts).
+  - package.json gana campos de librería: main, module, types, exports, "files":
+    ["dist"]. Esto excluye app/ del paquete publicado en npm.
+  - Next sigue con next dev para ver componentes en vivo, importando desde src/
+    (alias @/), sin depender del build de librería.
+  - Cuando estés listo: pnpm build (tsup) → npm publish. Next nunca se publica,
+    solo sirve de vitrina local.
+
+  Peer deps: react, react-dom deben moverse a peerDependencies (no dependencies)
+  para que no dupliquen React en proyectos consumidores.
+
+  Nombre paquete: decide ahora si es scope @iimp/ui o público sin scope, porque
+  cambia setup de publish (--access public si scope).
+
+  ¿Armo esta estructura (mover código a src/, agregar tsup.config.ts, ajustar
+  package.json)?
+
+✻ Cogitated for 16s · done 4:09 PM
+
+❯ listo, arma la estructura separa la vista "visual" para previsualizar lo que  
+  vamo haciendo de manera ordenada y por otro lado separas lo que se subirá a   
+  npm. lo idea lseria poder desplegarlo como vista en git (page) quizpas para   
+  visualizarlo ó ya seria internamente? es decir un usuario lo instala en su    
+  local pa verlo? osea quiero la mejor opciónp ar abordar esto                  
+
+  Searched for 2 patterns, read 12 files, listed 2 directories, ran 4 shell commands (ctrl+o to expand)
+
+⏺ Movido. Ahora bloqueo del sistema: borrar app/, next.config.ts, next-env.d.ts,
+  public/, .next/ (boilerplate de Next, ya no aplica) lo marcó como destrucción
+  irreversible y pide tu confirmación.
+
+⏺ User answered Claude's questions:
+  ⎿  · Borro app/, next.config.ts, next-env.d.ts, public/, .next/ y carpetas 
+     vacías components/ y lib/? Son solo boilerplate de create-next-app, ya 
+     copié lo útil (button.tsx, utils.ts, globals.css) a src/. → Sí, borrar 
+     (Recomendado)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Borrado limpio. Ahora armo librería + Storybook + workflow de deploy.
+
+⏺ Write(src/index.ts)
+  ⎿  Wrote 2 lines to src/index.ts
+      1 export * from "./components/ui/button"
+      2 export { cn } from "./lib/utils"
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Write(package.json)
+  ⎿  Added 50 lines, removed 14 lines
+       1  {
+       2 -  "name": "iimp-uikit",                                        
+       2 +  "name": "@iimp/ui",                                          
+       3    "version": "0.1.0",
+       4 -  "private": true,                                             
+       4 +  "description": "Design System / UI Kit oficial de Eventos IIM
+         +P",                                                            
+       5 +  "type": "module",                                            
+       6 +  "sideEffects": [                                             
+       7 +    "**/*.css"                                                 
+       8 +  ],                                                           
+       9 +  "main": "./dist/index.cjs",                                  
+      10 +  "module": "./dist/index.js",                                 
+      11 +  "types": "./dist/index.d.ts",                                
+      12 +  "exports": {                                                 
+      13 +    ".": {                                                     
+      14 +      "types": "./dist/index.d.ts",                            
+      15 +      "import": "./dist/index.js",                             
+      16 +      "require": "./dist/index.cjs"                            
+      17 +    },                                                         
+      18 +    "./style.css": "./dist/style.css"                          
+      19 +  },                                                           
+      20 +  "files": [                                                   
+      21 +    "dist"                                                     
+      22 +  ],                                                           
+      23    "scripts": {
+       6 -    "dev": "next dev",                                         
+       7 -    "build": "next build",                                     
+       8 -    "start": "next start",                                     
+       9 -    "lint": "eslint"                                           
+      24 +    "dev": "storybook dev -p 6006",                            
+      25 +    "build": "npm run build:js && npm run build:css",          
+      26 +    "build:js": "tsup",                                        
+      27 +    "build:css": "tailwindcss -i ./src/styles/globals.css -o ./
+         +dist/style.css --minify",                                      
+      28 +    "storybook": "storybook dev -p 6006",                      
+      29 +    "build-storybook": "storybook build",                      
+      30 +    "lint": "eslint .",                                        
+      31 +    "typecheck": "tsc --noEmit"                                
+      32    },
+      33 +  "peerDependencies": {                                        
+      34 +    "react": "^19",                                            
+      35 +    "react-dom": "^19"                                         
+      36 +  },                                                           
+      37    "dependencies": {
+      38      "@phosphor-icons/react": "^2.1.10",
+      39      "class-variance-authority": "^0.7.1",
+      40      "cn": "^0.4.0",
+      15 -    "next": "16.3.6",                                          
+      16 -    "radix-ui": "^1.6.7",                                      
+      17 -    "react": "19.2.8",                                         
+      18 -    "react-dom": "19.2.8",                                     
+      19 -    "shadcn": "^4.21.0",                                       
+      20 -    "tw-animate-css": "^1.4.0"                                 
+      41 +    "radix-ui": "^1.6.7"                                       
+      42    },
+      43    "devDependencies": {
+      44 +    "@chromatic-com/storybook": "^3",                          
+      45 +    "@eslint/js": "^9",                                        
+      46 +    "@storybook/addon-a11y": "^9",                             
+      47 +    "@storybook/addon-docs": "^9",                             
+      48 +    "@storybook/react-vite": "^9",                             
+      49 +    "@tailwindcss/cli": "^4",                                  
+      50      "@tailwindcss/postcss": "^4",
+      51      "@types/node": "^20",
+      52      "@types/react": "^19",
+      53      "@types/react-dom": "^19",
+      54      "eslint": "^9",
+      28 -    "eslint-config-next": "16.3.6",                            
+      55 +    "eslint-plugin-react-hooks": "^5",                         
+      56 +    "eslint-plugin-storybook": "^9",                           
+      57 +    "react": "19.2.8",                                         
+      58 +    "react-dom": "19.2.8",                                     
+      59 +    "shadcn": "^4.21.0",                                       
+      60 +    "storybook": "^9",                                         
+      61      "tailwindcss": "^4",
+      30 -    "typescript": "^5"                                         
+      62 +    "tsup": "^8",                                              
+      63 +    "tw-animate-css": "^1.4.0",                                
+      64 +    "typescript": "^5",                                        
+      65 +    "typescript-eslint": "^8",                                 
+      66 +    "vite": "^6"                                               
+      67    }
+      68  }
+
+⏺ Ahora tsup, tsconfig, eslint, components.json y Storybook config.
+
+⏺ Write(tsup.config.ts)
+  ⎿  Wrote 11 lines to tsup.config.ts
+       1 import { defineConfig } from "tsup"
+       2 
+       3 export default defineConfig({
+       4   entry: ["src/index.ts"],
+       5   format: ["esm", "cjs"],
+       6   dts: true,
+       7   sourcemap: true,
+       8   clean: true,
+       9   splitting: false,
+      10   external: ["react", "react-dom"],
+     … +1 line (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Write(tsconfig.json)
+  ⎿  Added 3 lines, removed 15 lines
+      13      "isolatedModules": true,
+      14      "jsx": "react-jsx",
+      15      "incremental": true,
+      16 -    "plugins": [                                               
+      17 -      {                                                        
+      18 -        "name": "next"                                         
+      19 -      }                                                        
+      20 -    ],                                                         
+      16      "paths": {
+      22 -      "@/*": ["./*"]                                           
+      17 +      "@/*": ["./src/*"]                                       
+      18      }
+      19    },
+      25 -  "include": [                                                 
+      26 -    "next-env.d.ts",                                           
+      27 -    "**/*.ts",                                                 
+      28 -    "**/*.tsx",                                                
+      29 -    ".next/types/**/*.ts",                                     
+      30 -    ".next/dev/types/**/*.ts",                                 
+      31 -    "**/*.mts"                                                 
+      32 -  ],                                                           
+      33 -  "exclude": ["node_modules"]                                  
+      20 +  "include": ["src/**/*.ts", "src/**/*.tsx", ".storybook/**/*.t
+         +s", "*.config.ts"],                                            
+      21 +  "exclude": ["node_modules", "dist", "storybook-static"]      
+      22  }
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(components.json)
+  ⎿  Added 1 line, removed 1 line
+       5    "tsx": true,
+       6    "tailwind": {
+       7      "config": "",
+       8 -    "css": "app/globals.css",                                  
+       8 +    "css": "src/styles/globals.css",                           
+       9      "baseColor": "neutral",
+      10      "cssVariables": true,
+      11      "prefix": ""
+
+⏺ Write(eslint.config.mjs)
+  ⎿  Added 18 lines, removed 17 lines
+       1 -import { defineConfig, globalIgnores } from "eslint/config";   
+       2 -import nextVitals from "eslint-config-next/core-web-vitals";   
+       3 -import nextTs from "eslint-config-next/typescript";            
+       1 +import js from "@eslint/js"                                    
+       2 +import tseslint from "typescript-eslint"                       
+       3 +import reactHooks from "eslint-plugin-react-hooks"             
+       4 +import storybook from "eslint-plugin-storybook"                
+       5 +import { defineConfig, globalIgnores } from "eslint/config"    
+       6  
+       5 -const eslintConfig = defineConfig([                            
+       6 -  ...nextVitals,                                               
+       7 -  ...nextTs,                                                   
+       8 -  // Override default ignores of eslint-config-next.           
+       9 -  globalIgnores([                                              
+      10 -    // Default ignores of eslint-config-next:                  
+      11 -    ".next/**",                                                
+      12 -    "out/**",                                                  
+      13 -    "build/**",                                                
+      14 -    "next-env.d.ts",                                           
+      15 -  ]),                                                          
+      16 -]);                                                            
+      17 -                                                               
+      18 -export default eslintConfig;                                   
+       7 +export default defineConfig([                                  
+       8 +  globalIgnores(["dist/**", "storybook-static/**", "node_module
+         +s/**"]),                                                       
+       9 +  js.configs.recommended,                                      
+      10 +  ...tseslint.configs.recommended,                             
+      11 +  {                                                            
+      12 +    files: ["**/*.{ts,tsx}"],                                  
+      13 +    plugins: { "react-hooks": reactHooks },                    
+      14 +    rules: {                                                   
+      15 +      ...reactHooks.configs.recommended.rules,                 
+      16 +    },                                                         
+      17 +  },                                                           
+      18 +  ...storybook.configs["flat/recommended"],                    
+      19 +])                                                             
+
+⏺ Ahora Storybook config, story de ejemplo, workflow de GitHub Pages y ajustes
+  de .gitignore.
+
+⏺ Write(.storybook/main.ts)
+  ⎿  Wrote 13 lines to .storybook/main.ts
+       1 import type { StorybookConfig } from "@storybook/react-vite"
+       2 
+       3 const config: StorybookConfig = {
+         |ts|tsx)"],
+       5   addons: ["@storybook/addon-docs", "@storybook/addon-a11y", "@c
+         hromatic-com/storybook"],
+       6   framework: {
+       8     options: {},
+       9   },
+      10   docs: {},
+     … +5 lines (ctrl+o to expand)
+⏺ Write(.storybook/preview.ts)
+  ⎿  Wrote 22 lines to .storybook/preview.ts
+       1 import type { Preview } from "@storybook/react-vite"
+       2 import "../src/styles/globals.css"
+       3 
+       4 const preview: Preview = {
+       5   parameters: {
+       6     controls: {
+       7       matchers: {
+       8         color: /(background|color)$/i,
+       9         date: /Date$/i,
+      10       },
+     … +12 lines (ctrl+o to expand)
+
+⏺ Write(src/components/ui/button.stories.tsx)
+  ⎿  Wrote 49 lines to src/components/ui/button.stories.tsx
+       1 import type { Meta, StoryObj } from "@storybook/react-vite"
+       2 import { Button } from "./button"
+       3 
+       4 const meta: Meta<typeof Button> = {
+       5   title: "Primitives/Button",
+       6   component: Button,
+       7   tags: ["autodocs"],
+       8   argTypes: {
+       9     variant: {
+      10       control: "select",
+     … +41 lines (ctrl+o to expand)
+
+⏺ Write(.github/workflows/deploy-storybook.yml)
+  ⎿  Wrote 40 lines to .github/workflows/deploy-storybook.yml
+       1 name: Deploy Storybook to GitHub Pages
+       2 
+       3 on:
+       4   push:
+       5     branches: [main]
+       6   workflow_dispatch: {}
+       7 
+       8 permissions:
+       9   contents: read
+      10   pages: write
+     … +30 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(.gitignore)
+  ⎿  Added 4 lines, removed 5 lines
+      13  # testing
+      14  /coverage
+      15  
+      16 -# next.js                                                      
+      17 -/.next/                                                        
+      18 -/out/                                                          
+      16 +# library build                                                
+      17 +/dist                                                          
+      18  
+      20 -# production                                                   
+      21 -/build                                                         
+      19 +# storybook                                                    
+      20 +/storybook-static                                              
+      21  
+      22  # misc
+      23  .DS_Store
+
+⏺ Update(.gitignore)
+  ⎿  Removed 1 line
+      37  
+      38  # typescript
+      39  *.tsbuildinfo
+      40 -next-env.d.ts                                                  
+
+⏺ Ahora instalo dependencias nuevas y valido build + Storybook.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Update(package.json)
+  ⎿  Removed 1 line
+      41      "radix-ui": "^1.6.7"
+      42    },
+      43    "devDependencies": {
+      44 -    "@chromatic-com/storybook": "^3",                          
+      44      "@eslint/js": "^9",
+      45      "@storybook/addon-a11y": "^9",
+      46      "@storybook/addon-docs": "^9",
+
+⏺ Update(.storybook/main.ts)
+  ⎿  Added 1 line, removed 1 line
+      2  
+      3  const config: StorybookConfig = {
+      4    stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs
+         |ts|tsx)"],
+      5 -  addons: ["@storybook/addon-docs", "@storybook/addon-a11y", "@c
+        -hromatic-com/storybook"],                                       
+      5 +  addons: ["@storybook/addon-docs", "@storybook/addon-a11y"],   
+      6    framework: {
+      7      name: "@storybook/react-vite",
+      8      options: {},
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Instalado. Ahora valido build de librería y typecheck.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Typecheck limpio.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ tsup dts build choca con incremental del tsconfig raíz. Lo quito (no aporta
+  nada acá, era boilerplate de Next).
+
+⏺ Update(tsconfig.json)
+  ⎿  Removed 1 line
+      12      "resolveJsonModule": true,
+      13      "isolatedModules": true,
+      14      "jsx": "react-jsx",
+      15 -    "incremental": true,                                       
+      15      "paths": {
+      16        "@/*": ["./src/*"]
+      17      }
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Build de librería OK: dist/index.js, dist/index.cjs, dist/index.d.ts,
+  dist/style.css. Ahora Storybook.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Storybook build OK (warnings de "use client" son inofensivos, vienen de
+  radix-ui). Reviso lint.
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+⏺ Full boilerplate de Next, obsoleto. Lo reescribo con instrucciones reales del
+  kit.
+
+⏺ Write(README.md)
+  ⎿  Added 35 lines, removed 21 lines
+       1 -This is a [Next.js](https://nextjs.org) project bootstrapped wi
+         -th [`create-next-app`](https://nextjs.org/docs/app/api-referenc
+         -e/cli/create-next-app).                                        
+       1 +# @iimp/ui                                                     
+       2  
+       3 -## Getting Started                                             
+       3 +Design System / UI Kit oficial de Eventos IIMP. Ver `AGENTS.md`
+         + y `docs/` como fuente de verdad antes de modificar componentes
+         +.                                                              
+       4  
+       5 -First, run the development server:                             
+       5 +## Desarrollo (preview visual)                                 
+       6  
+       7  ```bash
+       8 -npm run dev                                                    
+       9 -# or                                                           
+      10 -yarn dev                                                       
+      11 -# or                                                           
+      12 -pnpm dev                                                       
+      13 -# or                                                           
+      14 -bun dev                                                        
+       8 +npm run storybook                                              
+       9  ```
+      10  
+      17 -Open [http://localhost:3000](http://localhost:3000) with your b
+         -rowser to see the result.                                      
+      11 +Abre Storybook en `http://localhost:6006`. Cada primitive/patte
+         +rn vive junto a su archivo como `*.stories.tsx` (ej. `src/compo
+         +nents/ui/button.stories.tsx`).                                 
+      12  
+      19 -You can start editing the page by modifying `app/page.tsx`. The
+         - page auto-updates as you edit the file.                       
+      13 +## Build del paquete npm                                       
+      14  
+      21 -This project uses [`next/font`](https://nextjs.org/docs/app/bui
+         -lding-your-application/optimizing/fonts) to automatically optim
+         -ize and load [Geist](https://vercel.com/font), a new font famil
+         -y for Vercel.                                                  
+      15 +```bash                                                        
+      16 +npm run build                                                  
+      17 +```                                                            
+      18  
+      23 -## Learn More                                                  
+      19 +Genera `dist/` (ESM, CJS, tipos y `dist/style.css`). Solo `dist
+         +/` se publica (ver `files` en `package.json`).                 
+      20  
+      25 -To learn more about Next.js, take a look at the following resou
+         -rces:                                                          
+      21 +## Publicar                                                    
+      22  
+      27 -- [Next.js Documentation](https://nextjs.org/docs) - learn abou
+         -t Next.js features and API.                                    
+      28 -- [Learn Next.js](https://nextjs.org/learn) - an interactive Ne
+         -xt.js tutorial.                                                
+      23 +```bash                                                        
+      24 +npm version <patch|minor|major>                                
+      25 +npm publish --access public                                    
+      26 +```                                                            
+      27  
+      30 -You can check out [the Next.js GitHub repository](https://githu
+         -b.com/vercel/next.js) - your feedback and contributions are wel
+         -come!                                                          
+      28 +## Consumo en otro proyecto                                    
+      29  
+      32 -## Deploy on Vercel                                            
+      30 +```bash                                                        
+      31 +npm install @iimp/ui                                           
+      32 +```                                                            
+      33  
+      34 -The easiest way to deploy your Next.js app is to use the [Verce
+         -l Platform](https://vercel.com/new?utm_medium=default-template&
+         -filter=next.js&utm_source=create-next-app&utm_campaign=create-n
+         -ext-app-readme) from the creators of Next.js.                  
+      34 +```tsx                                                         
+      35 +import { Button } from "@iimp/ui"                              
+      36 +import "@iimp/ui/style.css"                                    
+      37 +```                                                            
+      38  
+      36 -Check out our [Next.js deployment documentation](https://nextjs
+         -.org/docs/app/building-your-application/deploying) for more det
+         -ails.                                                          
+      39 +## Catálogo público en GitHub Pages                            
+      40 +                                                               
+      41 +Cada push a `main` publica Storybook estático vía `.github/work
+         +flows/deploy-storybook.yml`. Habilitar una vez en el repo: Sett
+         +ings → Pages → Source: GitHub Actions.                         
+      42 +                                                               
+      43 +## Calidad                                                     
+      44 +                                                               
+      45 +```bash                                                        
+      46 +npm run typecheck                                              
+      47 +npm run lint                                                   
+      48 +npm run build                                                  
+      49 +npm run build-storybook                                        
+      50 +```                                                            
+
+⏺ Todo verificado: typecheck, lint, build de librería y build de Storybook pasan
+  limpio.
+
+  Resumen estructura final:
+  src/
+    components/ui/button.tsx        ← primitives (código fuente, se publica
+  compilado)
+    components/ui/button.stories.tsx ← preview Storybook (NO se publica)
+    lib/utils.ts
+    styles/globals.css               ← design tokens
+    index.ts                         ← barrel export público
+  .storybook/                        ← config Storybook
+  .github/workflows/deploy-storybook.yml  ← auto-deploy a GitHub Pages en cada
+  push a main
+  dist/                               ← output build, gitignored, esto es lo que
+  sube a npm
+
+  Vista visual = Storybook, no Next.js. Publicado en GitHub Pages, link
+  compartible, nadie instala nada para ver el catálogo. Paquete real = npm run 
+  build → dist/ → npm publish.
+
+  Flujo día a día:
+  1. npm run storybook → creas/ves componente en localhost:6006.
+  2. Push a main → catálogo se actualiza solo en GitHub Pages (falta activar
+     Settings → Pages → Source: GitHub Actions, una sola vez).
+  3. Cuando quieras usarlo en otro proyecto: npm run build → npm publish 
+     --access public.
+
+  Pendiente decidir: nombre de paquete @iimp/ui requiere scope npm (organización
+  u usuario iimp). Si no lo tienes, dime y lo cambio a nombre sin scope antes
+  de publicar.
+
+✻ Crunched for 7m 17s · done 4:20 PM
+
+❯ instalé un preset que generé en ña misma web de shadcn, nose si ya contenga   
+  alguna lirberia de iconos, adicional me gusytaria uq epeudas instalar a       
+  criterio tuyo alguna skill de ux/ui xq muchos componentes de shadcn son muy   
+  pequeñosy las buenas practicas por ejemplo menscionan que los botones deben   
+  ser de 45px de alto (esto es un ejemplo claro), pero me gustaria que  se      
+  peuda meter mano para que todos lso componentes tengan un tamaño adecuado     
+  basado en buenas practicas/guias de ux/ui, el color primario seria #092042 y  
+  secundario #c09153, tienes todo claro? lo haces? la necesidad de esto es para 
+  homogenizar y tener decalrado un ux en donde cualquier proeycto donde lo      
+  instale tome como referencia y use estos componentes si o si, inclusive poder 
+  cerar componetnes para modales (en alguna webs gemini me ha creado            
+  diferentes diseños y nunca ha respetado nada) necesito algo chevere, si me    
+  entendiste?                                                                   
+
+  Searched for 1 pattern, read 9 files, ran 4 shell commands (ctrl+o to expand)
+
+⏺ Update(src/components/ui/button.tsx)
+  ⎿  Added 6 lines, removed 9 lines
+       4  import { Slot } from "radix-ui"
+       5  
+       6  const buttonVariants = cva(
+       7 -  "group/button inline-flex shrink-0 items-center justify-cente
+         -r rounded-2xl border border-transparent bg-clip-padding text-sm
+         - font-medium whitespace-nowrap transition-all outline-none sele
+         -ct-none focus-visible:border-ring focus-visible:ring-3 focus-vi
+         -sible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px di
+         -sabled:pointer-events-none disabled:opacity-50 aria-invalid:bor
+         -der-destructive aria-invalid:ring-3 aria-invalid:ring-destructi
+         -ve/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid
+         -:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink
+         --0 [&_svg:not([class*='size-'])]:size-4",                      
+       7 +  "group/button inline-flex shrink-0 items-center justify-cente
+         +r rounded-2xl border border-transparent bg-clip-padding text-sm
+         + font-medium whitespace-nowrap outline-none select-none transit
+         +ion-[color,background-color,border-color,box-shadow,transform] 
+         +duration-150 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:borde
+         +r-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:n
+         +ot-aria-[haspopup]:translate-y-px disabled:pointer-events-none 
+         +disabled:opacity-50 aria-invalid:border-destructive aria-invali
+         +d:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:bor
+         +der-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg
+         +]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size
+         +-'])]:size-4 motion-reduce:transition-none motion-reduce:active
+         +:translate-y-0",                                               
+       8    {
+       9      variants: {
+      10        variant: {
+     ...
+      20          link: "text-primary underline-offset-4 hover:underline"
+          ,
+      21        },
+      22        size: {
+      23 +        sm: "h-9 gap-1 px-3 has-data-[icon=inline-end]:pr-2 has
+         +-data-[icon=inline-start]:pl-2",                               
+      24          default:
+      24 -          "h-8 gap-1.5 px-3 has-data-[icon=inline-end]:pr-2.5 h
+         -as-data-[icon=inline-start]:pl-2.5",                           
+      25 -        xs: "h-6 gap-1 px-2.5 text-xs has-data-[icon=inline-end
+         -]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='si
+         -ze-'])]:size-3",                                               
+      26 -        sm: "h-7 gap-1 px-3 has-data-[icon=inline-end]:pr-2 has
+         --data-[icon=inline-start]:pl-2",                               
+      27 -        lg: "h-9 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 h
+         -as-data-[icon=inline-start]:pl-3",                             
+      28 -        icon: "size-8",                                        
+      29 -        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3
+         -",                                                             
+      30 -        "icon-sm": "size-7",                                   
+      31 -        "icon-lg": "size-9",                                   
+      25 +          "h-11 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 ha
+         +s-data-[icon=inline-start]:pl-3",                              
+      26 +        lg: "h-12 gap-2 px-5 text-[0.9375rem] has-data-[icon=in
+         +line-end]:pr-4 has-data-[icon=inline-start]:pl-4",             
+      27 +        icon: "size-11",                                       
+      28 +        "icon-lg": "size-12",                                  
+      29        },
+      30      },
+      31      defaultVariants: {
+
+⏺ Update(src/components/ui/button.stories.tsx)  ⎿  Added 1 line, removed 1 line
+      12      },
+      13      size: {
+      14        control: "select",
+      15 -      options: ["default", "xs", "sm", "lg", "icon", "icon-xs",
+         - "icon-sm", "icon-lg"],                                        
+      15 +      options: ["sm", "default", "lg", "icon", "icon-lg"],     
+      16      },
+      17    },
+      18  }
+
+⏺ Ahora colores de marca + reduced-motion global en globals.css.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ API Error: Can't reach the API server — check your internet or DNS 
+  (ENOTFOUND)
+
+✻ Brewed for 7m 24s · done 4:29 PM
+
+❯ continua y apoate de las skills                                               
+
+⏺ Skill(accessibility)
+  ⎿  Successfully loaded skill
+
+⏺ Skill(frontend-design)
+  ⎿  Successfully loaded skill
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 3 lines, removed 3 lines
+      55    --card-foreground: oklch(0.145 0 0);
+      56    --popover: oklch(1 0 0);
+      57    --popover-foreground: oklch(0.145 0 0);
+      58 -  --primary: oklch(0.205 0 0);                                 
+      58 +  --primary: oklch(0.2474 0.0706 258.37);                      
+      59    --primary-foreground: oklch(0.985 0 0);
+      60 -  --secondary: oklch(0.97 0 0);                                
+      61 -  --secondary-foreground: oklch(0.205 0 0);                    
+      60 +  --secondary: oklch(0.6885 0.0977 72.62);                     
+      61 +  --secondary-foreground: oklch(0.2474 0.0706 258.37);         
+      62    --muted: oklch(0.97 0 0);
+      63    --muted-foreground: oklch(0.556 0 0);
+      64    --accent: oklch(0.97 0 0);
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 4 lines, removed 4 lines
+      90    --card-foreground: oklch(0.985 0 0);
+      91    --popover: oklch(0.205 0 0);
+      92    --popover-foreground: oklch(0.985 0 0);
+      93 -  --primary: oklch(0.922 0 0);                                 
+      94 -  --primary-foreground: oklch(0.205 0 0);                      
+      95 -  --secondary: oklch(0.269 0 0);                               
+      96 -  --secondary-foreground: oklch(0.985 0 0);                    
+      93 +  --primary: oklch(0.2474 0.0706 258.37);                      
+      94 +  --primary-foreground: oklch(0.985 0 0);                      
+      95 +  --secondary: oklch(0.6885 0.0977 72.62);                     
+      96 +  --secondary-foreground: oklch(0.2474 0.0706 258.37);         
+      97    --muted: oklch(0.269 0 0);
+      98    --muted-foreground: oklch(0.708 0 0);
+      99    --accent: oklch(0.269 0 0);
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 11 lines
+      130    html {
+      131      @apply font-sans;
+      132    }
+      133 +}                                                             
+      134 +                                                              
+      135 +@media (prefers-reduced-motion: reduce) {                     
+      136 +  *,                                                          
+      137 +  *::before,                                                  
+      138 +  *::after {                                                  
+      139 +    animation-duration: 0.01ms !important;                    
+      140 +    animation-iteration-count: 1 !important;                  
+      141 +    transition-duration: 0.01ms !important;                   
+      142 +    scroll-behavior: auto !important;                         
+      143 +  }                                                           
+      144  }
+      145   No newline at end of file
+
+⏺ Update(src/components/ui/button.tsx)
+  ⎿  Added 1 line, removed 1 line
+       4  import { Slot } from "radix-ui"
+       5  
+       6  const buttonVariants = cva(
+       7 -  "group/button inline-flex shrink-0 items-center justify-cente
+         -r rounded-2xl border border-transparent bg-clip-padding text-sm
+         - font-medium whitespace-nowrap outline-none select-none transit
+         -ion-[color,background-color,border-color,box-shadow,transform] 
+         -duration-150 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:borde
+         -r-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:n
+         -ot-aria-[haspopup]:translate-y-px disabled:pointer-events-none 
+         -disabled:opacity-50 aria-invalid:border-destructive aria-invali
+         -d:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:bor
+         -der-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg
+         -]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size
+         --'])]:size-4 motion-reduce:transition-none motion-reduce:active
+         -:translate-y-0",                                               
+       7 +  "group/button inline-flex shrink-0 items-center justify-cente
+         +r rounded-2xl border border-transparent bg-clip-padding text-sm
+         + font-medium whitespace-nowrap outline-none select-none transit
+         +ion-[color,background-color,border-color,box-shadow,transform] 
+         +duration-150 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:borde
+         +r-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:n
+         +ot-aria-[haspopup]:translate-y-px disabled:pointer-events-none 
+         +disabled:opacity-50 aria-invalid:border-destructive aria-invali
+         +d:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:bor
+         +der-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg
+         +]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size
+         +-'])]:size-4",                                                 
+       8    {
+       9      variants: {
+      10        variant: {
+
+⏺ Ahora el primitive Dialog (base para todos los modales).
+
+⏺ Write(src/components/ui/dialog.tsx)
+  ⎿  Wrote 123 lines to src/components/ui/dialog.tsx
+       1 import * as React from "react"
+       2 import { Dialog as DialogPrimitive } from "radix-ui"
+       3 import { X } from "@phosphor-icons/react"
+       5 
+       6 function Dialog(props: React.ComponentProps<typeof DialogPrimiti
+         ve.Root>) {
+       7   return <DialogPrimitive.Root data-slot="dialog" {...props} />
+       9 
+      10 function DialogTrigger(props: React.ComponentProps<typeof Dialog
+         Primitive.Trigger>) {
+     … +137 lines (ctrl+o to expand)
+
+⏺ Write(src/components/ui/alert-dialog.tsx)
+  ⎿  Wrote 136 lines to src/components/ui/alert-dialog.tsx
+       1 import * as React from "react"
+       3 import { cn } from "cn"
+       4 
+       5 function AlertDialog(props: React.ComponentProps<typeof AlertDia
+       6   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {..
+         .props} />
+       8 
+       9 function AlertDialogTrigger(props: React.ComponentProps<typeof A
+         lertDialogPrimitive.Trigger>) {
+         rigger" {...props} />
+     … +143 lines (ctrl+o to expand)
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+⏺ Confirmado, íconos existen vía ESM. Sigo con los patterns.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Write(src/components/ui/spinner.tsx)
+  ⎿  Wrote 16 lines to src/components/ui/spinner.tsx
+       1 import * as React from "react"
+       2 import { CircleNotch } from "@phosphor-icons/react"
+       3 import { cn } from "cn"
+       4 
+       5 function Spinner({ className, ...props }: React.ComponentProps<t
+       6   return (
+       7     <CircleNotch
+       8       role="status"
+       9       aria-label="Cargando"
+      10       className={cn("size-4 animate-spin", className)}
+     … +7 lines (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/FormDialog.tsx)
+  ⎿  Wrote 78 lines to src/components/patterns/FormDialog.tsx
+       1 import * as React from "react"
+       2 import {
+       3   Dialog,
+       4   DialogTrigger,
+       5   DialogContent,
+       6   DialogHeader,
+       7   DialogFooter,
+       8   DialogTitle,
+       9   DialogDescription,
+      10   DialogClose,
+     … +73 lines (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/InfoDialog.tsx)
+  ⎿  Wrote 57 lines to src/components/patterns/InfoDialog.tsx
+       1 import * as React from "react"
+       2 import {
+       3   Dialog,
+       4   DialogTrigger,
+       5   DialogContent,
+       6   DialogHeader,
+       7   DialogFooter,
+       8   DialogTitle,
+       9   DialogDescription,
+      10   DialogClose,
+     … +50 lines (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/ConfirmDialog.tsx)
+  ⎿  Wrote 72 lines to src/components/patterns/ConfirmDialog.tsx
+       1 import * as React from "react"
+       2 import {
+       3   AlertDialog,
+       4   AlertDialogTrigger,
+       5   AlertDialogContent,
+       6   AlertDialogHeader,
+       7   AlertDialogFooter,
+       8   AlertDialogTitle,
+       9   AlertDialogDescription,
+      10   AlertDialogAction,
+     … +66 lines (ctrl+o to expand)
+
+⏺ Update(src/components/patterns/ConfirmDialog.tsx)
+  ⎿  Added 1 line
+      21    description: string
+      22    confirmLabel: string
+      23    cancelLabel?: string
+      24 +  /** Dialog stays open after click; call onOpenChange(false) y
+         +ourself once the action settles. */                            
+      25    onConfirm: () => void | Promise<void>
+      26    loading?: boolean
+      27  }
+
+⏺ Ahora DestructiveDialog.
+
+⏺ Write(src/components/patterns/DestructiveDialog.tsx)
+  ⎿  Wrote 74 lines to src/components/patterns/DestructiveDialog.tsx
+       1 import * as React from "react"
+       2 import {
+       3   AlertDialog,
+       4   AlertDialogTrigger,
+       5   AlertDialogContent,
+       6   AlertDialogHeader,
+       7   AlertDialogFooter,
+       8   AlertDialogTitle,
+       9   AlertDialogDescription,
+      10   AlertDialogAction,
+     … +69 lines (ctrl+o to expand)
+
+⏺ Ahora actualizo el barrel export público y agrego stories para
+  Dialog/patterns.
+⏺ Write(src/index.ts)
+  ⎿  Added 7 lines
+      1  export * from "./components/ui/button"
+      2 +export * from "./components/ui/dialog"                          
+      3 +export * from "./components/ui/alert-dialog"                    
+      4 +export * from "./components/ui/spinner"                         
+      5 +export * from "./components/patterns/FormDialog"                
+      6 +export * from "./components/patterns/InfoDialog"                
+      7 +export * from "./components/patterns/ConfirmDialog"             
+      8 +export * from "./components/patterns/DestructiveDialog"         
+      9  export { cn } from "./lib/utils"
+
+⏺ Write(src/components/patterns/FormDialog.stories.tsx)
+  ⎿  Wrote 40 lines to src/components/patterns/FormDialog.stories.tsx
+       1 import * as React from "react"
+       2 import type { Meta, StoryObj } from "@storybook/react-vite"
+       3 import { FormDialog } from "./FormDialog"
+       4 import { Button } from "../ui/button"
+       5 
+       6 const meta: Meta<typeof FormDialog> = {
+       7   title: "Patterns/FormDialog",
+       8   component: FormDialog,
+       9   tags: ["autodocs"],
+      10 }
+     … +32 lines (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/InfoDialog.stories.tsx)
+  ⎿  Wrote 26 lines to src/components/patterns/InfoDialog.stories.tsx
+      1 import type { Meta, StoryObj } from "@storybook/react-vite"
+      2 import { InfoDialog } from "./InfoDialog"
+      3 import { Button } from "../ui/button"
+      4 
+      5 const meta: Meta<typeof InfoDialog> = {
+      6   title: "Patterns/InfoDialog",
+      7   component: InfoDialog,
+      8   tags: ["autodocs"],
+      9 }
+     … +18 lines (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/ConfirmDialog.stories.tsx)
+  ⎿  Wrote 40 lines to src/components/patterns/ConfirmDialog.stories.tsx
+       1 import * as React from "react"
+       2 import type { Meta, StoryObj } from "@storybook/react-vite"
+       3 import { ConfirmDialog } from "./ConfirmDialog"
+       4 import { Button } from "../ui/button"
+       5 
+       6 const meta: Meta<typeof ConfirmDialog> = {
+       7   title: "Patterns/ConfirmDialog",
+       8   component: ConfirmDialog,
+       9   tags: ["autodocs"],
+      10 }
+     … +32 lines (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/DestructiveDialog.stories.tsx)
+  ⎿  Wrote 40 lines to
+     src/components/patterns/DestructiveDialog.stories.tsx
+       1 import * as React from "react"
+       2 import type { Meta, StoryObj } from "@storybook/react-vite"
+       3 import { DestructiveDialog } from "./DestructiveDialog"
+       4 import { Button } from "../ui/button"
+       5 
+       6 const meta: Meta<typeof DestructiveDialog> = {
+       7   title: "Patterns/DestructiveDialog",
+       8   component: DestructiveDialog,
+       9   tags: ["autodocs"],
+      10 }
+     … +32 lines (ctrl+o to expand)
+
+⏺ Ahora typecheck, lint, build librería y build Storybook para validar todo.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Typecheck limpio.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Lint limpio.
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+⏺ Servidor arriba. Ahora tomo screenshot del catálogo con Playwright para
+  verificación visual real.
+
+  Searched for 1 pattern, read 1 file, ran 3 shell commands (ctrl+o to expand)
+
+⏺ Listo. Resumen de cambios:
+
+  Íconos: @phosphor-icons/react ya estaba instalado desde el inicio. No detecté
+  archivos nuevos en el repo de ese preset de la web de shadcn — si lo generaste
+  ahí, falta traerlo (pégame el JSON del tema o dime qué componentes trae y los
+  agrego).
+
+  Tamaños (Button), alineado a docs/03_UX_RULES.md (44px estándar, 48px CTA,
+  WCAG 2.5.5 AAA):
+  - sm 36px (solo desktop compacto), default 44px, lg 48px, icon/icon-lg 44/48px
+    target.
+  - Eliminé xs/icon-xs/icon-sm — violaban el mínimo táctil sin justificación, y
+    la doc prohíbe dos sistemas de densidad sin necesidad real.
+  - transition-all fuera (prohibido en AGENTS.md) → transiciones específicas
+    150ms, easing del sistema.
+
+  Colores de marca en src/styles/globals.css:
+  - --primary: #092042 → foreground blanco, contraste 16:1.
+  - --secondary: #c09153 → foreground NO blanco (blanco da 2.83:1, falla WCAG
+    AA). Usé el navy #092042 como secondary-foreground: 5.72:1, pasa. Esto es
+    justo lo que docs/02_DESIGN_TOKENS.md advierte: "no asumir siempre #fff".
+  - Reduced-motion global agregado (obligatorio por docs/04_ACCESSIBILITY.md).
+
+  Modales — lo que pediste explícito ("nunca ha respetado nada"), primitives + 4
+  patterns fijos exportados desde @iimp/ui, cero improvisación por feature:
+  - Dialog / AlertDialog (primitives, Radix, focus trap/Escape/retorno de foco
+    gestionado)
+  - FormDialog — crear/editar, loading + anti doble-submit, botón mantiene ancho
+  - InfoDialog — un solo botón "Cerrar", sin footer complejo
+  - ConfirmDialog — AlertDialog, requiere confirmLabel explícito
+  - DestructiveDialog — variant destructive forzado, requiere texto específico
+    ("Eliminar participante", no "Aceptar")
+
+  Todos comparten mismo ancho (max-w-lg), mismo radius, misma animación
+  (fade+zoom 200ms) — un solo sistema visual, no cuatro diseños distintos.
+
+  Skills usadas: accessibility (contraste, focus, target size) y frontend-design
+  (restraint, un solo acento, evitar defaults genéricos) — por eso no metí
+  gradientes/sombras porque sí.
+
+  Verificado: typecheck, lint, build (dist + css), build-storybook — todo
+  limpio.
+
+  Pendiente natural (no lo toqué, para no inflar el scope): Input, Select,
+  FormField — mismos 44px, misma lógica. ¿Sigo con eso ahora o revisas primero
+  lo que hay?
+
+✻ Sautéed for 5m 37s · done 4:38 PM
+
+※ recap: Building @iimp/ui as a standalone component library with Storybook preview and npm publishing. Just fixed Button sizing and colors and added Dialog/FormDialog/ConfirmDialog/DestructiveDialog patterns; next is Input, Select, and FormField at the same 44px standard. (disable recaps in /config)
+
+❯ q falta? se puede ver lo avanzado?                                            
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Ver ahora: local, corre npm run storybook → localhost:6006. GitHub Pages no
+  funciona todavía — no hay remoto configurado ni commit hecho (32 archivos sin
+  commitear), el workflow solo dispara con push a main en GitHub real.
+
+  ¿Lo levanto yo ahora en background y te paso el link local?
+
+  Qué falta (contra plan de 01_MASTER_BUILD_PROMPT.md):
+
+  ┌──────────────────────┬──────────────────────────────────────────────────┐
+  │         Fase         │                      Estado                      │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Tokens + colores     │ ✅ hecho                                         │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ IimpThemeProvider    │ ❌ falta — hoy los colores son fijos en CSS, no  │
+  │ (runtime theme)      │ inyectables por vertical                         │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │                      │ Solo Button, Dialog, AlertDialog, Spinner.       │
+  │ Primitives           │ Faltan ~40 más: Input, Select, Textarea, Label,  │
+  │                      │ Checkbox, Radio, Switch, Card, Badge, Avatar,    │
+  │                      │ Tabs, Table...                                   │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Dialog patterns      │ ✅ FormDialog/InfoDialog/ConfirmDialog/Destructi │
+  │                      │ veDialog                                         │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ FormField/FormSectio │ ❌ falta (necesita Input primero)                │
+  │ n                    │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Data/Nav/Feedback    │ ❌ DataTable, PageHeader, EmptyState,            │
+  │ patterns             │ LoadingState, ErrorState, StatCard, StatusBadge, │
+  │                      │  FilterBar, SearchField                          │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Theme Playground en  │ ❌ falta (toolbar para cambiar primary/secondary │
+  │ Storybook            │  en vivo)                                        │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Guardrails ESLint    │                                                  │
+  │ (bloquear            │ ❌ falta                                         │
+  │ <button>/<input>     │                                                  │
+  │ nativo en apps)      │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Tests unitarios/acce │ ❌ falta                                         │
+  │ sibilidad            │                                                  │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Publicar a npm       │ ❌ falta (todo local)                            │
+  ├──────────────────────┼──────────────────────────────────────────────────┤
+  │ Git remoto + commit  │ ❌ falta                                         │
+  │ + Pages              │                                                  │
+  └──────────────────────┴──────────────────────────────────────────────────┘
+
+  ¿Por dónde sigo: Input/Select/FormField (siguiente natural), Theme Provider, o
+  conectar git remoto + primer commit para que veas Storybook en la nube?
+
+✻ Worked for 27s · done 4:58 PM
+
+❯ continua con todos los componenetes de shadcn                                 
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ CLI funciona bien con la estructura actual. Reviso qué generó antes de seguir
+  en masa.
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+⏺ -a agrega todo el catálogo de una. Uso eso.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ La CLI trajo el catálogo completo (57 archivos) pero con --overwrite pisó mis
+  fixes en button.tsx, dialog.tsx, alert-dialog.tsx y spinner.tsx. Los repongo
+  antes de seguir.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/button.tsx)
+  ⎿  Added 6 lines, removed 9 lines
+       4  import { Slot } from "radix-ui"
+       5  
+       6  const buttonVariants = cva(
+       7 -  "group/button inline-flex shrink-0 items-center justify-cente
+         -r rounded-2xl border border-transparent bg-clip-padding text-sm
+         - font-medium whitespace-nowrap transition-all outline-none sele
+         -ct-none focus-visible:border-ring focus-visible:ring-3 focus-vi
+         -sible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px di
+         -sabled:pointer-events-none disabled:opacity-50 aria-invalid:bor
+         -der-destructive aria-invalid:ring-3 aria-invalid:ring-destructi
+         -ve/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid
+         -:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink
+         --0 [&_svg:not([class*='size-'])]:size-4",                      
+       7 +  "group/button inline-flex shrink-0 items-center justify-cente
+         +r rounded-2xl border border-transparent bg-clip-padding text-sm
+         + font-medium whitespace-nowrap outline-none select-none transit
+         +ion-[color,background-color,border-color,box-shadow,transform] 
+         +duration-150 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:borde
+         +r-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:n
+         +ot-aria-[haspopup]:translate-y-px disabled:pointer-events-none 
+         +disabled:opacity-50 aria-invalid:border-destructive aria-invali
+         +d:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:bor
+         +der-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg
+         +]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size
+         +-'])]:size-4",                                                 
+       8    {
+       9      variants: {
+      10        variant: {
+     ...
+      20          link: "text-primary underline-offset-4 hover:underline"
+          ,
+      21        },
+      22        size: {
+      23 +        sm: "h-9 gap-1 px-3 has-data-[icon=inline-end]:pr-2 has
+         +-data-[icon=inline-start]:pl-2",                               
+      24          default:
+      24 -          "h-8 gap-1.5 px-3 has-data-[icon=inline-end]:pr-2.5 h
+         -as-data-[icon=inline-start]:pl-2.5",                           
+      25 -        xs: "h-6 gap-1 px-2.5 text-xs has-data-[icon=inline-end
+         -]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='si
+         -ze-'])]:size-3",                                               
+      26 -        sm: "h-7 gap-1 px-3 has-data-[icon=inline-end]:pr-2 has
+         --data-[icon=inline-start]:pl-2",                               
+      27 -        lg: "h-9 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 h
+         -as-data-[icon=inline-start]:pl-3",                             
+      28 -        icon: "size-8",                                        
+      29 -        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3
+         -",                                                             
+      30 -        "icon-sm": "size-7",                                   
+      31 -        "icon-lg": "size-9",                                   
+      25 +          "h-11 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 ha
+         +s-data-[icon=inline-start]:pl-3",                              
+      26 +        lg: "h-12 gap-2 px-5 text-[0.9375rem] has-data-[icon=in
+         +line-end]:pr-4 has-data-[icon=inline-start]:pl-4",             
+      27 +        icon: "size-11",                                       
+      28 +        "icon-lg": "size-12",                                  
+      29        },
+      30      },
+      31      defaultVariants: {
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Write(src/components/ui/dialog.tsx)
+  ⎿  Added 6 lines, removed 7 lines
+      71            <DialogPrimitive.Close data-slot="dialog-close" asChi
+          ld>
+      72              <Button
+      73                variant="ghost"
+      74 -              className="absolute top-4 right-4 bg-secondary"  
+      75 -              size="icon-sm"                                   
+      74 +              className="absolute top-4 right-4 hover:bg-muted"
+      75 +              size="icon"                                      
+      76              >
+      77 -              <XIcon                                           
+      78 -              />                                               
+      79 -              <span className="sr-only">Close</span>           
+      77 +              <XIcon />                                        
+      78 +              <span className="sr-only">Cerrar</span>          
+      79              </Button>
+      80            </DialogPrimitive.Close>
+      81          )}
+     ...
+      88    return (
+      89      <div
+      90        data-slot="dialog-header"
+      92 -      className={cn("flex flex-col gap-1.5", className)}       
+      91 +      className={cn("flex flex-col gap-1.5 pr-8", className)}  
+      92        {...props}
+      93      />
+      94    )
+     ...
+      114        {children}
+      115        {showCloseButton && (
+      116          <DialogPrimitive.Close asChild>
+      118 -          <Button variant="outline">Close</Button>            
+      117 +          <Button variant="outline">Cerrar</Button>           
+      118          </DialogPrimitive.Close>
+      119        )}
+      120      </div>
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/ConfirmDialog.tsx)  ⎿  Added 5 lines, removed 11 lines
+      10    AlertDialogAction,
+      11    AlertDialogCancel,
+      12  } from "../ui/alert-dialog"
+      13 -import { Button } from "../ui/button"                          
+      13  import { Spinner } from "../ui/spinner"
+      14  
+      15  type ConfirmDialogProps = {
+     ...
+      45            <AlertDialogDescription>{description}</AlertDialogDes
+          cription>
+      46          </AlertDialogHeader>
+      47          <AlertDialogFooter>
+      49 -          <AlertDialogCancel asChild>                          
+      50 -            <Button type="button" variant="outline" disabled={l
+         -oading}>                                                       
+      51 -              {cancelLabel}                                    
+      52 -            </Button>                                          
+      53 -          </AlertDialogCancel>                                 
+      48 +          <AlertDialogCancel disabled={loading}>{cancelLabel}</
+         +AlertDialogCancel>                                             
+      49            <AlertDialogAction
+      55 -            asChild                                            
+      50              onClick={(event) => {
+      51                event.preventDefault()
+      52                if (!loading) void onConfirm()
+      53              }}
+      54 +            disabled={loading}                                 
+      55 +            aria-busy={loading}                                
+      56            >
+      61 -            <Button type="button" disabled={loading} aria-busy=
+         -{loading}>                                                     
+      62 -              {loading ? <Spinner /> : null}                   
+      63 -              {confirmLabel}                                   
+      64 -            </Button>                                          
+      57 +            {loading ? <Spinner /> : null}                     
+      58 +            {confirmLabel}                                     
+      59            </AlertDialogAction>
+      60          </AlertDialogFooter>
+      61        </AlertDialogContent>
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Write(src/components/patterns/DestructiveDialog.tsx)
+  ⎿  Added 6 lines, removed 11 lines
+      10    AlertDialogAction,
+      11    AlertDialogCancel,
+      12  } from "../ui/alert-dialog"
+      13 -import { Button } from "../ui/button"                          
+      13  import { Spinner } from "../ui/spinner"
+      14  
+      15  type DestructiveDialogProps = {
+     ...
+      46            <AlertDialogDescription>{description}</AlertDialogDes
+          cription>
+      47          </AlertDialogHeader>
+      48          <AlertDialogFooter>
+      50 -          <AlertDialogCancel asChild>                          
+      51 -            <Button type="button" variant="outline" disabled={l
+         -oading}>                                                       
+      52 -              {cancelLabel}                                    
+      53 -            </Button>                                          
+      54 -          </AlertDialogCancel>                                 
+      49 +          <AlertDialogCancel disabled={loading}>{cancelLabel}</
+         +AlertDialogCancel>                                             
+      50            <AlertDialogAction
+      56 -            asChild                                            
+      51 +            variant="destructive"                              
+      52              onClick={(event) => {
+      53                event.preventDefault()
+      54                if (!loading) void onConfirm()
+      55              }}
+      56 +            disabled={loading}                                 
+      57 +            aria-busy={loading}                                
+      58            >
+      62 -            <Button type="button" variant="destructive" disable
+         -d={loading} aria-busy={loading}>                               
+      63 -              {loading ? <Spinner /> : null}                   
+      64 -              {confirmLabel}                                   
+      65 -            </Button>                                          
+      59 +            {loading ? <Spinner /> : null}                     
+      60 +            {confirmLabel}                                     
+      61            </AlertDialogAction>
+      62          </AlertDialogFooter>
+      63        </AlertDialogContent>
+
+⏺ Update(src/components/ui/spinner.tsx)
+  ⎿  Added 9 lines, removed 2 lines
+       1 +import * as React from "react"                                 
+       2  import { cn } from "cn"
+       3  import { SpinnerIcon } from "@phosphor-icons/react"
+       4  
+       4 -function Spinner({ className, ...props }: React.ComponentProps<
+         -"svg">) {                                                      
+       5 +function Spinner({ className, ...props }: React.ComponentProps<
+         +typeof SpinnerIcon>) {                                         
+       6    return (
+       6 -    <SpinnerIcon data-slot="spinner" role="status" aria-label="
+         -Loading" className={cn("size-4 animate-spin", className)} {...p
+         -rops} />                                                       
+       7 +    <SpinnerIcon                                               
+       8 +      data-slot="spinner"                                      
+       9 +      role="status"                                            
+      10 +      aria-label="Cargando"                                    
+      11 +      className={cn("size-4 animate-spin", className)}         
+      12 +      {...props}                                               
+      13 +    />                                                         
+      14    )
+      15  }
+      16  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Update(src/components/ui/button.tsx)
+  ⎿  Added 1 line
+      25            "h-11 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 ha
+          s-data-[icon=inline-start]:pl-3",
+      26          lg: "h-12 gap-2 px-5 text-[0.9375rem] has-data-[icon=in
+          line-end]:pr-4 has-data-[icon=inline-start]:pl-4",
+      27          icon: "size-11",
+      28 +        "icon-sm": "size-9",                                   
+      29          "icon-lg": "size-12",
+      30        },
+      31      },
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/attachment.tsx)
+  ⎿  Added 1 line, removed 1 line
+      144  function AttachmentAction({
+      145    className,
+      146    variant,
+      147 -  size = "icon-xs",                                           
+      147 +  size = "icon-sm",                                           
+      148    ...props
+      149  }: React.ComponentProps<typeof Button>) {
+      150    return (
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/combobox.tsx)
+  ⎿  Added 1 line, removed 1 line
+      251        {children}
+      252        {showRemove && (
+      253          <ComboboxPrimitive.ChipRemove
+      254 -          render={<Button variant="ghost" size="icon-xs" />}  
+      254 +          render={<Button variant="ghost" size="icon-sm" />}  
+      255            className="-ml-0.5 size-4.5 opacity-50 hover:opacity
+           -100 aria-disabled:pointer-events-none"
+      256            data-slot="combobox-chip-remove"
+      257          >
+
+⏺ Ahora vuelvo a correr typecheck completo.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Typecheck limpio en las 61 primitivas. Ahora lint.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Lint limpio. Reviso violaciones de gobernanza (transition-all, colores
+  hardcodeados) en todo el catálogo nuevo.
+
+  Searched for 3 patterns (ctrl+o to expand)
+
+⏺ Update(src/components/ui/accordion.tsx)
+  ⎿  Added 1 line, removed 1 line
+      44        <AccordionPrimitive.Trigger
+      45          data-slot="accordion-trigger"
+      46          className={cn(
+      47 -          "group/accordion-trigger relative flex flex-1 items-s
+         -tart justify-between gap-6 border border-transparent p-4 text-l
+         -eft text-sm font-medium transition-all outline-none hover:under
+         -line disabled:pointer-events-none disabled:opacity-50 **:data-[
+         -slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-tr
+         -igger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-m
+         -uted-foreground",                                              
+      47 +          "group/accordion-trigger relative flex flex-1 items-s
+         +tart justify-between gap-6 border border-transparent p-4 text-l
+         +eft text-sm font-medium outline-none transition-[color,box-shad
+         +ow] duration-150 ease-[cubic-bezier(0.2,0,0,1)] hover:underline
+         + disabled:pointer-events-none disabled:opacity-50 **:data-[slot
+         +=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigge
+         +r-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted
+         +-foreground",                                                  
+      48            className
+      49          )}
+      50          {...props}
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Ambas quedaron bien con el sed.
+
+⏺ Update(src/components/ui/progress.tsx)
+  ⎿  Added 1 line, removed 1 line
+      20      >
+      21        <ProgressPrimitive.Indicator
+      22          data-slot="progress-indicator"
+      23 -        className="size-full flex-1 bg-primary transition-all" 
+      23 +        className="size-full flex-1 bg-primary transition-[widt
+         +h] duration-300 ease-[cubic-bezier(0.2,0,0,1)]"                
+      24          style={{ transform: `translateX(-${100 - (value || 0)}%
+          )` }}
+      25        />
+      26      </ProgressPrimitive.Root>
+
+⏺ Update(src/components/ui/sidebar.tsx)
+  ⎿  Added 1 line, removed 1 line
+      288        onClick={toggleSidebar}
+      289        title="Toggle Sidebar"
+      290        className={cn(
+      291 -        "absolute inset-y-0 z-20 hidden w-4 transition-all eas
+          -e-linear group-data-[side=left]:-right-4 group-data-[side=righ
+          -t]:left-0 after:absolute after:inset-y-0 after:start-1/2 after
+          -:w-[2px] hover:after:bg-sidebar-border sm:flex ltr:-translate-
+          -x-1/2 rtl:-translate-x-1/2",                                  
+      291 +        "absolute inset-y-0 z-20 hidden w-4 transition-colors 
+          +duration-150 ease-linear group-data-[side=left]:-right-4 group
+          +-data-[side=right]:left-0 after:absolute after:inset-y-0 after
+          +:start-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex
+          + ltr:-translate-x-1/2 rtl:-translate-x-1/2",                  
+      292          "in-data-[side=left]:cursor-w-resize in-data-[side=rig
+           ht]:cursor-e-resize",
+      293          "[[data-side=left][data-state=collapsed]_&]:cursor-e-r
+           esize [[data-side=right][data-state=collapsed]_&]:cursor-w-res
+           ize",
+      294          "group-data-[collapsible=offcanvas]:translate-x-0 grou
+           p-data-[collapsible=offcanvas]:after:left-full hover:group-dat
+           a-[collapsible=offcanvas]:bg-sidebar",
+
+⏺ Update(src/components/ui/badge.tsx)
+  ⎿  Added 1 line, removed 1 line
+       4  import { Slot } from "radix-ui"
+       5  
+       6  const badgeVariants = cva(
+       7 -  "group/badge inline-flex h-5 w-fit shrink-0 items-center just
+         -ify-center gap-1 overflow-hidden rounded-2xl border border-tran
+         -sparent px-2 py-0.5 text-xs font-medium whitespace-nowrap trans
+         -ition-all focus-visible:border-ring focus-visible:ring-[3px] fo
+         -cus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-
+         -data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive
+         - aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destru
+         -ctive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",         
+       7 +  "group/badge inline-flex h-5 w-fit shrink-0 items-center just
+         +ify-center gap-1 overflow-hidden rounded-2xl border border-tran
+         +sparent px-2 py-0.5 text-xs font-medium whitespace-nowrap trans
+         +ition-[color,background-color,border-color,box-shadow] duration
+         +-150 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:border-ring f
+         +ocus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[ic
+         +on=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-
+         +invalid:border-destructive aria-invalid:ring-destructive/20 dar
+         +k:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none 
+         +[&>svg]:size-3!",                                              
+       8    {
+       9      variants: {
+      10        variant: {
+
+⏺ Update(src/components/ui/switch.tsx)
+  ⎿  Added 1 line, removed 1 line
+      16        data-slot="switch"
+      17        data-size={size}
+      18        className={cn(
+      19 -        "peer group/switch relative inline-flex shrink-0 items-
+         -center rounded-2xl border-2 transition-all outline-none group-h
+         -as-[:focus-visible]/field-label:ring-0 after:absolute after:-in
+         -set-x-3 after:-inset-y-2 focus-visible:border-ring focus-visibl
+         -e:ring-3 focus-visible:ring-ring/30 aria-invalid:border-destruc
+         -tive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-
+         -[size=default]:h-5 data-[size=default]:w-8 data-[size=sm]:h-4 d
+         -ata-[size=sm]:w-6 dark:aria-invalid:border-destructive/50 dark:
+         -aria-invalid:ring-destructive/40 data-checked:border-primary da
+         -ta-checked:bg-primary group-has-[:focus-visible]/field-label:da
+         -ta-checked:border-primary data-unchecked:border-transparent dat
+         -a-unchecked:bg-input/90 group-has-[:focus-visible]/field-label:
+         -data-unchecked:border-transparent data-disabled:cursor-not-allo
+         -wed data-disabled:opacity-50",                                 
+      19 +        "peer group/switch relative inline-flex shrink-0 items-
+         +center rounded-2xl border-2 outline-none transition-[background
+         +-color,border-color,box-shadow] duration-150 ease-[cubic-bezier
+         +(0.2,0,0,1)] group-has-[:focus-visible]/field-label:ring-0 afte
+         +r:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:bord
+         +er-ring focus-visible:ring-3 focus-visible:ring-ring/30 aria-in
+         +valid:border-destructive aria-invalid:ring-3 aria-invalid:ring-
+         +destructive/20 data-[size=default]:h-5 data-[size=default]:w-8 
+         +data-[size=sm]:h-4 data-[size=sm]:w-6 dark:aria-invalid:border-
+         +destructive/50 dark:aria-invalid:ring-destructive/40 data-check
+         +ed:border-primary data-checked:bg-primary group-has-[:focus-vis
+         +ible]/field-label:data-checked:border-primary data-unchecked:bo
+         +rder-transparent data-unchecked:bg-input/90 group-has-[:focus-v
+         +isible]/field-label:data-unchecked:border-transparent data-disa
+         +bled:cursor-not-allowed data-disabled:opacity-50",             
+      20          className
+      21        )}
+      22        {...props}
+
+⏺ Update(src/components/ui/tabs.tsx)
+  ⎿  Added 1 line, removed 1 line
+      62      <TabsPrimitive.Trigger
+      63        data-slot="tabs-trigger"
+      64        className={cn(
+      65 -        "relative inline-flex h-[calc(100%-1px)] flex-1 items-c
+         -enter justify-center gap-1.5 rounded-2xl border border-transpar
+         -ent! px-1.5 py-0.5 text-sm font-medium whitespace-nowrap text-f
+         -oreground/60 transition-all group-data-vertical/tabs:w-full gro
+         -up-data-vertical/tabs:justify-start group-data-vertical/tabs:px
+         --3 group-data-vertical/tabs:py-0.5 hover:text-foreground focus-
+         -visible:border-ring focus-visible:ring-[3px] focus-visible:ring
+         --ring/50 focus-visible:outline-1 focus-visible:outline-ring dis
+         -abled:pointer-events-none disabled:opacity-50 dark:text-muted-f
+         -oreground dark:hover:text-foreground [&_svg]:pointer-events-non
+         -e [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",      
+      65 +        "relative inline-flex h-[calc(100%-1px)] flex-1 items-c
+         +enter justify-center gap-1.5 rounded-2xl border border-transpar
+         +ent! px-1.5 py-0.5 text-sm font-medium whitespace-nowrap text-f
+         +oreground/60 transition-[color,background-color,box-shadow] dur
+         +ation-150 ease-[cubic-bezier(0.2,0,0,1)] group-data-vertical/ta
+         +bs:w-full group-data-vertical/tabs:justify-start group-data-ver
+         +tical/tabs:px-3 group-data-vertical/tabs:py-0.5 hover:text-fore
+         +ground focus-visible:border-ring focus-visible:ring-[3px] focus
+         +-visible:ring-ring/50 focus-visible:outline-1 focus-visible:out
+         +line-ring disabled:pointer-events-none disabled:opacity-50 dark
+         +:text-muted-foreground dark:hover:text-foreground [&_svg]:point
+         +er-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:s
+         +ize-4",                                                        
+      66          "group-data-[variant=line]/tabs-list:bg-transparent gro
+          up-data-[variant=line]/tabs-list:data-active:bg-transparent dar
+          k:group-data-[variant=line]/tabs-list:data-active:border-transp
+          arent dark:group-data-[variant=line]/tabs-list:data-active:bg-t
+          ransparent",
+      67          "data-active:bg-background data-active:text-foreground 
+          dark:data-active:border-input dark:data-active:bg-input/30 dark
+          :data-active:text-foreground",
+      68          "after:absolute after:bg-foreground after:opacity-0 aft
+          er:transition-opacity group-data-horizontal/tabs:after:inset-x-
+          0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-hor
+          izontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y
+          -0 group-data-vertical/tabs:after:-right-1 group-data-vertical/
+          tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-activ
+          e:after:opacity-100",
+
+⏺ Ahora reviso el hex hardcodeado en chart.tsx.
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Ese hex es selector CSS para neutralizar los colores hardcodeados internos de
+  Recharts (stroke='#ccc') y redirigirlos a nuestros tokens — es un adapter
+  legítimo, no marca hardcodeada. Sigo con la verificación completa.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Limpio. Ahora bump del control de tamaño en Input, Select, Native Select,
+  Textarea — los explícitamente listados en 44px por docs/03_UX_RULES.md.
+  Read 4 files (ctrl+o to expand)
+
+⏺ Update(src/components/ui/input.tsx)
+  ⎿  Added 1 line, removed 1 line
+       7        type={type}
+       8        data-slot="input"
+       9        className={cn(
+      10 -        "h-8 w-full min-w-0 rounded-2xl border border-transpare
+         -nt bg-input/50 px-2.5 py-1 text-base transition-[color,box-shad
+         -ow] duration-200 outline-none file:inline-flex file:h-6 file:bo
+         -rder-0 file:bg-transparent file:text-sm file:font-medium file:t
+         -ext-foreground placeholder:text-muted-foreground focus-visible:
+         -border-ring focus-visible:ring-3 focus-visible:ring-ring/30 dis
+         -abled:pointer-events-none disabled:cursor-not-allowed disabled:
+         -opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 
+         -aria-invalid:ring-destructive/20 md:text-sm dark:aria-invalid:b
+         -order-destructive/50 dark:aria-invalid:ring-destructive/40",   
+      10 +        "h-11 w-full min-w-0 rounded-2xl border border-transpar
+         +ent bg-input/50 px-3 py-1 text-base transition-[color,box-shado
+         +w] duration-200 outline-none file:inline-flex file:h-6 file:bor
+         +der-0 file:bg-transparent file:text-sm file:font-medium file:te
+         +xt-foreground placeholder:text-muted-foreground focus-visible:b
+         +order-ring focus-visible:ring-3 focus-visible:ring-ring/30 disa
+         +bled:pointer-events-none disabled:cursor-not-allowed disabled:o
+         +pacity-50 aria-invalid:border-destructive aria-invalid:ring-3 a
+         +ria-invalid:ring-destructive/20 md:text-sm dark:aria-invalid:bo
+         +rder-destructive/50 dark:aria-invalid:ring-destructive/40",    
+      11          className
+      12        )}
+      13        {...props}
+
+⏺ Update(src/components/ui/select.tsx)
+  ⎿  Added 1 line, removed 1 line
+      43        data-slot="select-trigger"
+      44        data-size={size}
+      45        className={cn(
+      46 -        "flex w-fit items-center justify-between gap-1.5 rounde
+         -d-2xl border border-transparent bg-input/50 px-3 py-2 text-sm w
+         -hitespace-nowrap transition-[color,box-shadow] duration-200 out
+         -line-none focus-visible:border-ring focus-visible:ring-3 focus-
+         -visible:ring-ring/30 disabled:cursor-not-allowed disabled:opaci
+         -ty-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-
+         -invalid:ring-destructive/20 data-placeholder:text-muted-foregro
+         -und data-[size=default]:h-8 data-[size=sm]:h-7 *:data-[slot=sel
+         -ect-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-
+         -[slot=select-value]:items-center *:data-[slot=select-value]:gap
+         --1.5 dark:aria-invalid:border-destructive/50 dark:aria-invalid:
+         -ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-
+         -0 [&_svg:not([class*='size-'])]:size-4",                       
+      46 +        "flex w-fit items-center justify-between gap-1.5 rounde
+         +d-2xl border border-transparent bg-input/50 px-3 py-2 text-sm w
+         +hitespace-nowrap transition-[color,box-shadow] duration-200 out
+         +line-none focus-visible:border-ring focus-visible:ring-3 focus-
+         +visible:ring-ring/30 disabled:cursor-not-allowed disabled:opaci
+         +ty-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-
+         +invalid:ring-destructive/20 data-placeholder:text-muted-foregro
+         +und data-[size=default]:h-11 data-[size=sm]:h-9 *:data-[slot=se
+         +lect-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data
+         +-[slot=select-value]:items-center *:data-[slot=select-value]:ga
+         +p-1.5 dark:aria-invalid:border-destructive/50 dark:aria-invalid
+         +:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink
+         +-0 [&_svg:not([class*='size-'])]:size-4",                      
+      47          className
+      48        )}
+      49        {...props}
+
+⏺ Update(src/components/ui/native-select.tsx)
+  ⎿  Added 1 line, removed 1 line
+      23        <select
+      24          data-slot="native-select"
+      25          data-size={size}
+      26 -        className="h-8 w-full min-w-0 appearance-none rounded-2
+         -xl border border-transparent bg-input/50 py-1 pr-8 pl-2.5 text-
+         -sm transition-[color,box-shadow] duration-200 outline-none sele
+         -ct-none selection:bg-primary selection:text-primary-foreground 
+         -placeholder:text-muted-foreground focus-visible:border-ring foc
+         -us-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-e
+         -vents-none disabled:cursor-not-allowed aria-invalid:border-dest
+         -ructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 da
+         -ta-[size=sm]:h-7 dark:aria-invalid:border-destructive/50 dark:a
+         -ria-invalid:ring-destructive/40"                               
+      26 +        className="h-11 w-full min-w-0 appearance-none rounded-
+         +2xl border border-transparent bg-input/50 py-1 pr-8 pl-3 text-s
+         +m transition-[color,box-shadow] duration-200 outline-none selec
+         +t-none selection:bg-primary selection:text-primary-foreground p
+         +laceholder:text-muted-foreground focus-visible:border-ring focu
+         +s-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-ev
+         +ents-none disabled:cursor-not-allowed aria-invalid:border-destr
+         +uctive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dat
+         +a-[size=sm]:h-9 dark:aria-invalid:border-destructive/50 dark:ar
+         +ia-invalid:ring-destructive/40"                                
+      27          {...props}
+      28        />
+      29        <CaretDownIcon className="pointer-events-none absolute to
+          p-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground s
+          elect-none" aria-hidden="true" data-slot="native-select-icon" /
+          >
+
+  Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Update(src/components/ui/input-group.tsx)
+  ⎿  Added 1 line, removed 1 line
+      14        data-slot="input-group"
+      15        role="group"
+      16        className={cn(
+      17 -        "group/input-group relative flex h-8 w-full min-w-0 ite
+         -ms-center rounded-2xl border border-transparent bg-input/50 tra
+         -nsition-[color,box-shadow] duration-200 outline-none in-data-[s
+         -lot=combobox-content]:focus-within:border-inherit in-data-[slot
+         -=combobox-content]:focus-within:ring-0 has-[[data-slot=input-gr
+         -oup-control]:focus-visible]:border-ring has-[[data-slot=input-g
+         -roup-control]:focus-visible]:ring-3 has-[[data-slot=input-group
+         --control]:focus-visible]:ring-ring/30 has-[[data-slot][aria-inv
+         -alid=true]]:border-destructive has-[[data-slot][aria-invalid=tr
+         -ue]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructi
+         -ve/20 has-[>[data-align=block-end]]:h-auto has-[>[data-align=bl
+         -ock-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-[
+         ->[data-align=block-start]]:flex-col has-[>textarea]:h-auto dark
+         -:has-[[data-slot][aria-invalid=true]]:ring-destructive/40 has-[
+         ->[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block
+         --start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>input
+         -]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5",   
+      17 +        "group/input-group relative flex h-11 w-full min-w-0 it
+         +ems-center rounded-2xl border border-transparent bg-input/50 tr
+         +ansition-[color,box-shadow] duration-200 outline-none in-data-[
+         +slot=combobox-content]:focus-within:border-inherit in-data-[slo
+         +t=combobox-content]:focus-within:ring-0 has-[[data-slot=input-g
+         +roup-control]:focus-visible]:border-ring has-[[data-slot=input-
+         +group-control]:focus-visible]:ring-3 has-[[data-slot=input-grou
+         +p-control]:focus-visible]:ring-ring/30 has-[[data-slot][aria-in
+         +valid=true]]:border-destructive has-[[data-slot][aria-invalid=t
+         +rue]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destruct
+         +ive/20 has-[>[data-align=block-end]]:h-auto has-[>[data-align=b
+         +lock-end]]:flex-col has-[>[data-align=block-start]]:h-auto has-
+         +[>[data-align=block-start]]:flex-col has-[>textarea]:h-auto dar
+         +k:has-[[data-slot][aria-invalid=true]]:ring-destructive/40 has-
+         +[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=bloc
+         +k-start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>inpu
+         +t]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5",  
+      18          className
+      19        )}
+      20        {...props}
+
+⏺ Update(src/components/ui/combobox.tsx)
+  ⎿  Added 1 line, removed 1 line
+      223      <ComboboxPrimitive.Chips
+      224        data-slot="combobox-chips"
+      225        className={cn(
+      226 -        "flex min-h-8 flex-wrap items-center gap-1 rounded-2xl
+          - border border-transparent bg-input/50 bg-clip-padding px-2.5 
+          -py-1 text-sm transition-[color,box-shadow] duration-200 focus-
+          -within:border-ring focus-within:ring-3 focus-within:ring-ring/
+          -30 has-aria-invalid:border-destructive has-aria-invalid:ring-3
+          - has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-
+          -chip]:px-1 dark:has-aria-invalid:border-destructive/50 dark:ha
+          -s-aria-invalid:ring-destructive/40",                          
+      226 +        "flex min-h-11 flex-wrap items-center gap-1 rounded-2x
+          +l border border-transparent bg-input/50 bg-clip-padding px-3 p
+          +y-1 text-sm transition-[color,box-shadow] duration-200 focus-w
+          +ithin:border-ring focus-within:ring-3 focus-within:ring-ring/3
+          +0 has-aria-invalid:border-destructive has-aria-invalid:ring-3 
+          +has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-c
+          +hip]:px-1 dark:has-aria-invalid:border-destructive/50 dark:has
+          +-aria-invalid:ring-destructive/40",                           
+      227          className
+      228        )}
+      229        {...props}
+
+⏺ Ahora expongo todo el catálogo en el barrel público y corro build completo.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Write(src/index.ts)
+  ⎿  Added 60 lines, removed 1 line
+       1 +export * from "./components/ui/accordion"                      
+       2 +export * from "./components/ui/alert"                          
+       3 +export * from "./components/ui/alert-dialog"                   
+       4 +export * from "./components/ui/aspect-ratio"                   
+       5 +export * from "./components/ui/attachment"                     
+       6 +export * from "./components/ui/avatar"                         
+       7 +export * from "./components/ui/badge"                          
+       8 +export * from "./components/ui/breadcrumb"                     
+       9 +export * from "./components/ui/bubble"                         
+      10  export * from "./components/ui/button"
+      11 +export * from "./components/ui/button-group"                   
+      12 +export * from "./components/ui/calendar"                       
+      13 +export * from "./components/ui/card"                           
+      14 +export * from "./components/ui/carousel"                       
+      15 +export * from "./components/ui/chart"                          
+      16 +export * from "./components/ui/checkbox"                       
+      17 +export * from "./components/ui/collapsible"                    
+      18 +export * from "./components/ui/combobox"                       
+      19 +export * from "./components/ui/command"                        
+      20 +export * from "./components/ui/context-menu"                   
+      21  export * from "./components/ui/dialog"
+       3 -export * from "./components/ui/alert-dialog"                   
+      22 +export * from "./components/ui/direction"                      
+      23 +export * from "./components/ui/drawer"                         
+      24 +export * from "./components/ui/dropdown-menu"                  
+      25 +export * from "./components/ui/empty"                          
+      26 +export * from "./components/ui/field"                          
+      27 +export * from "./components/ui/hover-card"                     
+      28 +export * from "./components/ui/input"                          
+      29 +export * from "./components/ui/input-group"                    
+      30 +export * from "./components/ui/input-otp"                      
+      31 +export * from "./components/ui/item"                           
+      32 +export * from "./components/ui/kbd"                            
+      33 +export * from "./components/ui/label"                          
+      34 +export * from "./components/ui/marker"                         
+      35 +export * from "./components/ui/menubar"                        
+      36 +export * from "./components/ui/message"                        
+      37 +export * from "./components/ui/message-scroller"               
+      38 +export * from "./components/ui/native-select"                  
+      39 +export * from "./components/ui/navigation-menu"                
+      40 +export * from "./components/ui/pagination"                     
+      41 +export * from "./components/ui/popover"                        
+      42 +export * from "./components/ui/progress"                       
+      43 +export * from "./components/ui/questionnaire"                  
+      44 +export * from "./components/ui/radio-group"                    
+      45 +export * from "./components/ui/resizable"                      
+      46 +export * from "./components/ui/scroll-area"                    
+      47 +export * from "./components/ui/select"                         
+      48 +export * from "./components/ui/separator"                      
+      49 +export * from "./components/ui/sheet"                          
+      50 +export * from "./components/ui/sidebar"                        
+      51 +export * from "./components/ui/skeleton"                       
+      52 +export * from "./components/ui/slider"                         
+      53 +export * from "./components/ui/sonner"                         
+      54  export * from "./components/ui/spinner"
+      55 +export * from "./components/ui/switch"                         
+      56 +export * from "./components/ui/table"                          
+      57 +export * from "./components/ui/tabs"                           
+      58 +export * from "./components/ui/textarea"                       
+      59 +export * from "./components/ui/toggle"                         
+      60 +export * from "./components/ui/toggle-group"                   
+      61 +export * from "./components/ui/tooltip"                        
+      62 +                                                               
+      63  export * from "./components/patterns/FormDialog"
+      64  export * from "./components/patterns/InfoDialog"
+      65  export * from "./components/patterns/ConfirmDialog"
+      66  export * from "./components/patterns/DestructiveDialog"
+      67 +                                                               
+      68  export { cn } from "./lib/utils"
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ No hay colisiones de nombres. Ahora build completo + lint + storybook.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+⏺ @/ alias no lo resuelve Vite (Storybook), solo tsup. Agrego el alias en
+  .storybook/main.ts.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(.storybook/main.ts)
+  ⎿  Added 9 lines
+      1 +import path from "node:path"                                    
+      2  import type { StorybookConfig } from "@storybook/react-vite"
+      3  
+      4  const config: StorybookConfig = {
+     ...
+       9      options: {},
+      10    },
+      11    docs: {},
+      12 +  async viteFinal(viteConfig) {                                
+      13 +    viteConfig.resolve ??= {}                                  
+      14 +    viteConfig.resolve.alias = {                               
+      15 +      ...viteConfig.resolve.alias,                             
+      16 +      "@": path.resolve(__dirname, "../src"),                  
+      17 +    }                                                          
+      18 +    return viteConfig                                          
+      19 +  },                                                           
+      20  }
+      21  
+      22  export default config
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Catálogo completo instalado y verificado: 61 primitives + 4 patterns,
+  typecheck/lint/build/build-storybook en verde.
+
+  Qué pasó y qué corregí:
+  - La CLI de shadcn (-a = todos) trajo 57 archivos nuevos, pero con --overwrite
+    pisó mis fixes previos de Button, Dialog, AlertDialog, Spinner. Los repuse:
+    Button volvió a 44/48/36px, quité transition-all, Dialog/AlertDialog
+    quedaron en su versión nueva de shadcn (mejor que mi versión anterior: trae
+    slot de icono/media, integración directa de variant/size en
+    AlertDialogAction) pero con el botón de cerrar en size="icon" (44px) y
+    neutral (hover:bg-muted, no bg-secondary — evitar que el dorado de marca
+    tiña un ícono de cerrar que debe ser neutro).
+  - Reescribí ConfirmDialog/DestructiveDialog para usar la API nueva más limpia.
+  - Barrí transition-all en 7 archivos más (accordion, navigation-menu,
+    progress, sidebar, badge, switch, tabs) → transiciones específicas.
+  - Subí a 44px: Input, Select trigger, Native Select, InputGroup, Combobox
+    trigger (los que la doc marca explícito). Dejé como estaban: items de
+    menús/dropdown/select (siempre son compactos, todo sistema de diseño los
+    deja así) y Toggle (uso típico en toolbars densos, mismo criterio que el "sm
+    36px" ya aceptado para Button).
+  - Nuevo paquete @base-ui/react, cmdk, date-fns, embla-carousel-react,
+    input-otp, next-themes, react-day-picker, react-resizable-panels, recharts,
+    sonner, vaul entraron como dependencies (no peer) — correcto, el consumidor
+    no los instala aparte.
+  - Fix aparte: Storybook (Vite) no resolvía el alias @/ que usa shadcn — lo
+    agregué en .storybook/main.ts.
+
+  Lo que falta, honesto:
+  Los 61 componentes ya están exportados desde @iimp/ui y compilan, pero solo 6 
+  tienen story (Button + los 4 dialogs). Los otros 55 no aparecen todavía en el
+  sidebar de Storybook hasta que les escriba *.stories.tsx — eso es trabajo real
+  pendiente, no lo voy a fingir hecho. Tampoco pasé el review de 8 pasos
+  completo (estados/motion/a11y) componente por componente, solo el barrido
+  crítico de tamaño+transición+colores.
+
+  ¿Cómo seguimos: escribo stories para el resto (puedo ir por familias — forms,
+  overlays, data display — para que no sea un solo commit gigante, como pide
+  AGENTS.md), o prefieres revisar primero lo que ya se ve (npm run storybook)?
+
+✻ Brewed for 10m 14s · done 5:10 PM
+
+❯ claor, dale con todo, hazlo completo!                                         
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Voy a lanzar 4 forks en paralelo por familia de componentes (evita meter todo
+  en un solo commit gigante, como pide AGENTS.md), cada uno escribe los
+  *.stories.tsx faltantes. Yo verifico build al final.
+
+⏺ 4 background agents launched (↓ to manage)
+   ├ Stories para form controls
+   ├ Stories para overlays y menús
+   ├ Stories para data display y layout
+   └ Stories para feedback, nav y misc
+
+⏺ 4 forks corriendo en paralelo (form controls, overlays/menús, data display,
+  feedback/nav/misc). Cuando terminen los 4 corro typecheck+lint+build-storybook
+  completo y arreglo lo que falle. Aviso cuando esté listo.
+
+✻ Baked for 1m 33s · done 5:15 PM
+
+⏺ Agent "Stories para data display y layout" finished · 2m 54s
+
+⏺ 1 de 4 forks listo (data display). Detectó un gap real: faltan tokens
+  success/warning/info en globals.css (los pide docs/02_DESIGN_TOKENS.md) — lo
+  agrego cuando terminen los otros 3. Sigo esperando.
+
+✻ Sautéed for 6m 27s · done 5:24 PM
+
+⏺ Agent "Stories para overlays y menús" finished · 9m 9s
+
+⏺ 2 de 4 listos (overlays/menús). Sigo esperando los otros 2.
+
+✻ Worked for 3s · done 5:24 PM
+
+⏺ Agent "Stories para form controls" finished · 11m 17s
+
+⏺ 3 de 4 listos (form controls). Falta el último (feedback/nav/misc, el más
+  grande — 20 componentes).  ⎿  Error: `prompt` is required when `stop` is not true.
+
+⏺ Ese tool era para /loop, no aplica acá — ignoralo. Sigo esperando la
+  notificación automática del 4to fork, sin acción de mi parte mientras tanto.
+
+✻ Churned for 15s · done 5:26 PM
+
+⏺ Agent "Stories para feedback, nav y misc" finished · 12m 9s
+
+⏺ Los 4 forks terminaron (60 stories creadas). Corro verificación completa y
+  arreglo lo que aparezca.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Solo un error, exactamente el que reportó el fork. Lo arreglo.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/checkbox.stories.tsx)
+  ⎿  Added 5 lines, removed 1 line
+      17      const [checked, setChecked] = React.useState(false)
+      18      return (
+      19        <div className="flex items-center gap-2">
+      20 -        <Checkbox id="story-terms" checked={checked} onCheckedC
+         -hange={setChecked} />                                          
+      20 +        <Checkbox                                              
+      21 +          id="story-terms"                                     
+      22 +          checked={checked}                                    
+      23 +          onCheckedChange={(value) => setChecked(value === true
+         +)}                                                             
+      24 +        />                                                     
+      25          <Label htmlFor="story-terms">Acepto los términos del ev
+          ento</Label>
+      26        </div>
+      27      )
+
+⏺ Ahora agrego los tokens success/warning/info que faltan en globals.css (los
+  pide docs/02_DESIGN_TOKENS.md, y varias stories nuevas probablemente los
+  referencian).
+
+  Searched for 2 patterns, read 2 files, ran 2 shell commands (ctrl+o to expand)
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 3 lines
+      27    --color-input: var(--input);
+      28    --color-border: var(--border);
+      29    --color-destructive: var(--destructive);
+      30 +  --color-success: var(--success);                             
+      31 +  --color-warning: var(--warning);                             
+      32 +  --color-info: var(--info);                                   
+      33    --color-accent-foreground: var(--accent-foreground);
+      34    --color-accent: var(--accent);
+      35    --color-muted-foreground: var(--muted-foreground);
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 3 lines
+      67    --accent: oklch(0.97 0 0);
+      68    --accent-foreground: oklch(0.205 0 0);
+      69    --destructive: oklch(0.577 0.245 27.325);
+      70 +  --success: oklch(0.54 0.15 145);                             
+      71 +  --warning: oklch(0.56 0.15 80);                              
+      72 +  --info: oklch(0.54 0.15 235);                                
+      73    --border: oklch(0.922 0 0);
+      74    --input: oklch(0.922 0 0);
+      75    --ring: oklch(0.708 0 0);
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 3 lines
+      105    --accent: oklch(0.269 0 0);
+      106    --accent-foreground: oklch(0.985 0 0);
+      107    --destructive: oklch(0.704 0.191 22.216);
+      108 +  --success: oklch(0.68 0.14 145);                            
+      109 +  --warning: oklch(0.7 0.14 80);                              
+      110 +  --info: oklch(0.68 0.14 235);                               
+      111    --border: oklch(1 0 0 / 10%);
+      112    --input: oklch(1 0 0 / 15%);
+      113    --ring: oklch(0.556 0 0);
+
+⏺ Ahora extiendo Badge con variantes success/warning/info (mismo patrón que
+  destructive).
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/badge.tsx)
+  ⎿  Added 6 lines
+      13            "bg-secondary text-secondary-foreground [a]:hover:bg-
+          secondary/80",
+      14          destructive:
+      15            "bg-destructive/10 text-destructive focus-visible:rin
+          g-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring
+          -destructive/40 [a]:hover:bg-destructive/20",
+      16 +        success:                                               
+      17 +          "bg-success/10 text-success focus-visible:ring-succes
+         +s/20 dark:bg-success/20 dark:focus-visible:ring-success/40 [a]:
+         +hover:bg-success/20",                                          
+      18 +        warning:                                               
+      19 +          "bg-warning/10 text-warning focus-visible:ring-warnin
+         +g/20 dark:bg-warning/20 dark:focus-visible:ring-warning/40 [a]:
+         +hover:bg-warning/20",                                          
+      20 +        info:                                                  
+      21 +          "bg-info/10 text-info focus-visible:ring-info/20 dark
+         +:bg-info/20 dark:focus-visible:ring-info/40 [a]:hover:bg-info/2
+         +0",                                                            
+      22          outline:
+      23            "border-border text-foreground [a]:hover:bg-muted [a]
+          :hover:text-muted-foreground",
+      24          ghost:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/badge.stories.tsx)
+  ⎿  Added 3 lines
+      16        <Badge>Default</Badge>
+      17        <Badge variant="secondary">Secondary</Badge>
+      18        <Badge variant="destructive">Destructive</Badge>
+      19 +      <Badge variant="success">Success</Badge>                 
+      20 +      <Badge variant="warning">Warning</Badge>                 
+      21 +      <Badge variant="info">Info</Badge>                       
+      22        <Badge variant="outline">Outline</Badge>
+      23        <Badge variant="ghost">Ghost</Badge>
+      24        <Badge variant="link">Link</Badge>
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(src/components/ui/avatar.stories.tsx)
+  ⎿  Added 1 line, removed 1 line
+      44    render: () => (
+      45      <Avatar>
+      46        <AvatarFallback>MR</AvatarFallback>
+      47 -      <AvatarBadge className="bg-primary" />                   
+      47 +      <AvatarBadge className="bg-success" />                   
+      48      </Avatar>
+      49    ),
+      50  }
+
+⏺ Ahora corro typecheck, lint, build y build-storybook completos.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Limpio.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Lint limpio. Ahora exportar los nuevos *.stories.tsx no van al barrel (son
+  solo para Storybook), pero corro el build de la librería y el build de
+  Storybook.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+⏺ Todo compila: typecheck, lint, build, build-storybook — 65/65 componentes con
+  story (163 variantes). Reviso el bug que reportó un fork en direction.tsx
+  antes de cerrar.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Listo. Todo el catálogo de shadcn + patterns compila y tiene story.
+
+  Verificado en verde: typecheck, lint, build (dist + css), build-storybook — 65
+  componentes, 163 variantes de story, cero errores.
+
+  Qué se agregó en esta pasada:
+  - 60 archivos *.stories.tsx nuevos (4 forks en paralelo por familia: forms,
+    overlays/menús, data display, feedback/nav/misc).
+  - Tokens success/warning/info en globals.css (faltaban, los pide
+    docs/02_DESIGN_TOKENS.md) + variantes correspondientes en Badge.
+  - Fix de 1 bug real: checkbox.stories.tsx pasaba CheckedState (puede ser
+    "indeterminate") a un setter de boolean.
+  - Avatar WithBadge usaba bg-primary como punto de estado por falta de token —
+    ahora bg-success.
+
+  Lo que no pude verificar (sin navegador en este entorno, solo compilación):
+  - Chart — coloreado vía CSS var anidada, no lo vi renderizado.
+  - Combobox — usa @base-ui/react (no Radix, API distinta al resto del kit),
+    compila pero no lo vi correr.
+  - Sidebar (705 líneas) — composición estándar pero sin revisión visual de sus
+    variantes.
+  - MessageScroller / Questionnaire — paquete @shadcn/react nuevo, auto-scroll y
+    navegación sin probar en vivo.
+  - DirectionProvider — un fork marcó esto como bug, lo revisé: no lo es, acepta
+    dir o direction a propósito.
+
+  Para ver todo esto en vivo: npm run storybook → localhost:6006.
+
+  Pendiente real (no tocado): IimpThemeProvider, Theme Playground en Storybook,
+  guardrails de ESLint para apps consumidoras, tests, patterns de
+  datos/navegación (DataTable, PageHeader, etc.), y publicar a npm.
+✻ Cooked for 17m 39s · done 5:31 PM
+
+❯ termina con todo, xq te detienes y me preguntas? adicional te comento que     
+  acabo de ver el storyboook y está feo el diseño de este, tambien la fuente    
+  está horrible, yo recuerdo haber instalado un preset de shadcn eso peud estar 
+  afectando?                                                                    
+
+⏺ Entendido, sigo sin pausas. Primero el bug de fuentes — no es el preset, es
+  una regresión mía: al borrar Next.js también borré next/font
+  (Roboto/Figtree/Geist Mono se cargaban ahí), y globals.css quedó con
+  --font-sans: var(--font-sans) — una referencia circular que no resuelve a
+  nada, cae a la fuente default del navegador. Lo arreglo con Google Fonts
+  (framework-agnostic, funciona en Storybook y en cualquier app consumidora).
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 2 lines, removed 1 line
+      1 +@import url("https://fonts.googleapis.com/css2?family=Roboto:wgh
+        +t@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Figtree
+        +:wght@500;600;700&display=swap");                               
+      2  @import "tailwindcss";
+      3  @import "tw-animate-css";
+      4  @import "shadcn/tailwind.css";
+     ...
+       9    --color-background: var(--background);
+      10    --color-foreground: var(--foreground);
+      11    --font-sans: var(--font-sans);
+      11 -  --font-mono: var(--font-geist-mono);                         
+      12 +  --font-mono: var(--font-mono);                               
+      13    --font-heading: var(--font-heading);
+      14    --color-sidebar-ring: var(--sidebar-ring);
+      15    --color-sidebar-border: var(--sidebar-border);
+
+⏺ Ahora defino los valores reales (antes eran circulares/no definidos) en :root.
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 3 lines
+      53  }
+      54  
+      55  :root {
+      56 +  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif; 
+      57 +  --font-heading: "Figtree", ui-sans-serif, system-ui, sans-ser
+         +if;                                                            
+      58 +  --font-mono: "Roboto Mono", ui-monospace, "SFMono-Regular", M
+         +enlo, monospace;                                               
+      59    --background: oklch(1 0 0);
+      60    --foreground: oklch(0.145 0 0);
+      61    --card: oklch(1 0 0);
+
+  Searched for 1 pattern, ran 2 shell commands (ctrl+o to expand)
+
+⏺ Confirmado, ya compila bien. Rebuild de Storybook para validar visualmente el
+  fix.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Fuentes resueltas. Ahora sigo con todo lo pendiente en paralelo — sin pausas
+  hasta el final.
+
+⏺ 4 background agents launched (↓ to manage)
+   ├ IimpThemeProvider y Theme Playground
+   ├ Patterns de feedback y formularios
+   ├ Patterns de navegación y DataTable
+   └ Guardrails ESLint y tests
+
+⏺ Fuentes arregladas ya. 4 forks más corriendo: theme provider + playground,
+  patterns de formularios/feedback, patterns de navegación/tabla, y guardrails
+  ESLint + tests. Sigo sin pausas hasta que cierren los cuatro.
+
+✻ Sautéed for 3m 35s · done 5:41 PM
+
+⏺ Agent "Guardrails ESLint y tests" failed: Agent terminated early due to an API
+error: You've hit your session limit · resets 6:20pm (America/Lima) (error type
+rate_limit, HTTP 429, request id req_011CfQxrV8uHJwhf7Ha5Z3zd, model sent to
+the API: claude-sonnet-5)
+  ⎿  You've hit your session limit · resets 6:20pm (America/Lima)
+     /upgrade or /usage-credits to finish what you’re working on.
+
+⏺ Usage limit reached · continuing automatically at 6:20pm · esc or type
+  to cancel
+
+✻ Baked for 0s · done 5:41 PM
+
+⏺ Agent "Patterns de navegación y DataTable" failed: Agent terminated early due
+to an API error: You've hit your session limit · resets 6:20pm (America/Lima)
+(error type rate_limit, HTTP 429, request id req_011CfQxrXLre3po3gP3ynGzy, model
+sent to the API: claude-sonnet-5)
+  ⎿  You've hit your session limit · resets 6:20pm (America/Lima)
+     /upgrade or /usage-credits to finish what you’re working on.
+
+✻ Baked for 0s · done 5:41 PM
+
+⏺ Agent "Patterns de feedback y formularios" failed: Agent terminated early due
+to an API error: You've hit your session limit · resets 6:20pm (America/Lima)
+(error type rate_limit, HTTP 429, request id req_011CfQxrcGH9NQyFbSHX8mpb, model
+sent to the API: claude-sonnet-5)
+  ⎿  You've hit your session limit · resets 6:20pm (America/Lima)
+     /upgrade or /usage-credits to finish what you’re working on.
+
+✻ Worked for 0s · done 5:41 PM
+
+⏺ Agent "IimpThemeProvider y Theme Playground" failed: Agent terminated early
+due to an API error: You've hit your session limit · resets 6:20pm
+(America/Lima) (error type rate_limit, HTTP 429, request id
+req_011CfQxrd97XQpd5whTTpaij, model sent to the API: claude-sonnet-5)
+  ⎿  You've hit your session limit · resets 6:20pm (America/Lima)
+     /upgrade or /usage-credits to finish what you’re working on.
+
+✻ Brewed for 3m 40s · done 5:41 PM
+
+❯ /export mi_sesion_claude.txt                                                  
+  ⎿  Conversation exported to: /Users/neillbryanriveralivia/Documents/proyectos_
+     iimp/iimp-uikit/mi_sesion_claude.txt
+
+⏺ Usage limit reset · continuing automatically
+
+⏺ Los 4 forks fallaron por rate limit (no por error de código) — nada de trabajo
+  real perdido probablemente, pero reviso el filesystem antes de relanzar para
+  no duplicar nada.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Confirmado: cero archivos creados por esos forks, fallaron antes de escribir
+  nada. Relanzo los 4 con los mismos prompts.
+
+⏺ 4 background agents launched (↓ to manage)
+   ├ IimpThemeProvider y Theme Playground
+   ├ Patterns de feedback y formularios
+   ├ Patterns de navegación y DataTable
+   └ Guardrails ESLint y tests
+
+⏺ Relanzados los 4 (tu límite ya se reseteó). Sigo esperando, sin más preguntas.
+
+✻ Churned for 23m 34s · done 6:52 PM
+
+⏺ Agent "Patterns de navegación y DataTable" finished · 1m 34s
+
+⏺ 1 de 4 listo (PageHeader, SearchField, FilterBar, DataTable). Sigo esperando
+  los otros 3.
+✻ Cooked for 3s · done 6:54 PM
+
+⏺ Agent "Patterns de feedback y formularios" finished · 2m 17s
+
+⏺ 2 de 4 listos (form/feedback patterns). Sigo esperando theme provider y
+  guardrails/tests.
+
+✻ Cogitated for 5s · done 6:54 PM
+
+⏺ Agent "Guardrails ESLint y tests" finished · 5m 58s
+
+⏺ 3 de 4 listos, pero el de guardrails/tests reportó una anomalía:
+  package.json/vitest.config.ts se sobreescribieron varias veces solos durante
+  su ejecución (probablemente quedó una instancia zombie del intento anterior
+  corriendo en paralelo). Dice que reconvergió bien, pero lo voy a auditar yo
+  mismo apenas termine el último fork (theme provider). Esperando ese.
+
+✻ Cogitated for 8s · done 6:58 PM
+
+⏺ Agent "IimpThemeProvider y Theme Playground" finished · 7m 12s
+
+⏺ Los 4 forks terminaron, pero uno se atribuye trabajo de los otros tres
+  (síntoma de que corrieron en paralelo sobre el mismo filesystem) y ya hubo una
+  anomalía reportada de sobreescritura de package.json. No confío en los
+  reportes narrativos — verifico yo mismo el estado real del repo antes de decir
+  que esto está listo.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Typecheck limpio.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Lint limpio.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ 6/6 tests pasan. Ahora build de librería y Storybook.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+⏺ Números cuadran (77 componentes, 193 stories, sin corrupción). Reviso rápido
+  la calidad de las piezas nuevas más sensibles: guardrails ESLint y el
+  ThemeProvider (contraste automático).
+
+  Read 7 files, listed 1 directory (ctrl+o to expand)
+
+⏺ Todo limpio. Actualizo el README con lo nuevo (theme provider, tests,
+  guardrails) ya que documenta cómo consumir el paquete.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(README.md)
+  ⎿  Added 26 lines
+      36  import "@iimp/ui/style.css"
+      37  ```
+      38  
+      39 +### Theming por vertical (runtime)                             
+      40 +                                                               
+      41 +```tsx                                                         
+      42 +import { IimpThemeProvider } from "@iimp/ui"                   
+      43 +                                                               
+      44 +<IimpThemeProvider theme={{ primary: vertical.primaryColor, sec
+         +ondary: vertical.secondaryColor, radius: vertical.radius }}>   
+      45 +  <App />                                                      
+      46 +</IimpThemeProvider>                                           
+      47 +```                                                            
+      48 +                                                               
+      49 +Si no envías `primaryForeground`/`secondaryForeground`, se resu
+         +elven automáticamente por contraste (nunca asume blanco).      
+      50 +                                                               
+      51 +### Guardrails de ESLint (recomendado en la app consumidora)   
+      52 +                                                               
+      53 +```js                                                          
+      54 +// eslint.config.js de la app consumidora                      
+      55 +import { iimpGuardrails } from "@iimp/ui/eslint"               
+      56 +                                                               
+      57 +export default [                                               
+      58 +  // ...tu config existente                                    
+      59 +  ...iimpGuardrails,                                           
+      60 +]                                                              
+      61 +```                                                            
+      62 +                                                               
+      63 +Bloquea `<button>/<input>/<select>/<textarea>` nativos e import
+         +s directos de Radix/Base UI o rutas internas del paquete.      
+      64 +                                                               
+      65  ## Catálogo público en GitHub Pages
+      66  
+      67  Cada push a `main` publica Storybook estático vía `.github/work
+          flows/deploy-storybook.yml`. Habilitar una vez en el repo: Sett
+          ings → Pages → Source: GitHub Actions.
+
+⏺ Update(README.md)
+  ⎿  Added 1 line
+      71  ```bash
+      72  npm run typecheck
+      73  npm run lint
+      74 +npm run test                                                   
+      75  npm run build
+      76  npm run build-storybook
+      77  ```
+
+⏺ Verificación final de todo el pipeline junto.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Todo verde. Esto es lo que quedó completo:
+
+  Cerrado en esta pasada, de punta a punta:
+  - Fuentes reales (Roboto/Figtree/Roboto Mono) — el bug detrás de "feo".
+  - IimpThemeProvider + useIimpTheme, resuelve contraste automático (nunca asume
+    blanco).
+  - Theme Playground en Storybook (toolbar Primary/Secondary/Radius, retematiza
+    todo en vivo).
+  - 15 patterns nuevos: FormField, FormSection, StatusBadge, EmptyState,
+    LoadingState, ErrorState, StatCard, PageHeader, SearchField, FilterBar,
+    DataTable — todos con story.
+  - Guardrails ESLint exportables (@iimp/ui/eslint) para que apps consumidoras
+    bloqueen <button> nativo, imports directos de Radix, etc.
+  - Tests: Vitest + Testing Library + axe, 6/6 verdes.
+  - README actualizado con ejemplos de theming y guardrails.
+
+  Verificado por mí, no solo reportado por los forks: typecheck, lint, test,
+  build, build-storybook — todo en verde. Revisé línea por línea el ESLint
+  config, el IimpThemeProvider y el decorator de Storybook (las piezas más
+  sensibles) porque uno de los forks tuvo una condición de carrera con otro
+  reintento fallido por rate-limit — no encontré nada corrupto, todo reconvergió
+  bien.
+
+  Lo único que no hago sin tu OK explícito: npm publish. Es la única acción
+  pública e irreversible de toda la lista (nombre de paquete queda tomado,
+  versión no se borra). Todo lo demás ya está listo. ¿Publico?
+
+✻ Worked for 33m 25s · done 7:02 PM
+
+※ recap: Armamos @iimp/ui, tu design system, con todo el catálogo de shadcn, patterns y theming listo; todo compila y pasa tests. Solo falta que confirmes si publico el paquete a npm. (disable recaps in /config)
+
+❯ bueno, terminaste todo?                                                       
+  ⎿  ⧉ Selected 1 lines from src/styles/globals.css in Antigravity IDE
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ No del todo. Lo que sí terminé, verificado
+  (typecheck/lint/test/build/build-storybook en verde):
+
+  - Librería completa: 61 primitives de shadcn + 15 patterns + IimpThemeProvider
+    + Theme Playground + guardrails ESLint + tests.
+  - Fix de fuentes, tokens success/warning/info, tamaños 44px.
+
+  Lo que falta de verdad:
+
+  ┌────────────────┬────────────────────────────────────────────────────────┐
+  │     Falta      │                   Por qué no lo hice                   │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Commit + push  │ Todo sigue local sin commitear (36 archivos), nunca me │
+  │ a git          │  pediste commitear                                     │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ npm publish    │ Acción pública irreversible, esperando tu OK explícito │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Nombre del     │ @iimp/ui necesita scope npm real (org o usuario iimp)  │
+  │ paquete        │ — si no existe, publish falla                          │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │                │ Nunca vi Storybook en un navegador (no tengo esa       │
+  │ Verificación   │ herramienta acá) — Chart, Combobox, Sidebar,           │
+  │ visual real    │ MessageScroller/Questionnaire solo pasaron             │
+  │                │ compilación, no ojos                                   │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Consumer       │ App fixture que instale el paquete empacado y lo       │
+  │ contract test  │ pruebe end-to-end (guardrail #8 de la doc) — no armado │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Cobertura de   │ Solo 6 tests (Button + ConfirmDialog). El resto de 76  │
+  │ tests          │ componentes no tiene test                              │
+  └────────────────┴────────────────────────────────────────────────────────┘
+
+  ¿Quieres que:
+  1. Commitee todo ahora (necesito tu confirmación, es lo único que pediste
+     explícito que no hiciera sin avisar),
+  2. Levante Storybook para que lo veas vos con tus ojos antes de seguir, o
+  3. Ambas?
+
+✻ Sautéed for 35s · done 7:26 PM

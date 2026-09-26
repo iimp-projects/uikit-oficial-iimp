@@ -1,0 +1,28 @@
+{
+  "name": "IIMP UI Kit Blueprint",
+  "package": "@iimp/ui",
+  "files": [
+    "00_START_HERE.md",
+    "01_MASTER_BUILD_PROMPT.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "docs/01_ARCHITECTURE.md",
+    "docs/02_DESIGN_TOKENS.md",
+    "docs/03_UX_RULES.md",
+    "docs/04_ACCESSIBILITY.md",
+    "docs/05_MOTION.md",
+    "docs/06_COMPONENT_CATALOG.md",
+    "docs/07_PATTERNS.md",
+    "docs/08_THEMING.md",
+    "docs/09_GUARDRAILS.md",
+    "docs/10_TESTING_AND_QA.md",
+    "docs/11_STORYBOOK.md",
+    "docs/12_MIGRATION_PLAN.md",
+    "docs/13_REFERENCES.md",
+    "docs/14_UI_AUDIT_PROMPT.md",
+    "docs/15_DECISION_LOG_TEMPLATE.md",
+    "skills/iimp-ui/SKILL.md"
+  ],
+  "purpose": "Design System/UI Kit planning, governance, UX, accessibility, theming, migration and agent instructions."
+}
