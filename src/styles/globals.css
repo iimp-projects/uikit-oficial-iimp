@@ -2,69 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
 
-@theme {
-  /* Minimum readable size is 16px: xs/sm collapse to base. */
-  --text-xs: 1rem;
-  --text-xs--line-height: 1.5rem;
-  --text-sm: 1rem;
-  --text-sm--line-height: 1.5rem;
-  --text-base: 1rem;
-  --text-base--line-height: 1.5rem;
-  --shadow-xs: 0 1px 1px oklch(0.235 0.035 258 / 0.04);
-  --shadow-sm: 0 1px 2px oklch(0.235 0.035 258 / 0.06), 0 1px 1px oklch(0.235 0.035 258 / 0.04);
-  --shadow-md: 0 4px 12px -2px oklch(0.235 0.035 258 / 0.08), 0 2px 4px -2px oklch(0.235 0.035 258 / 0.05);
-  --shadow-lg: 0 12px 28px -6px oklch(0.235 0.035 258 / 0.14), 0 4px 8px -4px oklch(0.235 0.035 258 / 0.06);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-body-foreground: var(--body-foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-heading: var(--font-heading);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-info: var(--info);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
+@import "./theme.css";
 
 :root {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -81,34 +20,41 @@
   --primary-foreground: oklch(0.985 0 0);
   --secondary: #f2e8dd;
   --secondary-foreground: #c09153;
-  --muted: oklch(0.965 0.006 258);
   --muted-foreground: oklch(0.535 0.035 258);
-  --accent: oklch(0.955 0.01 258);
   --accent-foreground: oklch(0.235 0.035 258);
   --destructive: oklch(0.577 0.245 27.325);
   --success: oklch(0.54 0.15 145);
   --warning: oklch(0.56 0.15 80);
   --info: oklch(0.54 0.15 235);
-  --border: oklch(0.925 0.008 258);
-  --input: oklch(0.87 0.012 258);
-  --ring: oklch(0.5 0.09 258);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
+/* Surfaces, borders and focus derive from --primary so every component follows the brand color.
+   Also declared on the provider element so a runtime theme retints them. */
+:root,
+[data-slot="iimp-theme-provider"] {
+  --muted: color-mix(in oklch, var(--primary) 5%, white);
+  --accent: color-mix(in oklch, var(--primary) 8%, white);
+  --border: color-mix(in oklch, var(--primary) 12%, white);
+  --input: color-mix(in oklch, var(--primary) 24%, white);
+  --ring: var(--primary);
+  --chart-1: var(--primary);
+  --chart-2: var(--secondary-foreground);
+  --chart-3: color-mix(in oklch, var(--primary) 65%, white);
+  --chart-4: color-mix(in oklch, var(--secondary-foreground) 60%, white);
+  --chart-5: color-mix(in oklch, var(--primary) 35%, white);
+  --sidebar: color-mix(in oklch, var(--primary) 3%, white);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+.dark,
+.dark [data-slot="iimp-theme-provider"] {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --body-foreground: oklch(0.75 0.02 258);

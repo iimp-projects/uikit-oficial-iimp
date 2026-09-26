@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test"
 
-// docs/03_UX_RULES.md: interactive targets >= 44px. Compact variants (Button sm / icon-sm, 36px)
-// are allowed for dense desktop contexts. Switch keeps a small visual with a 44px pseudo-element hit area.
-const MIN = 44
-const COMPACT_MIN = 36
+// Every interactive control is >= 50px (Button, Tabs, Toggle, Select, Input...). Exceptions: icon-xs buttons inside a
+// 50px field (24px), nested sidebar links (44px). Small visuals (checkbox/radio/switch) expose a >=50px hit area.
+const MIN = 50
+const COMPACT_MIN = 50
+const MENU_ROW_MIN = 44 // options/rows inside open menus and nested sidebar links
 const COMPACT_INSIDE_CONTROL_MIN = 24 // icon-xs inside an already-44px input group (WCAG 2.5.8 AA)
 const SELECTOR =
   "button,[role=button],[role=checkbox],[role=radio],[role=tab],[role=combobox],input:not([type=hidden]):not([data-slot=questionnaire-choice-input]),select,a[href]"
@@ -38,7 +39,8 @@ test("all primitive/pattern interactive targets meet size rules", async ({ page,
           return {
             name: `${el.getAttribute("data-slot") ?? el.tagName}${size ? ":" + size : ""}`,
             compact: size === "sm" || size === "icon-sm",
-            tiny: size === "icon-xs" || size === "xs",
+            tiny: size === "icon-xs" || size === "xs" || (el.getAttribute("data-slot") ?? "").startsWith("input-group-button"),
+            row: ["sidebar-menu-sub-button"].includes(el.getAttribute("data-slot") ?? ""),
             w: Math.round(Math.max(r.width, aw)),
             h: Math.round(Math.max(r.height, ah)),
             inert,
@@ -51,11 +53,11 @@ test("all primitive/pattern interactive targets meet size rules", async ({ page,
       els
         .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent?.trim()))
         .map((el) => ({ tag: el.tagName, fs: parseFloat(getComputedStyle(el).fontSize), t: el.textContent?.trim().slice(0, 20) }))
-        .filter((x) => x.fs < 16)
+        .filter((x) => x.fs < 14)
     )
-    for (const x of small) violations.push(`${id}: text "${x.t}" ${x.fs}px (min 16px)`)
+    for (const x of small) violations.push(`${id}: text "${x.t}" ${x.fs}px (min 14px)`)
     for (const x of found) {
-      const min = x.tiny ? COMPACT_INSIDE_CONTROL_MIN : x.compact ? COMPACT_MIN : MIN
+      const min = x.tiny ? COMPACT_INSIDE_CONTROL_MIN : x.row ? MENU_ROW_MIN : x.compact ? COMPACT_MIN : MIN
       if (x.h < min || x.w < min) violations.push(`${id}: ${x.name} ${x.w}x${x.h} (min ${min})`)
     }
   }
@@ -123,7 +125,7 @@ for (const [id, item, trigger] of [
     await items.first().waitFor()
     const heights = await items.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().height)))
     expect(heights.length).toBeGreaterThan(0)
-    for (const h of heights) expect(h).toBeGreaterThanOrEqual(44)
+    for (const h of heights) expect(h).toBeGreaterThanOrEqual(MENU_ROW_MIN)
   })
 }
 
@@ -139,20 +141,20 @@ test("body and heading typography follow brand spec", async ({ page }) => {
     }
     return { p: mk("p"), h1: mk("h1") }
   })
-  expect(t.p).toMatchObject({ fw: "400", fs: "16px", lh: "24px" })
+  expect(t.p).toMatchObject({ fw: "400", fs: "14px", lh: "24px" })
   expect(t.p.ff).toContain("system-ui")
   expect(t.h1).toMatchObject({ fw: "600", fs: "30px", lh: "36px" })
   expect(t.h1.ff).toContain("system-ui")
 })
 
-test("inputs are 50px tall with 16px text and solid white background", async ({ page }) => {
+test("inputs are 50px tall with 14px text and solid white background", async ({ page }) => {
   await page.goto("/iframe.html?id=primitives-input--default&viewMode=story")
   const c = await page.locator("[data-slot=input]").first().evaluate((el) => {
     const s = getComputedStyle(el)
     return { h: el.getBoundingClientRect().height, fs: s.fontSize, bg: s.backgroundColor }
   })
   expect(c.h).toBe(50)
-  expect(c.fs).toBe("16px")
+  expect(c.fs).toBe("14px")
   expect(["rgb(255, 255, 255)", "oklch(1 0 0)"]).toContain(c.bg)
 })
 

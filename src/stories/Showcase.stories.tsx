@@ -118,7 +118,7 @@ export const Pagina: StoryObj = {
           <Card>
             <CardHeader>
               <CardTitle>Formulario</CardTitle>
-              <CardDescription>Inputs de 50px, fuente de 16px, fondo sólido.</CardDescription>
+              <CardDescription>Inputs de 50px, fuente de 14px, fondo sólido.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
               <FormField label="Razón social" required>
@@ -169,7 +169,7 @@ export const Pagina: StoryObj = {
                 </TabsContent>
               </Tabs>
               <Separator />
-              <p className="text-muted-foreground">Texto de cuerpo a 16px, color slate, alto de línea 24px.</p>
+              <p className="text-muted-foreground">Texto de cuerpo a 14px, texto de 14px, alto de línea 24px.</p>
             </CardContent>
           </Card>
         </div>

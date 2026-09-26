@@ -26,8 +26,8 @@ Recomendación inicial:
 |---|---:|
 | Button default | 50px alto |
 | Button large | 56px alto |
-| Button small | 40px, desktop compacto |
-| Icon button | 50x50px target (icon-sm 40) |
+| Button small | 50px (mismo alto; solo cambia el padding) |
+| Icon button | 50x50px (icon-sm también 50) |
 | Input | 50px alto fijo, texto 16px, fondo blanco sólido |
 | Select trigger | 50px alto |
 | Combobox | 50px alto |
@@ -115,10 +115,19 @@ Deben explicar:
 
 ## Actualización visual (v0.2)
 
-- **Fuente mínima: 16px.** `text-xs` y `text-sm` resuelven a 16px/24px en el tema. Jerarquía por peso y color, no por tamaño.
+- **Texto: 14px/24px** (ver homologación v0.3). Jerarquía por peso y color.
 - **Superficies sólidas.** Inputs, selects, cards y popovers usan fondo blanco opaco (`--background`, `--card`, `--popover`). Para cambiarlo, pasa `className` (ej. `<Card className="bg-muted">`).
 - **Iconos:** 24px por defecto (20px en tamaño `sm`, 28px en `lg`).
 - **Líneas:** 1px con `--border` (slate claro). Nunca negro. Usa `<Separator />` o `border-border`.
 - **Tabs:** alto 44px; variante `line` con subrayado primary de 2px.
 - **Checkbox/Radio 20px, Switch 48x28**, todos con área de clic de 44px+.
 - Items de menús abiertos: 44px de alto.
+
+## Homologación de tamaños (v0.3)
+
+- **Todo control interactivo mide mínimo 50px:** Button (todas las variantes y tamaños), Input, Select, Combobox, Tabs (trigger), Toggle/ToggleGroup, Menubar, NavigationMenu y botones de Sidebar. Checkbox, Radio y Switch mantienen visual pequeño con área de clic de 50px+.
+- Excepciones documentadas: botones `icon-xs` dentro de un campo de 50px (24px), items de menús desplegados y links anidados del sidebar (44px). Breadcrumb links: 50px.
+- **Texto: 14px/24px en todo el kit** (`text-xs`, `text-sm` y `text-base` resuelven a 14px). Los títulos usan su propia escala (`CardTitle` 20px, `h1` 30px).
+- **Radio base 10px.** Fondo de inputs: blanco sólido con borde fino.
+- **Colores derivados de `--primary`:** muted, accent, border, input, ring, chart y sidebar se calculan con `color-mix`. Al cambiar el color en `IimpThemeProvider`, todo el kit se retiñe.
+- **No sobrescribir** altura, tamaño de texto ni colores sueltos en componentes del kit: el linter (`iimpGuardrails`) lo bloquea.

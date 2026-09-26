@@ -1,6 +1,6 @@
 {
   "name": "official-uikit-iimp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Design System / UI Kit oficial de Eventos IIMP",
   "type": "module",
   "sideEffects": [
@@ -19,17 +19,19 @@
       "types": "./eslint/index.d.ts",
       "default": "./eslint/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./theme.css": "./dist/theme.css"
   },
   "files": [
     "dist",
-    "eslint"
+    "eslint",
+    "!eslint/**/*.test.ts"
   ],
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "npm run build:js && npm run build:css",
     "build:js": "tsup",
-    "build:css": "tailwindcss -i ./src/styles/globals.css -o ./dist/style.css --minify",
+    "build:css": "tailwindcss -i ./src/styles/globals.css -o ./dist/style.css --minify && cp src/styles/theme.css dist/theme.css",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint": "eslint .",
