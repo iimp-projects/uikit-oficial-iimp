@@ -58,8 +58,8 @@ export const Pagina: StoryObj = {
           <CardContent className="flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative min-w-64 flex-1">
-                <MagnifyingGlassIcon className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-muted-foreground" />
-                <Input className="pl-12" placeholder="Buscar por RUC, constancia o proveedor" />
+                <MagnifyingGlassIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input className="pl-9" placeholder="Buscar por RUC, constancia o proveedor" />
               </div>
               <Select defaultValue="todos">
                 <SelectTrigger className="w-48" aria-label="Estado">
@@ -118,7 +118,7 @@ export const Pagina: StoryObj = {
           <Card>
             <CardHeader>
               <CardTitle>Formulario</CardTitle>
-              <CardDescription>Inputs de 50px, fuente de 14px, fondo sólido.</CardDescription>
+              <CardDescription>Preset shadcn luma con los colores de IIMP.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
               <FormField label="Razón social" required>
@@ -155,7 +155,7 @@ export const Pagina: StoryObj = {
           <Card>
             <CardHeader>
               <CardTitle>Tabs y separadores</CardTitle>
-              <CardDescription>Línea fina y armónica.</CardDescription>
+              <CardDescription>Componentes del preset.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
               <Tabs defaultValue="a">
@@ -169,7 +169,7 @@ export const Pagina: StoryObj = {
                 </TabsContent>
               </Tabs>
               <Separator />
-              <p className="text-muted-foreground">Texto de cuerpo a 14px, texto de 14px, alto de línea 24px.</p>
+              <p className="text-muted-foreground">Texto de cuerpo del preset.</p>
             </CardContent>
           </Card>
         </div>

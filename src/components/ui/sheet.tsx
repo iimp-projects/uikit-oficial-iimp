@@ -4,8 +4,8 @@ import * as React from "react"
 import { cn } from "cn"
 import { Dialog as SheetPrimitive } from "radix-ui"
 
-import { Button } from "@/components/ui/button"
-import { XIcon } from "@phosphor-icons/react"
+import { Button } from "./button"
+import { RiCloseLine } from "@remixicon/react"
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
@@ -75,7 +75,7 @@ function SheetContent({
               className="absolute top-4 right-4 bg-secondary"
               size="icon-sm"
             >
-              <XIcon
+              <RiCloseLine
               />
               <span className="sr-only">Close</span>
             </Button>

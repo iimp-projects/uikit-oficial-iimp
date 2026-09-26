@@ -16,7 +16,7 @@ Importa los estilos **una sola vez** en la raíz de la app. El CSS ya viene comp
 
 ### Tailwind v4 en tu app (recomendado)
 
-Si tu app usa Tailwind v4, importa también los tokens del kit en tu CSS global. Así tus clases (`text-sm`, `bg-primary`, `border-border`, `rounded-lg`…) usan los mismos tamaños y colores del kit (texto de 14px, radio de 10px):
+Si tu app usa Tailwind v4, importa también los tokens del kit en tu CSS global. Así tus clases (`text-sm`, `bg-primary`, `border-border`, `rounded-lg`…) usan los mismos tamaños y colores del kit (radio, colores y tokens del preset):
 
 ```css
 /* app/globals.css */
@@ -203,7 +203,7 @@ import { EmptyState, ErrorState, LoadingState } from "official-uikit-iimp"
 
 ## 4. Theming (opcional)
 
-Por defecto el kit usa los tokens de IIMP: primary `#092042`, secondary `#f2e8dd` con texto `#c09153`, radio `10px`, tipografía `system-ui` (cuerpo 14px/24px peso 400, todo el kit a 14px; todo control interactivo de 50px de alto; títulos 600, `h1` de 30px/36px).
+Por defecto el kit usa el preset de shadcn `b1aIuQ2XC` (estilo luma, radio `0.875rem`, fuente Raleway, iconos Remix) con los colores de IIMP: primary `#092042`, secondary `#f2e8dd` con texto `#c09153`. Los tamaños (alturas, texto, espaciado) son los de shadcn.
 
 Para cambiar colores o radio por vertical, envuelve la app:
 
@@ -225,8 +225,6 @@ import { IimpThemeProvider } from "official-uikit-iimp"
 - `primary` y `secondary` son obligatorios dentro de `theme`; `radius`, `primaryForeground` y `secondaryForeground` son opcionales.
 - Si no envías un foreground, se calcula automáticamente por contraste (blanco u oscuro, el de mayor ratio). Si cambias `secondary` y quieres conservar el texto `#c09153`, pásalo explícitamente.
 - **Accesibilidad:** el par de marca `#c09153` sobre `#f2e8dd` tiene un contraste de ~2.4:1 y no cumple WCAG AA (4.5:1) para texto normal. Úsalo en texto grande o acompañado de icono/borde.
-- Iconos: 24px por defecto (`sm` 20px, `lg` 28px).
-- Todo control interactivo mide mínimo 50px, incluidos Tabs y Toggle. Botón `sm` = 50px también.
 - No hardcodees colores de marca (`#hex`, `rgb()`) ni escribas reglas por vertical (`if (vertical === "perumin")`): todo pasa por el `theme`.
 
 ### Fondos y líneas
@@ -263,8 +261,6 @@ El maquetado se hace **siempre con el componente equivalente del kit** (shadcn/u
 | `<progress>` | `Progress` |
 | `<dialog>` | `Dialog`, `ConfirmDialog`, `FormDialog` |
 | `<details>` | `Accordion` / `Collapsible` |
-
-También bloquea alturas (`h-9`), tamaños de texto (`text-xs`) y colores sueltos (`bg-amber-600`) sobre componentes del kit (Button, Input, Select, Tabs…): todo control mide 50px y los colores salen de los tokens. Usa las variantes o `IimpThemeProvider`.
 
 Además bloquea `className` con bordes sin color (`border-b` a secas se pinta negro; usa `border-border` o `Separator`) y los imports directos de Radix, Base UI, shadcn o rutas internas del paquete.
 

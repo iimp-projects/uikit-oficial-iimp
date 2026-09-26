@@ -1,16 +1,10 @@
 import * as React from "react"
 import { cn } from "cn"
-import { SpinnerIcon } from "@phosphor-icons/react"
+import { RiLoaderLine } from "@remixicon/react"
 
-function Spinner({ className, ...props }: React.ComponentProps<typeof SpinnerIcon>) {
+function Spinner({ className, ...props }: React.ComponentProps<typeof RiLoaderLine>) {
   return (
-    <SpinnerIcon
-      data-slot="spinner"
-      role="status"
-      aria-label="Cargando"
-      className={cn("size-4 animate-spin", className)}
-      {...props}
-    />
+    <RiLoaderLine data-slot="spinner" role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
   )
 }
 

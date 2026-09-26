@@ -9,8 +9,8 @@ import {
 } from "@shadcn/react/message-scroller"
 import { cn } from "cn"
 
-import { Button } from "@/components/ui/button"
-import { ArrowDownIcon } from "@phosphor-icons/react"
+import { Button } from "./button"
+import { RiArrowDownLine } from "@remixicon/react"
 
 function MessageScrollerProvider(
   props: React.ComponentProps<typeof MessageScrollerPrimitive.Provider>
@@ -87,7 +87,7 @@ function MessageScrollerButton({
   children,
   render,
   variant = "secondary",
-  size = "icon",
+  size = "icon-sm",
   ...props
 }: React.ComponentProps<typeof MessageScrollerPrimitive.Button> &
   Pick<React.ComponentProps<typeof Button>, "variant" | "size">) {
@@ -107,7 +107,7 @@ function MessageScrollerButton({
     >
       {children ?? (
         <>
-          <ArrowDownIcon
+          <RiArrowDownLine
           />
           <span className="sr-only">
             {direction === "end" ? "Scroll to end" : "Scroll to start"}

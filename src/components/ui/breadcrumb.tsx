@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
-import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react"
+import { RiArrowRightSLine, RiMoreLine } from "@remixicon/react"
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -49,7 +49,7 @@ function BreadcrumbLink({
   return (
     <Comp
       data-slot="breadcrumb-link"
-      className={cn("inline-flex min-h-[50px] items-center transition-colors hover:text-foreground", className)}
+      className={cn("transition-colors hover:text-foreground", className)}
       {...props}
     />
   )
@@ -82,7 +82,7 @@ function BreadcrumbSeparator({
       {...props}
     >
       {children ?? (
-        <CaretRightIcon />
+        <RiArrowRightSLine />
       )}
     </li>
   )
@@ -98,12 +98,12 @@ function BreadcrumbEllipsis({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "flex size-6 items-center justify-center [&>svg]:size-6",
+        "flex size-5 items-center justify-center [&>svg]:size-4",
         className
       )}
       {...props}
     >
-      <DotsThreeIcon
+      <RiMoreLine
       />
       <span className="sr-only">More</span>
     </span>

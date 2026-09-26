@@ -33,15 +33,6 @@ describe("iimp guardrails", () => {
   it("allows borders with a token color", async () => {
     expect(await lint('export const A = () => <div className="border-b border-border p-4" />')).toEqual([])
   })
-  it("flags height/text/color overrides on kit components", async () => {
-    expect((await lint('export const A = () => <Button className="h-9 text-xs" />'))[0]).toContain("50px")
-    expect((await lint('export const A = () => <Button className="bg-amber-600 text-white" />'))[0]).toContain("colores")
-    expect((await lint('export const A = () => <Button className="bg-primary" />'))[0]).toContain("colores")
-    expect((await lint('export const A = () => <Button className="rounded-2xl" />'))[0]).toContain("radio")
-  })
-  it("allows layout classes on kit components", async () => {
-    expect(await lint('export const A = () => <Button className="w-full gap-2 text-left" />')).toEqual([])
-  })
   it("allows borders with any explicit color", async () => {
     expect(await lint('export const A = () => <div className="border-b border-white/10" />')).toEqual([])
     expect(await lint('export const A = () => <div className="border border-red-500" />')).toEqual([])
