@@ -1,0 +1,5 @@
+/* Entry for the published stylesheet: same tokens/components, without story and test classes. */
+@import "./globals.css";
+@source not "../stories";
+@source not "../**/*.stories.tsx";
+@source not "../**/*.test.tsx";

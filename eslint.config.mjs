@@ -5,7 +5,7 @@ import storybook from "eslint-plugin-storybook"
 import { defineConfig, globalIgnores } from "eslint/config"
 
 export default defineConfig([
-  globalIgnores(["dist/**", "storybook-static/**", "node_modules/**"]),
+  globalIgnores(["dist/**", "storybook-static/**", "node_modules/**", "test-results/**", "src/stories/preset-preview/**"]),
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

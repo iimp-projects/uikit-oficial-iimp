@@ -31,7 +31,7 @@
     "dev": "storybook dev -p 6006",
     "build": "npm run build:js && npm run build:css",
     "build:js": "tsup",
-    "build:css": "tailwindcss -i ./src/styles/globals.css -o ./dist/style.css --minify && cp src/styles/theme.css dist/theme.css",
+    "build:css": "tailwindcss -i ./src/styles/dist.css -o ./dist/style.css --minify && cp src/styles/theme.css dist/theme.css",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint": "eslint .",

@@ -18,7 +18,10 @@ const AXE_OPTIONS = { rules: { "color-contrast": { enabled: false }, region: { e
 // Known third-party false positive: cmdk wraps options in a role-less <div cmdk-list-sizer> inside role=listbox.
 const KNOWN_AXE: Record<string, string[]> = { "./components/ui/command.stories.tsx": ["aria-required-children"] }
 
-describe.each(Object.entries(modules))("%s", (path, mod) => {
+// Upstream demo composition (shadcn preview): visual reference only, not part of the kit contract.
+const entries = Object.entries(modules).filter(([, m]) => !String(m.default?.title).startsWith("Foundations/Preset Preview"))
+
+describe.each(entries)("%s", (path, mod) => {
   if (!mod.default?.title && !mod.default?.component) return
   const stories = composeStories(mod) as Record<string, React.ComponentType>
   it.each(Object.entries(stories))("%s renders and has no axe violations", async (_name, Story) => {
