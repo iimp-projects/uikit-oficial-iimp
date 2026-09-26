@@ -20,7 +20,7 @@ Usar como fuente actual para validar el catálogo de componentes.
 ### Registry
 https://ui.shadcn.com/docs/registry
 
-Un registry privado/interno puede ser útil como complemento, aunque para Eventos IIMP se recomienda que el producto consuma el package `@iimp/ui` para tener versionado central.
+Un registry privado/interno puede ser útil como complemento, aunque para Eventos IIMP se recomienda que el producto consuma el package `official-uikit-iimp` para tener versionado central.
 
 ## WCAG 2.2
 

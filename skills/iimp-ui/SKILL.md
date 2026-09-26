@@ -1,6 +1,6 @@
 ---
 name: iimp-ui
-description: Use whenever creating, modifying, reviewing or migrating frontend UI that must follow the IIMP Design System and @iimp/ui.
+description: Use whenever creating, modifying, reviewing or migrating frontend UI that must follow the IIMP Design System and official-uikit-iimp.
 ---
 
 # IIMP UI Skill
@@ -115,6 +115,6 @@ Si el requerimiento visual no puede representarse con el Design System:
 
 1. no crear workaround silencioso;
 2. explicar el gap;
-3. proponer extensión de `@iimp/ui`;
+3. proponer extensión de `official-uikit-iimp`;
 4. implementar extensión primero;
 5. usarla después.

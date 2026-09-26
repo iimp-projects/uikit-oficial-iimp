@@ -1,4 +1,4 @@
-# @iimp/ui
+# official-uikit-iimp
 
 Design System / UI Kit oficial de Eventos IIMP. Ver `AGENTS.md` y `docs/` como fuente de verdad antes de modificar componentes.
 
@@ -28,18 +28,18 @@ npm publish --access public
 ## Consumo en otro proyecto
 
 ```bash
-npm install @iimp/ui
+npm install official-uikit-iimp
 ```
 
 ```tsx
-import { Button } from "@iimp/ui"
-import "@iimp/ui/style.css"
+import { Button } from "official-uikit-iimp"
+import "official-uikit-iimp/style.css"
 ```
 
 ### Theming por vertical (runtime)
 
 ```tsx
-import { IimpThemeProvider } from "@iimp/ui"
+import { IimpThemeProvider } from "official-uikit-iimp"
 
 <IimpThemeProvider theme={{ primary: vertical.primaryColor, secondary: vertical.secondaryColor, radius: vertical.radius }}>
   <App />
@@ -52,7 +52,7 @@ Si no envías `primaryForeground`/`secondaryForeground`, se resuelven automátic
 
 ```js
 // eslint.config.js de la app consumidora
-import { iimpGuardrails } from "@iimp/ui/eslint"
+import { iimpGuardrails } from "official-uikit-iimp/eslint"
 
 export default [
   // ...tu config existente

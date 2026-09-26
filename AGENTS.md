@@ -12,7 +12,7 @@ Orden de autoridad:
 4. `docs/05_MOTION.md`
 5. `docs/06_COMPONENT_CATALOG.md`
 6. `docs/07_PATTERNS.md`
-7. implementación actual de `@iimp/ui`
+7. implementación actual de `official-uikit-iimp`
 
 ## Regla principal
 
@@ -20,10 +20,10 @@ Las aplicaciones consumidoras **componen** UI; no crean un sistema visual parale
 
 Antes de crear UI:
 
-1. buscar un pattern en `@iimp/ui`;
-2. buscar un primitive en `@iimp/ui`;
+1. buscar un pattern en `official-uikit-iimp`;
+2. buscar un primitive en `official-uikit-iimp`;
 3. reutilizarlo;
-4. si no alcanza, determinar si debe extenderse `@iimp/ui`.
+4. si no alcanza, determinar si debe extenderse `official-uikit-iimp`.
 
 ## Prohibido
 
@@ -79,7 +79,7 @@ import {
   FormDialog,
   ConfirmDialog,
   DataTable,
-} from "@iimp/ui"
+} from "official-uikit-iimp"
 ```
 
 ## className

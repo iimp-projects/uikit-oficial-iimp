@@ -1,4 +1,4 @@
-// Consumer contract test: pack @iimp/ui, install the tarball in a clean fixture app,
+// Consumer contract test: pack official-uikit-iimp, install the tarball in a clean fixture app,
 // typecheck + server-render a component that uses only the public API.
 import { execSync } from "node:child_process"
 import { mkdtempSync, writeFileSync, mkdirSync, readdirSync, rmSync } from "node:fs"
@@ -33,8 +33,8 @@ writeFileSync(
 writeFileSync(
   join(app, "main.tsx"),
   `import { renderToString } from "react-dom/server"
-import { Button, IimpThemeProvider, ConfirmDialog, FormField, Input } from "@iimp/ui"
-import { iimpGuardrails } from "@iimp/ui/eslint"
+import { Button, IimpThemeProvider, ConfirmDialog, FormField, Input } from "official-uikit-iimp"
+import { iimpGuardrails } from "official-uikit-iimp/eslint"
 
 const html = renderToString(
   <IimpThemeProvider theme={{ primary: "#092042", secondary: "#f2e8dd", secondaryForeground: "#c09153" }}>
@@ -50,5 +50,5 @@ console.log("consumer contract OK")
 )
 run("npx tsc -p tsconfig.json", app)
 run("npx tsx main.tsx", app)
-run(`node -e "import('@iimp/ui/style.css').catch(()=>{});require('fs').accessSync(require.resolve('@iimp/ui/style.css'))"`, app)
+run(`node -e "import('official-uikit-iimp/style.css').catch(()=>{});require('fs').accessSync(require.resolve('official-uikit-iimp/style.css'))"`, app)
 rmSync(out, { recursive: true, force: true })

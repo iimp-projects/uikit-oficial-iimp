@@ -1,6 +1,6 @@
 # IIMP UI Kit — Start Here
 
-Este paquete de documentación sirve como **blueprint ejecutable** para construir `@iimp/ui`, el Design System / UI Kit de la plataforma Eventos IIMP.
+Este paquete de documentación sirve como **blueprint ejecutable** para construir `official-uikit-iimp`, el Design System / UI Kit de la plataforma Eventos IIMP.
 
 ## Objetivo
 
@@ -8,8 +8,8 @@ Separar claramente cuatro responsabilidades:
 
 1. **Verticales**: definen identidad de marca en runtime (`primary`, `secondary`, `radius`).
 2. **Design System**: define reglas de UX, accesibilidad, motion, tipografía, spacing, estados y jerarquías.
-3. **@iimp/ui**: implementa componentes reutilizables sobre shadcn/ui + Tailwind CSS.
-4. **Aplicaciones consumidoras**: usan exclusivamente `@iimp/ui` y no inventan estilos paralelos.
+3. **official-uikit-iimp**: implementa componentes reutilizables sobre shadcn/ui + Tailwind CSS.
+4. **Aplicaciones consumidoras**: usan exclusivamente `official-uikit-iimp` y no inventan estilos paralelos.
 
 Arquitectura objetivo:
 
@@ -135,4 +135,4 @@ Es una skill portable para orientar a un agente durante creación, revisión o m
 
 > Las apps consumidoras no diseñan. Componen.
 
-Si una pantalla necesita un patrón visual que `@iimp/ui` no tiene, se extiende primero el Design System y recién después se usa en la feature.
+Si una pantalla necesita un patrón visual que `official-uikit-iimp` no tiene, se extiende primero el Design System y recién después se usa en la feature.

@@ -1,6 +1,6 @@
-# MASTER PROMPT — Construcción de `@iimp/ui`
+# MASTER PROMPT — Construcción de `official-uikit-iimp`
 
-Quiero construir un proyecto independiente llamado `@iimp/ui`.
+Quiero construir un proyecto independiente llamado `official-uikit-iimp`.
 
 Será el Design System / UI Kit oficial de Eventos IIMP y podrá ser consumido por aplicaciones React/Next.js.
 
@@ -312,7 +312,7 @@ Aplicar reglas que impidan en apps consumidoras:
 - `<button>` directo cuando exista Button del UI Kit
 - `<input>`, `<select>`, `<textarea>` directos cuando exista equivalente
 - imports directos de la capa interna de primitives
-- imports directos de Radix/Base UI/etc. salvo dentro de `@iimp/ui`
+- imports directos de Radix/Base UI/etc. salvo dentro de `official-uikit-iimp`
 - colores HEX/RGB/HSL hardcodeados fuera de archivos autorizados
 - overriding visual arbitrario vía `className`
 

@@ -39,7 +39,7 @@ Component:
 Category:
 Current implementation:
 Problem:
-Recommended @iimp/ui replacement:
+Recommended official-uikit-iimp replacement:
 Risk:
 Migration notes:
 ```

@@ -1,6 +1,6 @@
 {
   "name": "IIMP UI Kit Blueprint",
-  "package": "@iimp/ui",
+  "package": "official-uikit-iimp",
   "files": [
     "00_START_HERE.md",
     "01_MASTER_BUILD_PROMPT.md",

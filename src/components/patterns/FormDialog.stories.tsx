@@ -32,7 +32,7 @@ export const Default: Story = {
         onSubmit={handleSubmit}
       >
         <p className="text-sm text-muted-foreground">
-          Aquí van los campos del formulario (Input, Select, etc. de @iimp/ui).
+          Aquí van los campos del formulario (Input, Select, etc. de official-uikit-iimp).
         </p>
       </FormDialog>
     )

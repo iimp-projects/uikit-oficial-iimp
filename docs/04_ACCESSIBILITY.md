@@ -1,6 +1,6 @@
 # Accessibility
 
-Objetivo: diseñar `@iimp/ui` para que accesibilidad sea el comportamiento por defecto.
+Objetivo: diseñar `official-uikit-iimp` para que accesibilidad sea el comportamiento por defecto.
 
 ## Referencia base
 

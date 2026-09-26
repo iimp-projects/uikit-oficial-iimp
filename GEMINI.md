@@ -13,7 +13,7 @@ No interpretar mocks o diseños como autorización para inventar:
 - motion.
 
 Al implementar una pantalla:
-1. mapear cada elemento al componente oficial de `@iimp/ui`;
+1. mapear cada elemento al componente oficial de `official-uikit-iimp`;
 2. usar patterns existentes;
 3. usar tokens semánticos;
 4. conservar layout responsive;

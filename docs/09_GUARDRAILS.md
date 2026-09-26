@@ -18,16 +18,16 @@ salvo archivos/carpetas autorizadas.
 Mensaje sugerido:
 
 ```text
-Use the equivalent component from @iimp/ui.
+Use the equivalent component from official-uikit-iimp.
 ```
 
 ## 2. Restricted imports
 
 Bloquear imports directos de:
 - Radix/Base UI/React Aria primitives elegidos internamente,
-- componentes copiados localmente que compitan con `@iimp/ui`.
+- componentes copiados localmente que compitan con `official-uikit-iimp`.
 
-La aplicación consumidora debe importar desde `@iimp/ui`.
+La aplicación consumidora debe importar desde `official-uikit-iimp`.
 
 ## 3. Hardcoded brand colors
 

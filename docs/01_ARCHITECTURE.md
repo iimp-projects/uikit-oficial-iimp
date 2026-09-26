@@ -5,12 +5,12 @@
 Nombre recomendado:
 
 ```text
-@iimp/ui
+official-uikit-iimp
 ```
 
 ## Responsabilidades
 
-### `@iimp/ui`
+### `official-uikit-iimp`
 Contiene:
 - tokens,
 - theme runtime,
@@ -104,10 +104,10 @@ Evitar que consumidores importen rutas internas:
 
 ```tsx
 // correcto
-import { Button } from "@iimp/ui"
+import { Button } from "official-uikit-iimp"
 
 // evitar
-import { Button } from "@iimp/ui/src/components/ui/button"
+import { Button } from "official-uikit-iimp/src/components/ui/button"
 ```
 
 ## Versionado
