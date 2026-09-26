@@ -1,6 +1,6 @@
 {
   "name": "official-uikit-iimp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Design System / UI Kit oficial de Eventos IIMP",
   "type": "module",
   "sideEffects": [
@@ -91,5 +91,9 @@
     "vite": "^6",
     "vitest": "^3.2.7",
     "vitest-axe": "^0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iimp-projects/uikit-oficial-iimp.git"
   }
 }
