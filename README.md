@@ -204,7 +204,7 @@ import { EmptyState, ErrorState, LoadingState } from "official-uikit-iimp"
 
 ## 4. Theming (opcional)
 
-Por defecto el kit usa el preset de shadcn `b1aIuQ2XC` (estilo luma, radio `0.875rem`, iconos Remix) con los colores de IIMP (primary `#092042`, secondary `#f2e8dd` con texto `#c09153`) y tipografía Apple: **SF Pro Text** para texto (mínimo 13px, base 14px) y **SF Pro Display** para títulos (mínimo 20px). SF solo existe en dispositivos Apple; en otros sistemas cae a Segoe UI / Roboto.
+Por defecto el kit usa el preset de shadcn `b1aIuQ2XC` (estilo luma, iconos Remix) con las decisiones de IIMP: colores primary `#092042` y secondary `#f2e8dd` con texto `#c09153`; **radio de 10px** en controles y ~14px en cards (los controles circulares como Switch, Radio o Avatar siguen `rounded-full`); campos de formulario con fondo blanco sólido y borde sutil; sombra `shadow-sm` en superficies en reposo (los menús y modales mantienen más elevación); y tipografía de cuerpo con la pila `system-ui` (San Francisco en Mac/iOS, Segoe UI en Windows, mínimo 13px) con títulos en **SF Pro Display** (mínimo 20px).
 
 Para cambiar colores o radio por vertical, envuelve la app:
 

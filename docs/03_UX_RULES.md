@@ -106,9 +106,13 @@ Deben explicar:
 
 ## Base visual: preset shadcn `b1aIuQ2XC` (v0.4)
 
-El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, radio `large` = 0.875rem, iconos Remix; tipografía Apple: SF Pro Text mínimo 13px y SF Pro Display en títulos, mínimo 20px) **sin modificar tamaños**: alturas, tipografía y espaciado son los de shadcn. Lo único propio de IIMP:
+El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, iconos Remix), con estas decisiones propias de IIMP sobre esa base:
 
 - `primary` `#092042` y `secondary` `#f2e8dd` con texto `#c09153` (contraste bajo, ~2.4:1: úsalo en texto grande o con icono).
 - Charts y `sidebar-primary` derivan de esos dos colores.
 - Tokens semánticos `success`, `warning` e `info` (variantes de `Badge`).
+- **Radio 10px** (`--radius: 0.625rem`) en controles y contenedores. Los controles genuinamente circulares (Avatar, Switch, Radio, el segmented control de Tabs) siguen `rounded-full`; eso es forma, no esquina, y no cambia con el radio. Cards y diálogos usan un radio algo mayor (14px) derivado del mismo token.
+- **Campos de formulario** (Input, Textarea, Select, Combobox, NativeSelect, InputOTP) con fondo blanco sólido, borde sutil (`border-input`) y `shadow-sm`; antes eran translúcidos.
+- **Sombra base `shadow-sm`** en superficies en reposo (Card). Los menús flotantes mantienen `shadow-lg` y los modales `shadow-xl`: necesitan más elevación visual para separarse del contenido de atrás; aplanarlos a todos a `shadow-sm` los haría ver pegados a la página.
+- **Tipografía de cuerpo:** `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif` (resuelve a San Francisco en Mac/iOS, Segoe UI en Windows). Los títulos siguen en SF Pro Display, mínimo 20px; el texto mínimo del kit es 13px.
 - `IimpThemeProvider` cambia primary/secondary/radio en runtime.

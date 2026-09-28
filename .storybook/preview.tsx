@@ -52,9 +52,9 @@ const preview: Preview = {
         title: "Radius",
         icon: "component",
         items: [
-          { value: "0.875rem", title: "Preset luma (0.875rem)" },
+          { value: "0.625rem", title: "IIMP (default, 0.625rem)" },
           { value: "0.25rem", title: "Sharp (0.25rem)" },
-          { value: "1rem", title: "Round (1rem)" },
+          { value: "0.875rem", title: "Preset luma (0.875rem)" },
         ],
         dynamicTitle: true,
       },
@@ -63,7 +63,7 @@ const preview: Preview = {
   initialGlobals: {
     primary: "#092042",
     secondary: "#f2e8dd/#c09153",
-    radius: "0.875rem",
+    radius: "0.625rem",
   },
   decorators: [
     (Story, context) => (

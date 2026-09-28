@@ -18,14 +18,25 @@ test("secondary button uses the brand pair #c09153 on #f2e8dd", async ({ page })
   expect(c.color).toBe("rgb(192, 145, 83)")
 })
 
-test("preset radius and Apple typography (SF Pro Text / SF Pro Display)", async ({ page }) => {
+test("controls use 10px radius, system-ui body text, solid white fields with a subtle border and shadow-sm", async ({ page }) => {
   await page.goto("/iframe.html?id=primitives-input--default&viewMode=story")
   const s = await page.locator("[data-slot=input]").first().evaluate((el) => {
     const c = getComputedStyle(el)
-    return { r: c.borderTopLeftRadius, ff: c.fontFamily, radius: getComputedStyle(document.documentElement).getPropertyValue("--radius").trim() }
+    return {
+      r: c.borderTopLeftRadius,
+      ff: c.fontFamily,
+      radius: getComputedStyle(document.documentElement).getPropertyValue("--radius").trim(),
+      bg: c.backgroundColor,
+      borderColor: c.borderTopColor,
+      shadow: c.boxShadow,
+    }
   })
-  expect(s.ff).toContain("SF Pro Text")
-  expect(s.radius).toBe("0.875rem")
+  expect(s.ff).toContain("system-ui")
+  expect(s.radius).toBe("0.625rem")
+  expect(s.r).toBe("10px")
+  expect(["rgb(255, 255, 255)", "oklch(1 0 0)"]).toContain(s.bg)
+  expect(s.borderColor).not.toBe("rgba(0, 0, 0, 0)") // not border-transparent
+  expect(s.shadow).not.toBe("none")
 })
 
 test("card is solid white", async ({ page }) => {

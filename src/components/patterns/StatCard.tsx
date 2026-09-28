@@ -20,7 +20,7 @@ type StatCardProps = {
 
 function StatCard({ label, value, trend, hint, icon, className }: StatCardProps) {
   return (
-    <Card className={cn("gap-3 rounded-2xl", className)}>
+    <Card className={cn("gap-3", className)}>
       <div className="flex items-start justify-between gap-3 px-(--card-spacing)">
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
         {icon ? (

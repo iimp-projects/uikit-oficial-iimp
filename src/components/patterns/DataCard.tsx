@@ -20,7 +20,7 @@ type DataCardProps = {
 /** Card for data screens: header (title, meta, actions) + separator + full-width table. */
 function DataCard({ title, description, icon, meta, actions, children, className }: DataCardProps) {
   return (
-    <Card className={cn("gap-0 rounded-2xl py-0", className)}>
+    <Card className={cn("gap-0 py-0", className)}>
       <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
         <div className="flex min-w-0 flex-1 basis-80 items-center gap-4">
           {icon ? (
