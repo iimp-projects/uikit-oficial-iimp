@@ -24,7 +24,7 @@ function StatCard({ label, value, trend, hint, icon, className }: StatCardProps)
       <div className="flex items-start justify-between gap-3 px-(--card-spacing)">
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
         {icon ? (
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground [&_svg]:size-5">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground [&_svg]:size-6">
             {icon}
           </span>
         ) : null}

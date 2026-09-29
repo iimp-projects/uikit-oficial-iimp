@@ -80,12 +80,15 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 | `DestructiveDialog` | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar". |
 | `FormDialog` | Formulario dentro de un diálogo, con botones cancelar y enviar. |
 | `InfoDialog` | Mostrar información sin acción. |
+| `AuthLayout` | Shell de dos columnas para login (panel de marca + tu propia card). No implementa autenticación; úsalo con `GoogleSignInButton`. Ver `docs/03_UX_RULES.md`. |
 
 ### Primitives
 
-Button, Input, Textarea, Select, NativeSelect, Combobox, Checkbox, RadioGroup, Switch, Slider, Toggle, ToggleGroup, InputOTP, Calendar, Label, Field, InputGroup, Card, Table, Tabs, Accordion, Collapsible, Separator, ScrollArea, Resizable, Avatar, Badge, Alert, Progress, Skeleton, Spinner, Kbd, Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip, DropdownMenu, ContextMenu, Menubar, NavigationMenu, Breadcrumb, Pagination, Sidebar, Command, Carousel, Chart, Sonner (`Toaster`), y componentes de chat (Message, Bubble, MessageScroller, Attachment, Questionnaire).
+Button, GoogleSignInButton, Input, Textarea, Select, NativeSelect, Combobox, Checkbox, RadioGroup, Switch, Slider, Toggle, ToggleGroup, InputOTP, Calendar, Label, Field, InputGroup, Card, Table, Tabs, Accordion, Collapsible, Separator, ScrollArea, Resizable, Avatar, Badge, Alert, Progress, Skeleton, Spinner, Kbd, Dialog, AlertDialog, Sheet, Drawer, Popover, HoverCard, Tooltip, DropdownMenu, ContextMenu, Menubar, NavigationMenu, Breadcrumb, Pagination, Sidebar, Command, Carousel, Chart, Sonner (`Toaster`), y componentes de chat (Message, Bubble, MessageScroller, Attachment, Questionnaire).
 
 Todos se importan de `official-uikit-iimp`. Los tipos incluyen la documentación de props en tu editor.
+
+> **`Select` vs. `Combobox`:** usa `Select` solo para listas cortas y fijas (hasta ~8-10 opciones). Para listas largas, que vienen de una API, o donde el usuario probablemente busque escribiendo, usa `Combobox` — trae buscador integrado. Ver `docs/03_UX_RULES.md`.
 
 ## 3. Recetas
 

@@ -92,6 +92,10 @@ import {
 } from "official-uikit-iimp"
 ```
 
+## Login / Auth
+
+No armar la pantalla de login a mano. Usar `AuthLayout` (shell de dos columnas: panel de marca + tu propia card de login) y `GoogleSignInButton` (botón con el logo oficial de Google) si el proyecto usa Google. Ninguno de los dos implementa autenticación: reciben la lógica real (`onClick`/`formAction`) del proyecto. Receta completa en `docs/03_UX_RULES.md` → "AuthLayout".
+
 ## className
 
 Permitido principalmente para layout:
@@ -145,6 +149,8 @@ No construir dialogs custom en features sin justificación.
 Campos etiquetados:
 - `FormField`
 - control oficial (`Input`, `Select`, etc.)
+
+**`Select` solo para listas cortas (hasta ~8-10 opciones).** Si la lista es larga, viene de una API/base de datos, o el usuario necesita escribir para encontrar la opción, usar `Combobox` (tiene buscador integrado). `Select` obliga a leer la lista completa desplazándose; en listas largas eso es más lento y menos accesible que escribir 2-3 letras. No es una regla de lint (la cantidad de opciones suele depender de datos en runtime, no se puede verificar de forma estática) — es criterio a aplicar antes de elegir el control, igual que "busca un Pattern/Primitive antes de crear uno nuevo".
 
 No construir labels/error text con estilos manuales salvo caso no cubierto por el pattern.
 

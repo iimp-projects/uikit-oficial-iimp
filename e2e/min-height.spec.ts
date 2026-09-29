@@ -12,6 +12,9 @@ import { expect, test } from "@playwright/test"
 // - A bare `<input>`/`<select>` nested inside `[data-slot=input-group]`: the wrapping
 //   InputGroup is the visible, clickable 40px surface and is checked in its own right;
 //   the raw leaf keeps its natural (shorter) content height inside that padding.
+// - A plain `<a>` inline inside a sentence/paragraph (e.g. "Acepto los Términos de Uso"):
+//   WCAG 2.5.5 (AAA) itself exempts links within a block of text, since the target is the
+//   whole line the text wraps to, not a fixed-size control.
 const EXEMPT_SLOTS = new Set(["checkbox", "radio-group-item", "switch"])
 
 type Entry = { id: string; type: string }
@@ -45,12 +48,13 @@ test("every interactive control on every story is >= 40px tall (min-height)", as
               w: Math.round(r.width),
               inert: cs.pointerEvents === "none" || cs.opacity === "0" || cs.display === "none",
               nestedField: (tag === "input" || tag === "select") && !!el.closest("[data-slot=input-group]"),
+              inlineLink: tag === "a" && !el.hasAttribute("data-slot") && !!el.closest("p, li, span"),
             }
           })
           .filter((x) => x.h > 1 && x.w > 1 && !x.inert)
     )
     for (const x of found) {
-      if (EXEMPT_SLOTS.has(x.slot) || x.size === "icon-xs" || x.nestedField) continue
+      if (EXEMPT_SLOTS.has(x.slot) || x.size === "icon-xs" || x.nestedField || x.inlineLink) continue
       if (x.h < 40) violations.push(`${id}: ${x.name} h=${x.h} (min 40)`)
     }
   }

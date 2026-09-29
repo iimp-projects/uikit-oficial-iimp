@@ -18,7 +18,7 @@ export const Default: Story = {
         label="Inscripciones"
         value="1,284"
         trend={{ value: "12% vs. semana pasada", direction: "up" }}
-        icon={<UsersIcon className="size-5" />}
+        icon={<UsersIcon className="size-6" />}
       />
       <StatCard
         label="Cancelaciones"

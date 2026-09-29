@@ -54,6 +54,53 @@ Reglas:
 - no depender solo de color para error;
 - mantener distancia consistente entre campos.
 
+### Select vs. Combobox
+
+- `Select`: listas cortas y fijas (hasta ~8-10 opciones), conocidas de antemano (estados, tipos de documento, monedas).
+- `Combobox`: listas largas, que vienen de una API/base de datos, o donde el usuario probablemente busque escribiendo (proveedores, participantes, países, cualquier catálogo de decenas o cientos de registros). Trae buscador integrado, así que el usuario escribe en vez de desplazarse por toda la lista.
+- Criterio práctico: si dudas, o la lista puede crecer con el tiempo, usa `Combobox`. Migrar un `Select` a `Combobox` más adelante implica rehacer el control; empezar con `Combobox` no cuesta nada de más.
+- Esto es criterio de diseño, no una regla de ESLint: la cantidad de opciones casi siempre depende de datos en runtime (una lista de proveedores desde una API, por ejemplo), así que no se puede verificar de forma estática antes de ejecutar la app.
+
+## AuthLayout (pantallas de login)
+
+`AuthLayout` es el shell de dos columnas para pantallas de autenticación: panel de marca a la izquierda (oculto en mobile, con logo/tagline/eyebrow/headline/descripción/features/footer por props) y el `children` — la card de login real — a la derecha. Mobile-first: en mobile el panel de marca se colapsa a un header chico (logo + nombre) arriba de la card.
+
+**No implementa autenticación.** Solo da la estructura visual. El botón de Google (`GoogleSignInButton`, con el logo oficial de Google) tampoco hace login por sí solo: recibe `onClick`/`formAction` para que cada proyecto conecte su propio proveedor (NextAuth, Server Action, Firebase, lo que use).
+
+Receta mínima:
+
+```tsx
+import { AuthLayout, GoogleSignInButton, Card, CardContent, CardDescription, CardHeader, CardTitle } from "official-uikit-iimp"
+
+export default function LoginPage() {
+  return (
+    <AuthLayout
+      logo={<TuLogoIcon />}
+      systemName="Nombre del sistema"
+      systemTagline="Instituto de Ingenieros de Minas del Perú"
+      eyebrow="Módulo o producto"
+      headline="Resumen breve de qué hace el sistema."
+      description="Una o dos frases sobre el problema que resuelve."
+      features={["Beneficio clave", "Otra capacidad relevante"]}
+      footer={`© ${new Date().getFullYear()} Instituto de Ingenieros de Minas del Perú`}
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>Bienvenido de vuelta</CardTitle>
+          <CardDescription>Inicia sesión con tu cuenta institucional.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-5">
+          {/* Conecta tu propio proveedor de auth aquí */}
+          <GoogleSignInButton formAction={miServerActionDeLogin} />
+        </CardContent>
+      </Card>
+    </AuthLayout>
+  )
+}
+```
+
+Ver el pattern completo, con textos de enlaces legales incluidos, en Storybook: **Patterns → AuthLayout**.
+
 ## Dialogs
 
 No usar modal para cualquier cosa.
@@ -115,4 +162,6 @@ El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, ic
 - **Campos de formulario** (Input, Textarea, Select, Combobox, NativeSelect, InputOTP) con fondo blanco sólido, borde sutil (`border-input`) y `shadow-sm`; antes eran translúcidos.
 - **Sombra base `shadow-sm`** en superficies en reposo (Card). Los menús flotantes mantienen `shadow-lg` y los modales `shadow-xl`: necesitan más elevación visual para separarse del contenido de atrás; aplanarlos a todos a `shadow-sm` los haría ver pegados a la página.
 - **Tipografía de cuerpo:** `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif` (resuelve a San Francisco en Mac/iOS, Segoe UI en Windows). Los títulos siguen en SF Pro Display, mínimo 20px; el texto mínimo del kit es 13px.
+- **Todo control interactivo mide mínimo 40px de alto** (Button, Input, Select, Combobox, Toggle, Tabs, Menubar, NavigationMenu, Sidebar, Breadcrumb). Checkbox/Radio/Switch mantienen su caja visual pequeña (así se ven en cualquier sistema), pero exponen un área de clic invisible de 40px o más.
+- **Iconos: mínimo 24×24px.** Excepciones documentadas, siempre por una razón física (no cabrían) o semántica (son chrome decorativo junto a texto, no "un icono"): el check dentro de Checkbox/Radio, el icono de un `Badge`, `Kbd`, el caret de disclosure de `NavigationMenuTrigger`/el dropdown de mes-año del `Calendar`, el separador/ellipsis de `Breadcrumb`, la acción de `SidebarMenuAction` (20px) y el glifo `icon-xs` de `Button`/`InputGroupButton` (nace para vivir dentro de un campo o chip ya de 40px).
 - `IimpThemeProvider` cambia primary/secondary/radio en runtime.

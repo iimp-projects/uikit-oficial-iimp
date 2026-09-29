@@ -36,7 +36,7 @@ function SearchField({
   return (
     <div className={cn("relative w-full", className)}>
       <MagnifyingGlassIcon
-        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute top-1/2 left-3.5 size-6 -translate-y-1/2 text-muted-foreground"
         aria-hidden="true"
       />
       <Input
@@ -44,7 +44,7 @@ function SearchField({
         value={internalValue}
         placeholder={placeholder}
         onChange={(event) => setInternalValue(event.target.value)}
-        className="pl-9 pr-9"
+        className="pl-12 pr-9"
         aria-label={placeholder}
       />
       {internalValue ? (
@@ -55,7 +55,7 @@ function SearchField({
           className="absolute top-1/2 right-1.5 -translate-y-1/2"
           onClick={() => setInternalValue("")}
         >
-          <XIcon className="size-4" aria-hidden="true" />
+          <XIcon className="size-6" aria-hidden="true" />
           <span className="sr-only">Limpiar búsqueda</span>
         </Button>
       ) : null}

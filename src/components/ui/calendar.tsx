@@ -147,18 +147,18 @@ function Calendar({
         Chevron: ({ className, orientation, ...props }) => {
           if (orientation === "left") {
             return (
-              <RiArrowLeftSLine className={cn("size-4", className)} {...props} />
+              <RiArrowLeftSLine className={cn("size-6", className)} {...props} />
             )
           }
 
           if (orientation === "right") {
             return (
-              <RiArrowRightSLine className={cn("size-4", className)} {...props} />
+              <RiArrowRightSLine className={cn("size-6", className)} {...props} />
             )
           }
 
           return (
-            <RiArrowDownSLine className={cn("size-4", className)} {...props} />
+            <RiArrowDownSLine className={cn("size-6", className)} {...props} />
           )
         },
         DayButton: ({ ...props }) => (
