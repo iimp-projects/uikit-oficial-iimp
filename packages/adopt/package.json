@@ -4,7 +4,7 @@
   "description": "Adopta los estándares oficiales IIMP en proyectos Next.js existentes",
   "type": "module",
   "bin": {
-    "iimp-adopt": "./bin/iimp-adopt.mjs"
+    "iimp-adopt": "bin/iimp-adopt.mjs"
   },
   "exports": {
     ".": "./src/index.mjs"
