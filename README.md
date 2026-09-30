@@ -27,6 +27,17 @@ npm run check
 
 El starter incluye Next.js App Router, Tailwind v4, TypeScript estricto, ESLint sin warnings, tests, CI, seguridad base y la instalación idempotente de skills. Consulta [`templates/next-starter/README.md`](./templates/next-starter/README.md).
 
+### Actualizar una aplicación existente
+
+Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
+
+```bash
+npm install official-uikit-iimp@0.7.0 --save-exact
+npm run check
+```
+
+La versión 0.7 añade `LanguageSwitcher` y hace que `DashboardSidebarBrand` muestre el logo institucional por defecto. El prop anterior `icon` continúa por compatibilidad, pero está deprecado; reemplázalo gradualmente por `logoSrc`/`logoAlt` solo cuando realmente exista otra marca autorizada.
+
 ### Proyectos existentes: CLI de adopción
 
 ```bash
@@ -109,7 +120,8 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 | `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                              |
 | `InfoDialog`         | Mostrar información sin acción.                                                                                                                              |
 | `AuthLayout`         | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación.                                  |
-| Familia `Dashboard*` | Shell autenticado con sidebar responsive, marca, usuario/logout, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
+| Familia `Dashboard*` | Shell autenticado con sidebar responsive, logo institucional, usuario/logout, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
+| `LanguageSwitcher` | Selector compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate. |
 
 ### Primitives
 
@@ -127,6 +139,7 @@ Todos se importan de `official-uikit-iimp`. Los tipos incluyen la documentación
 import {
   DashboardHeader,
   DashboardLayout,
+  LanguageSwitcher,
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
@@ -138,7 +151,7 @@ import {
   sidebarTone="primary"
   sidebar={
     <Sidebar collapsible="offcanvas">
-      <DashboardSidebarBrand icon={<ProductIcon />} title="Sistema IIMP" />
+      <DashboardSidebarBrand title="Sistema IIMP" />
       <SidebarContent>
         <AppNavigation />
       </SidebarContent>
@@ -152,6 +165,9 @@ import {
   header={
     <DashboardHeader
       navigation={<AppBreadcrumb />}
+      languageSwitcher={
+        <LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={changeLocale} />
+      }
       notifications={<DashboardNotifications count={alerts.length} />}
       actions={<PageActions />}
     />
@@ -162,6 +178,23 @@ import {
 ```
 
 `AppSidebar` compone los primitives `Sidebar*` oficiales. Routing, permisos, sesión, navegación y logout permanecen en la app. Ver receta completa en `docs/03_UX_RULES.md`.
+
+`DashboardSidebarBrand` usa por defecto el logo PNG institucional en un recuadro blanco. Si un producto autorizado necesita otra marca, pasa `logoSrc` y `logoAlt`; no hace falta crear ni mantener iconos por sistema.
+
+### Idioma y Google Translate
+
+`LanguageSwitcher` crea los botones desde los códigos que recibe y se ubica inmediatamente a la izquierda de la campana cuando se pasa mediante `DashboardHeader.languageSwitcher`. Por defecto solo selecciona y emite `onValueChange`: es la integración recomendada con el proveedor i18n de la aplicación.
+
+Para una integración existente con Google Website Translator, activa su bridge de cookie:
+
+```tsx
+<LanguageSwitcher
+  languages={["es", "en", "qu"]}
+  googleTranslate={{ sourceLanguage: "es" }}
+/>
+```
+
+El componente añade el objetivo oculto que requiere Google, carga el script una vez si aún no existe, guarda `googtrans` y recarga la página. Es una compatibilidad temporal: consulta la guía y los límites de Google en [`docs/17_LANGUAGE_SWITCHER.md`](./docs/17_LANGUAGE_SWITCHER.md).
 
 ### Formulario
 

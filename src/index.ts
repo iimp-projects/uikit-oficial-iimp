@@ -79,6 +79,7 @@ export * from "./components/patterns/DataTable"
 export * from "./components/patterns/DataCard"
 export * from "./components/patterns/AuthLayout"
 export * from "./components/patterns/DashboardLayout"
+export * from "./components/patterns/LanguageSwitcher"
 
 export * from "./theme/IimpThemeProvider"
 

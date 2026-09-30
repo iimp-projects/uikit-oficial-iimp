@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 import { Sidebar, SidebarContent, SidebarMenuButton } from "../ui/sidebar"
@@ -10,6 +10,7 @@ import {
   DashboardSidebarBrand,
   DashboardSidebarUser,
 } from "./DashboardLayout"
+import { LanguageSwitcher } from "./LanguageSwitcher"
 
 describe("AuthLayout", () => {
   it("uses the primary brand surface by default", () => {
@@ -70,7 +71,7 @@ describe("DashboardLayout", () => {
       <DashboardLayout
         sidebar={
           <Sidebar collapsible="offcanvas">
-            <DashboardSidebarBrand icon={<span>Icon</span>} title="IIMP Tesorería" description="Gestión" />
+            <DashboardSidebarBrand title="IIMP Tesorería" description="Gestión" />
             <SidebarContent>
               <SidebarMenuButton>Dashboard</SidebarMenuButton>
             </SidebarContent>
@@ -83,6 +84,7 @@ describe("DashboardLayout", () => {
     )
 
     expect(container.querySelector('[data-slot="dashboard-sidebar-brand"]')).toHaveClass("h-20")
+    expect(screen.getByRole("img", { name: "IIMP Tesorería" })).toBeInTheDocument()
     expect(screen.getByRole("banner")).toHaveClass("sm:h-20")
     expect(screen.getByRole("button", { name: "Dashboard" })).toHaveClass(
       "h-11",
@@ -120,5 +122,35 @@ describe("DashboardLayout", () => {
 
     await user.click(screen.getByRole("button", { name: "Notificaciones" }))
     expect(screen.getByText("Todo al día. No hay alertas pendientes.")).toBeVisible()
+  })
+})
+
+describe("LanguageSwitcher", () => {
+  it("creates one control per injected locale and reports the selection", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(<LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={onValueChange} />)
+
+    expect(screen.getByRole("radio", { name: "ES" })).toHaveAttribute("data-state", "on")
+    await user.click(screen.getByRole("radio", { name: "EN" }))
+
+    expect(onValueChange).toHaveBeenCalledWith("en")
+    expect(screen.getByRole("radio", { name: "EN" })).toHaveAttribute("data-state", "on")
+  })
+
+  it("syncs and writes the legacy Google Translate cookie when enabled", async () => {
+    const user = userEvent.setup()
+    document.cookie = "googtrans=/es/en; path=/"
+
+    render(
+      <LanguageSwitcher languages={["es", "en", "qu"]} googleTranslate={{ loadScript: false, reload: false }} />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole("radio", { name: "EN" })).toHaveAttribute("data-state", "on")
+    })
+
+    await user.click(screen.getByRole("radio", { name: "QU" }))
+    expect(document.cookie).toContain("googtrans=/es/qu")
   })
 })

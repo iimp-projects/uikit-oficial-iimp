@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Bell, SignOut } from "@phosphor-icons/react"
 import { cn } from "../../lib/utils"
+import logoIimp from "./assets/logo-iimp.png"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
@@ -75,6 +76,8 @@ type DashboardHeaderProps = Omit<React.ComponentProps<"header">, "children"> & {
   navigation?: React.ReactNode
   /** Runtime status shown before notifications and actions. */
   status?: React.ReactNode
+  /** Locale control shown immediately before notifications. Prefer LanguageSwitcher. */
+  languageSwitcher?: React.ReactNode
   /** Notification control. Prefer DashboardNotifications. */
   notifications?: React.ReactNode
   /** Page-level actions aligned to the end. */
@@ -84,8 +87,12 @@ type DashboardHeaderProps = Omit<React.ComponentProps<"header">, "children"> & {
 }
 
 type DashboardSidebarBrandProps = Omit<React.ComponentProps<typeof SidebarHeader>, "children"> & {
-  /** Product or module icon. */
-  icon: React.ReactNode
+  /** Official brand image. Defaults to the IIMP logo bundled with the UI Kit. */
+  logoSrc?: string
+  /** Accessible text for logoSrc. Defaults to the title text when it is a string. */
+  logoAlt?: string
+  /** @deprecated Use the default logo or logoSrc. Kept only for backwards compatibility. */
+  icon?: React.ReactNode
   title: React.ReactNode
   description?: React.ReactNode
 }
@@ -156,6 +163,7 @@ function DashboardLayout({
 function DashboardHeader({
   navigation,
   status,
+  languageSwitcher,
   notifications,
   actions,
   sidebarToggleLabel = "Mostrar u ocultar menú",
@@ -180,9 +188,10 @@ function DashboardHeader({
           </>
         ) : null}
       </div>
-      {status || notifications || actions ? (
+      {status || languageSwitcher || notifications || actions ? (
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {status}
+          {languageSwitcher}
           {notifications}
           {actions}
         </div>
@@ -193,6 +202,8 @@ function DashboardHeader({
 
 /** Sidebar brand block whose bottom border aligns with DashboardHeader on desktop. */
 function DashboardSidebarBrand({
+  logoSrc = logoIimp,
+  logoAlt,
   icon,
   title,
   description,
@@ -209,8 +220,14 @@ function DashboardSidebarBrand({
       {...props}
     >
       <div className="flex w-full items-center gap-3 group-data-[collapsible=icon]:justify-center">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-sidebar-border bg-sidebar-accent text-sidebar-foreground group-data-[collapsible=icon]:size-10">
-          {icon}
+        <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-sidebar-border bg-background group-data-[collapsible=icon]:size-10">
+          {icon ?? (
+            <img
+              src={logoSrc}
+              alt={logoAlt ?? (typeof title === "string" ? title : "Logo institucional")}
+              className="size-full object-contain"
+            />
+          )}
         </div>
         <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
           <span className="truncate font-semibold text-sidebar-foreground">{title}</span>

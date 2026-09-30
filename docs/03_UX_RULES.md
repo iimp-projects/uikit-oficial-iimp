@@ -173,9 +173,11 @@ Reglas:
 - construir la navegación con los primitives `Sidebar*` oficiales;
 - usar `Sidebar collapsible="offcanvas"`; al cerrar, el sidebar sale completamente hacia la izquierda y el main recupera todo el ancho;
 - usar `DashboardSidebarBrand` para marca/título/subtítulo y alinear su divisor con `DashboardHeader`;
+- `DashboardSidebarBrand` muestra el logo PNG institucional en un recuadro blanco por defecto; para otra marca autorizada pasar `logoSrc` y `logoAlt`, no un icono por sistema;
 - usar `DashboardSidebarUser` para nombre, email, avatar y salida; recibe `onSignOut` o `signOutAction` de la app;
 - usar `DashboardHeader` para obtener `SidebarTrigger`, separación y distribución responsive estándar;
 - usar `DashboardNotifications` para campana y Popover; la lista y conteo siguen perteneciendo a la app;
+- usar `LanguageSwitcher` en el slot `languageSwitcher` si la app ofrece idiomas; queda a la izquierda de la campana;
 - pasar breadcrumb/título en `navigation` y acciones de página en `actions`;
 - usar `sidebarTone="primary" | "secondary" | "base"`; el valor por defecto es `primary`;
 - mantener routing, estado activo, usuario y logout en la app consumidora;
@@ -189,6 +191,7 @@ Receta mínima:
 import {
   DashboardHeader,
   DashboardLayout,
+  LanguageSwitcher,
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
@@ -203,7 +206,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       sidebar={
         <Sidebar collapsible="offcanvas">
           <DashboardSidebarBrand
-            icon={<ProductIcon />}
             title="Nombre del sistema"
             description="Nombre del módulo"
           />
@@ -219,6 +221,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <DashboardHeader
           navigation={<AppBreadcrumb />}
           status={<SystemStatus />}
+          languageSwitcher={<LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={changeLocale} />}
           notifications={<DashboardNotifications count={alerts.length}>{/* lista */}</DashboardNotifications>}
           actions={<PageActions />}
         />
@@ -239,6 +242,8 @@ Cambiar el color del sidebar no requiere otra implementación:
 ```
 
 Ver los tres tonos en Storybook: **Patterns → DashboardLayout**.
+
+`LanguageSwitcher` no traduce por sí mismo: emite el ISO seleccionado a `onValueChange` para el i18n de la aplicación. Para sistemas existentes puede usar `googleTranslate={{ sourceLanguage: "es" }}`; consulta la implementación, privacidad y retiro programado del servicio en [`17_LANGUAGE_SWITCHER.md`](./17_LANGUAGE_SWITCHER.md).
 
 ## Dialogs
 

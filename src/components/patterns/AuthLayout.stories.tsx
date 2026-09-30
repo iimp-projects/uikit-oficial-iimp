@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { AuthLayout } from "./AuthLayout"
 import { GoogleSignInButton } from "../ui/google-sign-in-button"
 import { Card, CardContent, CardHeader } from "../ui/card"
-// Demo-only asset: lives under src/components/patterns/assets/, never referenced from
-// src/index.ts, so it never ships in the published package (tsup only bundles the index.ts entry).
+// Shared institutional asset. DashboardSidebarBrand references it from the public entry, so it is
+// emitted into dist and available to consumers of the published package.
 import logoIimp from "./assets/logo-iimp.png"
 
 const meta: Meta<typeof AuthLayout> = {

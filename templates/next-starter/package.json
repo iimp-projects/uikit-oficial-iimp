@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "next": "16.3.8",
-    "official-uikit-iimp": "0.6.0",
+    "official-uikit-iimp": "0.7.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5"

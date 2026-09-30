@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
-  Bank,
   Certificate,
   Files,
   PaperPlaneTilt,
@@ -37,6 +36,7 @@ import {
   DashboardSidebarUser,
   type DashboardSidebarTone,
 } from "./DashboardLayout"
+import { LanguageSwitcher } from "./LanguageSwitcher"
 
 const meta: Meta<typeof DashboardLayout> = {
   title: "Patterns/DashboardLayout",
@@ -67,7 +67,6 @@ function DemoSidebar() {
   return (
     <Sidebar collapsible="offcanvas">
       <DashboardSidebarBrand
-        icon={<Bank aria-hidden="true" weight="bold" />}
         title="IIMP Tesorería"
         description="Gestión de Detracciones"
       />
@@ -127,6 +126,7 @@ function DashboardDemo({ sidebarTone }: { sidebarTone: DashboardSidebarTone }) {
               Sistema operativo
             </Badge>
           }
+          languageSwitcher={<LanguageSwitcher languages={["es", "en", "qu"]} />}
           notifications={<DashboardNotifications />}
           actions={
             <Button aria-label="Cargar PDF">
