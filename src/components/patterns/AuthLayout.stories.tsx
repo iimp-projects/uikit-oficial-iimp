@@ -11,6 +11,12 @@ const meta: Meta<typeof AuthLayout> = {
   component: AuthLayout,
   tags: ["autodocs"],
   parameters: { layout: "fullscreen" },
+  argTypes: {
+    brandTone: {
+      control: "inline-radio",
+      options: ["primary", "secondary"],
+    },
+  },
 }
 export default meta
 
@@ -26,8 +32,10 @@ const cardDescription = "Ingresa utilizando tu correo corporativo (@iimp.org.pe)
 // not a fixed component, since that copy differs per project. No auth is wired: GoogleSignInButton
 // is a plain button; give it your own onClick/formAction (NextAuth, a Server Action, Firebase…).
 export const Default: Story = {
-  render: () => (
+  args: { brandTone: "primary" },
+  render: ({ brandTone = "primary" }) => (
     <AuthLayout
+      brandTone={brandTone}
       systemName="Nombre del sistema"
       systemTagline="Del PDF masivo de SUNAT a la constancia individual, en minutos"
       eyebrow="Módulo o producto"
@@ -63,4 +71,9 @@ export const Default: Story = {
       </Card>
     </AuthLayout>
   ),
+}
+
+export const SecondaryBrandPanel: Story = {
+  ...Default,
+  args: { brandTone: "secondary" },
 }

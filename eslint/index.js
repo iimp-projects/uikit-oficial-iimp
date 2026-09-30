@@ -40,11 +40,26 @@ const bareBorderRule = {
     "Bordes sin color se pintan en negro. Usa <Separator /> para líneas divisorias, o añade `border-border` (ej. `border-b border-border`).",
 }
 
+const officialLayoutImportRules = [
+  {
+    selector:
+      "ImportDeclaration:not([source.value='official-uikit-iimp']) > ImportSpecifier[imported.name=/^(AuthLayout|DashboardLayout|DashboardHeader|DashboardSidebarBrand|DashboardSidebarUser|DashboardNotifications)$/]",
+    message:
+      'No importes copias locales de los patterns AuthLayout o Dashboard*. Usa el pattern oficial desde "official-uikit-iimp".',
+  },
+  {
+    selector:
+      "ImportDeclaration:not([source.value='official-uikit-iimp']) > ImportDefaultSpecifier[local.name=/^(AuthLayout|DashboardLayout|DashboardHeader|DashboardSidebarBrand|DashboardSidebarUser|DashboardNotifications)$/]",
+    message:
+      'No importes copias locales de los patterns AuthLayout o Dashboard*. Usa el pattern oficial desde "official-uikit-iimp".',
+  },
+]
+
 const iimpGuardrails = [
   {
     files: ["**/*.{ts,tsx,js,jsx}"],
     rules: {
-      "no-restricted-syntax": ["error", ...nativeElementRules, bareBorderRule],
+      "no-restricted-syntax": ["error", ...nativeElementRules, bareBorderRule, ...officialLayoutImportRules],
       "no-restricted-imports": [
         "error",
         {

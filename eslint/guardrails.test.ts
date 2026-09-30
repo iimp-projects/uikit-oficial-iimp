@@ -44,4 +44,18 @@ describe("iimp guardrails", () => {
     const msgs = await lint('import { Dialog } from "radix-ui"\nexport const A = Dialog')
     expect(msgs[0]).toContain("Radix")
   })
+  it("flags local copies of official layout patterns", async () => {
+    const msgs = await lint(
+      'import { AuthLayout, DashboardLayout, DashboardHeader, DashboardSidebarBrand, DashboardSidebarUser, DashboardNotifications } from "@/components/layouts"\nexport const A = () => null'
+    )
+    expect(msgs).toHaveLength(6)
+    expect(msgs.every((message) => message.includes("official-uikit-iimp"))).toBe(true)
+  })
+  it("allows official layout pattern imports", async () => {
+    expect(
+      await lint(
+        'import { AuthLayout, DashboardLayout, DashboardHeader, DashboardSidebarBrand, DashboardSidebarUser, DashboardNotifications } from "official-uikit-iimp"\nexport const A = () => null'
+      )
+    ).toEqual([])
+  })
 })

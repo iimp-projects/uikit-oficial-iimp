@@ -89,12 +89,26 @@ import {
   FormDialog,
   ConfirmDialog,
   DataTable,
+  AuthLayout,
+  DashboardLayout,
+  DashboardHeader,
+  DashboardSidebarBrand,
+  DashboardSidebarUser,
+  DashboardNotifications,
 } from "official-uikit-iimp"
 ```
 
 ## Login / Auth
 
-No armar la pantalla de login a mano. Usar `AuthLayout` (shell de dos columnas: panel de marca + tu propia card de login) y `GoogleSignInButton` (botón con el logo oficial de Google) si el proyecto usa Google. Ninguno de los dos implementa autenticación: reciben la lógica real (`onClick`/`formAction`) del proyecto. Receta completa en `docs/03_UX_RULES.md` → "AuthLayout".
+No armar la pantalla de login a mano. Usar `AuthLayout` (shell de dos columnas: panel de marca + tu propia card de login) y `GoogleSignInButton` (botón con el logo oficial de Google) si el proyecto usa Google. `brandTone="primary" | "secondary"` cambia el panel mediante tokens semánticos; no recrear el layout para cambiar color. Ninguno implementa autenticación: reciben la lógica real (`onClick`/`formAction`) del proyecto. Receta completa en `docs/03_UX_RULES.md` → "AuthLayout".
+
+## Dashboard / App shell
+
+No armar el shell autenticado a mano. Usar `DashboardLayout` para componer `Sidebar`, `DashboardHeader` y el contenido de la ruta. Para el shell estándar usar también `DashboardSidebarBrand`, `DashboardSidebarUser` y `DashboardNotifications`. La app conserva navegación, routing, permisos, sesión y acciones; los patterns conservan estructura responsive, landmark principal, gutters, alineación visual y controles comunes.
+
+`sidebarTone="primary" | "secondary" | "base"` cambia la familia de tokens del sidebar. El valor por defecto es `primary`. No hardcodear colores ni duplicar `AppLayout`/`DashboardLayout` dentro de cada proyecto. Receta completa en `docs/03_UX_RULES.md` → "DashboardLayout".
+
+El sidebar autenticado usa `collapsible="offcanvas"`: al cerrarlo desaparece completamente hacia la izquierda y `SidebarInset`/main recupera todo el ancho. No dejar una franja de iconos. `DashboardSidebarBrand` y `DashboardHeader` comparten altura desktop; sus divisores inferiores deben coincidir. `SidebarMenuButton` mantiene target de 44px y radius de 10px mediante tokens. El footer de usuario y la campana no implementan logout ni consultas: reciben la lógica y datos reales de la app.
 
 ## className
 
@@ -128,12 +142,18 @@ Los componentes consumen tokens; nunca reciben conocimiento de la vertical.
 
 ## Buttons
 
-- default → acción principal
-- secondary → acción secundaria con énfasis
-- outline → cancelar/volver/neutra
-- ghost → baja jerarquía
-- destructive → irreversible o peligrosa
-- link → navegación/acción tipo enlace
+Las variantes comunican jerarquía e intención, no colores corporativos.
+
+- `default` es el nombre técnico de Primary → única acción dominante del contexto visual.
+- `secondary` → alternativa importante subordinada; nunca usarla automáticamente por ser el segundo botón.
+- `outline` → acción secundaria visible que no debe competir con Primary.
+- `ghost` → acción auxiliar, contextual o de baja jerarquía.
+- `destructive` → intención destructiva, irreversible o de alto impacto; puede dominar una confirmación destructiva.
+- `link` → navegación/acción tipo enlace.
+
+Un contexto visual es un dialog, formulario, card, sección funcional, wizard step o panel de acciones. Como regla general, debe haber como máximo un Primary dominante por contexto; una página puede tener varios si pertenecen a contextos independientes.
+
+Para `Cancelar`/`Cerrar`, usar `outline` si la salida segura necesita visibilidad y `ghost` si es auxiliar. No decidir la variante solo por el texto. Antes de modificar una interfaz existente, señalar cualquier incumplimiento de jerarquía. Ver ejemplos y anti-patterns en `docs/03_UX_RULES.md` → “Jerarquía de acciones”.
 
 ## Dialogs
 

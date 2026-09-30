@@ -126,6 +126,10 @@ Ejemplos:
 - FormField → pattern
 - Empty → primitive
 - EmptyState con acción/contexto IIMP → puede ser pattern si aporta composición real
+- Sidebar → primitive
+- DashboardLayout + DashboardHeader + DashboardSidebarBrand + DashboardSidebarUser + DashboardNotifications → patterns de shell autenticado
+- Card + layout responsive → primitives/composición
+- AuthLayout → pattern de shell de autenticación
 
 ## Button sizes propuestos
 
@@ -135,6 +139,21 @@ default 44px
 lg      48px
 icon    target mínimo 44x44px
 ```
+
+## Button variants
+
+La API actual soporta `default`, `secondary`, `outline`, `ghost`, `destructive` y `link`. `default` es el nombre técnico de la variante Primary; no se agrega un alias `primary` para mantener compatibilidad con shadcn/ui.
+
+Las variantes se eligen por intención y jerarquía, no por color:
+
+- `default`: única acción dominante del contexto visual;
+- `secondary`: alternativa importante subordinada, no simplemente “el segundo botón”;
+- `outline`: acción secundaria visible que no compite con la dominante;
+- `ghost`: acción auxiliar o contextual de bajo énfasis;
+- `destructive`: intención destructiva o irreversible, incluso cuando sea la acción dominante de una confirmación;
+- `link`: navegación o acción con tratamiento de enlace.
+
+La regla completa, los ejemplos y los anti-patterns están en `03_UX_RULES.md` → “Jerarquía de acciones”.
 
 ## Form controls
 

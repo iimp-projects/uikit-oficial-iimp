@@ -58,6 +58,9 @@ No usar:
 Validar:
 - target sizes,
 - hierarchy,
+- una sola acción Primary dominante por contexto visual,
+- `secondary` solo para una alternativa importante, no por ser el segundo botón,
+- `destructive` solo cuando la intención sea destructiva o irreversible,
 - focus,
 - states,
 - responsive,
@@ -89,6 +92,11 @@ Indicar:
 ```text
 "Crear botón"
   → Button primitive
+  → elegir variant por intención y jerarquía, no por color
+
+"Dos acciones en un formulario"
+  → identificar primero la acción dominante
+  → no asumir Primary + Secondary; evaluar Outline o Ghost
 
 "Editar usuario en modal"
   → FormDialog + FormField + controls
@@ -105,6 +113,16 @@ Indicar:
 "Input con label/error"
   → FormField + Input
 
+"Pantalla de login"
+  → AuthLayout
+  → brandTone para primary/secondary
+
+"Aplicación autenticada con sidebar y header"
+  → DashboardLayout + DashboardHeader
+  → DashboardSidebarBrand + DashboardSidebarUser + DashboardNotifications
+  → Sidebar primitives con collapsible="offcanvas"
+  → sidebarTone para primary/secondary/base
+
 "Pantalla diseñada por Stitch"
   → mapear diseño al sistema; NO copiar valores arbitrarios
 ```
@@ -118,3 +136,5 @@ Si el requerimiento visual no puede representarse con el Design System:
 3. proponer extensión de `official-uikit-iimp`;
 4. implementar extensión primero;
 5. usarla después.
+
+Al revisar una interfaz existente, reportar primero cualquier incumplimiento de la jerarquía de acciones definida en `docs/03_UX_RULES.md`; no cambiarlo silenciosamente.

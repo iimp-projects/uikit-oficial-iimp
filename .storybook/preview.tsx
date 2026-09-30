@@ -20,26 +20,26 @@ const preview: Preview = {
     },
   },
   globalTypes: {
-    primary: {
+    themePrimary: {
       description: "Theme Playground — color primary",
       toolbar: {
         title: "Primary",
         icon: "paintbrush",
         items: [
-          { value: "#092042", title: "IIMP (default)" },
+          { value: "#c09153/oklch(0.985 0 0)", title: "IIMP (default)" },
           { value: "#1b4332", title: "Verde" },
           { value: "#7c2d12", title: "Terracota" },
         ],
         dynamicTitle: true,
       },
     },
-    secondary: {
+    themeSecondary: {
       description: "Theme Playground — color secondary",
       toolbar: {
         title: "Secondary",
         icon: "paintbrush",
         items: [
-          { value: "#f2e8dd/#c09153", title: "IIMP (default)" },
+          { value: "#092042/oklch(0.985 0 0)", title: "IIMP (default)" },
           { value: "#e9c46a", title: "Dorado claro" },
           { value: "#94a3b8", title: "Gris azulado" },
         ],
@@ -61,17 +61,18 @@ const preview: Preview = {
     },
   },
   initialGlobals: {
-    primary: "#092042",
-    secondary: "#f2e8dd/#c09153",
+    themePrimary: "#c09153/oklch(0.985 0 0)",
+    themeSecondary: "#092042/oklch(0.985 0 0)",
     radius: "0.625rem",
   },
   decorators: [
     (Story, context) => (
       <IimpThemeProvider
         theme={{
-          primary: context.globals.primary,
-          secondary: String(context.globals.secondary).split("/")[0],
-          secondaryForeground: String(context.globals.secondary).split("/")[1],
+          primary: String(context.globals.themePrimary).split("/")[0],
+          primaryForeground: String(context.globals.themePrimary).split("/")[1],
+          secondary: String(context.globals.themeSecondary).split("/")[0],
+          secondaryForeground: String(context.globals.themeSecondary).split("/")[1],
           radius: context.globals.radius,
         }}
       >

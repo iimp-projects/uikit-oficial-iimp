@@ -80,7 +80,8 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 | `DestructiveDialog` | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar". |
 | `FormDialog` | Formulario dentro de un diálogo, con botones cancelar y enviar. |
 | `InfoDialog` | Mostrar información sin acción. |
-| `AuthLayout` | Shell de dos columnas para login (panel de marca + tu propia card). No implementa autenticación; úsalo con `GoogleSignInButton`. Ver `docs/03_UX_RULES.md`. |
+| `AuthLayout` | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación. |
+| Familia `Dashboard*` | Shell autenticado con sidebar responsive, marca, usuario/logout, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
 
 ### Primitives
 
@@ -91,6 +92,42 @@ Todos se importan de `official-uikit-iimp`. Los tipos incluyen la documentación
 > **`Select` vs. `Combobox`:** usa `Select` solo para listas cortas y fijas (hasta ~8-10 opciones). Para listas largas, que vienen de una API, o donde el usuario probablemente busque escribiendo, usa `Combobox` — trae buscador integrado. Ver `docs/03_UX_RULES.md`.
 
 ## 3. Recetas
+
+### Shell autenticado
+
+```tsx
+import {
+  DashboardHeader,
+  DashboardLayout,
+  DashboardNotifications,
+  DashboardSidebarBrand,
+  DashboardSidebarUser,
+  Sidebar,
+  SidebarContent,
+} from "official-uikit-iimp"
+
+<DashboardLayout
+  sidebarTone="primary"
+  sidebar={
+    <Sidebar collapsible="offcanvas">
+      <DashboardSidebarBrand icon={<ProductIcon />} title="Sistema IIMP" />
+      <SidebarContent><AppNavigation /></SidebarContent>
+      <DashboardSidebarUser name={user.name} email={user.email} signOutAction={logout} />
+    </Sidebar>
+  }
+  header={
+    <DashboardHeader
+      navigation={<AppBreadcrumb />}
+      notifications={<DashboardNotifications count={alerts.length} />}
+      actions={<PageActions />}
+    />
+  }
+>
+  {children}
+</DashboardLayout>
+```
+
+`AppSidebar` compone los primitives `Sidebar*` oficiales. Routing, permisos, sesión, navegación y logout permanecen en la app. Ver receta completa en `docs/03_UX_RULES.md`.
 
 ### Formulario
 
@@ -245,7 +282,13 @@ Los componentes (Input, Select, Card, Popover…) traen **fondo blanco sólido**
 
 Para separar secciones usa `<Separator />` o la clase `border-border` (línea fina de 1px). Si en tu app escribes `border-b` a secas, Tailwind lo pinta con el color del texto (negro). Añade siempre `border-border`.
 
-## 5. Guardrails de ESLint (recomendado)
+## 5. Jerarquía de botones
+
+Las variantes representan intención y jerarquía, no colores corporativos. `variant="default"` es la acción Primary dominante del contexto; `secondary` es una alternativa importante subordinada, no “el segundo botón”; `outline` mantiene visible una acción menor; `ghost` sirve para acciones auxiliares; y `destructive` se reserva para consecuencias destructivas o irreversibles.
+
+Como regla general, usa como máximo un Primary dominante por dialog, formulario, card, sección funcional, paso de wizard o panel de acciones. Una página puede tener varios si pertenecen a contextos independientes. Consulta ejemplos correctos, incorrectos y el criterio para `Cancelar`/`Cerrar` en `docs/03_UX_RULES.md` → “Jerarquía de acciones”.
+
+## 6. Guardrails de ESLint (recomendado)
 
 ```js
 // eslint.config.js de la app consumidora
@@ -270,7 +313,7 @@ El maquetado se hace **siempre con el componente equivalente del kit** (shadcn/u
 | `<dialog>` | `Dialog`, `ConfirmDialog`, `FormDialog` |
 | `<details>` | `Accordion` / `Collapsible` |
 
-Además bloquea `className` con bordes sin color (`border-b` a secas se pinta negro; usa `border-border` o `Separator`) y los imports directos de Radix, Base UI, shadcn o rutas internas del paquete.
+Además bloquea `className` con bordes sin color (`border-b` a secas se pinta negro; usa `border-border` o `Separator`), imports directos de Radix/Base UI/shadcn, rutas internas del paquete e imports de copias locales de `AuthLayout` o la familia `Dashboard*` oficial.
 
 ## Contribuir
 

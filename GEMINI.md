@@ -18,5 +18,7 @@ Al implementar una pantalla:
 3. usar tokens semánticos;
 4. conservar layout responsive;
 5. reportar cualquier necesidad no cubierta por el Design System antes de crear un patrón nuevo.
+6. asignar variantes de `Button` por jerarquía semántica según `AGENTS.md`: no por color ni por posición; señalar incumplimientos existentes antes de cambiarlos.
+7. usar `AuthLayout` para login y la familia `DashboardLayout`/`DashboardHeader`/`DashboardSidebarBrand`/`DashboardSidebarUser`/`DashboardNotifications` para el shell autenticado; cambiar sus superficies con props semánticas, no con copias locales.
 
 No generar HTML controls paralelos ni estilos de marca hardcodeados.

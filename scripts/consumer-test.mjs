@@ -33,7 +33,7 @@ writeFileSync(
 writeFileSync(
   join(app, "main.tsx"),
   `import { renderToString } from "react-dom/server"
-import { Button, IimpThemeProvider, ConfirmDialog, FormField, Input } from "official-uikit-iimp"
+import { AuthLayout, Button, DashboardHeader, DashboardLayout, DashboardNotifications, DashboardSidebarBrand, DashboardSidebarUser, IimpThemeProvider, ConfirmDialog, FormField, Input } from "official-uikit-iimp"
 import { iimpGuardrails } from "official-uikit-iimp/eslint"
 
 const html = renderToString(
@@ -45,6 +45,12 @@ const html = renderToString(
 if (!html.includes("Guardar") || !html.includes("--secondary-foreground")) throw new Error("render contract broken")
 if (!Array.isArray(iimpGuardrails)) throw new Error("eslint guardrails export broken")
 void ConfirmDialog
+void AuthLayout
+void DashboardHeader
+void DashboardLayout
+void DashboardNotifications
+void DashboardSidebarBrand
+void DashboardSidebarUser
 console.log("consumer contract OK")
 `
 )
