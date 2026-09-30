@@ -225,7 +225,7 @@ function DashboardSidebarBrand({
             <img
               src={logoSrc}
               alt={logoAlt ?? (typeof title === "string" ? title : "Logo institucional")}
-              className="size-full object-contain"
+              className="max-w-7 object-contain"
             />
           )}
         </div>
