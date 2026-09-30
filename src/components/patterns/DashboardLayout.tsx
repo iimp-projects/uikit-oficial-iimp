@@ -3,6 +3,7 @@ import { Bell, SignOut } from "@phosphor-icons/react"
 import { cn } from "../../lib/utils"
 import logoIimp from "./assets/logo-iimp.png"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Separator } from "../ui/separator"
@@ -118,6 +119,11 @@ type DashboardNotificationsProps = {
   className?: string
 }
 
+type DashboardVersionProps = Omit<React.ComponentProps<typeof Badge>, "children"> & {
+  /** Application version, for example `0.0.1` or `v0.0.1`. */
+  version: string
+}
+
 /**
  * Authenticated application shell. Owns SidebarProvider, main landmark, responsive content
  * gutters, and semantic sidebar colors. The app supplies navigation, header content, routing,
@@ -225,7 +231,7 @@ function DashboardSidebarBrand({
             <img
               src={logoSrc}
               alt={logoAlt ?? (typeof title === "string" ? title : "Logo institucional")}
-              className="max-w-7 object-contain"
+              className="size-full object-contain"
             />
           )}
         </div>
@@ -337,12 +343,24 @@ function DashboardNotifications({
   )
 }
 
+/** Compact app version indicator for the DashboardHeader status slot. */
+function DashboardVersion({ version, className, ...props }: DashboardVersionProps) {
+  const label = version.startsWith("v") ? version : `v${version}`
+
+  return (
+    <Badge variant="outline" className={cn("font-mono tabular-nums", className)} {...props}>
+      {label}
+    </Badge>
+  )
+}
+
 export {
   DashboardHeader,
   DashboardLayout,
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
+  DashboardVersion,
 }
 export type {
   DashboardHeaderProps,
@@ -351,4 +369,5 @@ export type {
   DashboardSidebarBrandProps,
   DashboardSidebarTone,
   DashboardSidebarUserProps,
+  DashboardVersionProps,
 }

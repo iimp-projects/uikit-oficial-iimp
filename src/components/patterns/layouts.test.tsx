@@ -9,6 +9,7 @@ import {
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
+  DashboardVersion,
 } from "./DashboardLayout"
 import { LanguageSwitcher } from "./LanguageSwitcher"
 
@@ -123,19 +124,35 @@ describe("DashboardLayout", () => {
     await user.click(screen.getByRole("button", { name: "Notificaciones" }))
     expect(screen.getByText("Todo al día. No hay alertas pendientes.")).toBeVisible()
   })
+
+  it("formats the dashboard version consistently", () => {
+    render(<DashboardVersion version="0.0.1" />)
+
+    expect(screen.getByText("v0.0.1")).toBeInTheDocument()
+  })
 })
 
 describe("LanguageSwitcher", () => {
   it("creates one control per injected locale and reports the selection", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()
-    render(<LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={onValueChange} />)
+    render(
+      <LanguageSwitcher
+        languages={[
+          { code: "es", ariaLabel: "Español" },
+          { code: "en", ariaLabel: "English" },
+          { code: "qu", ariaLabel: "Quechua" },
+        ]}
+        onValueChange={onValueChange}
+      />
+    )
 
-    expect(screen.getByRole("radio", { name: "ES" })).toHaveAttribute("data-state", "on")
-    await user.click(screen.getByRole("radio", { name: "EN" }))
+    await user.click(screen.getByRole("button", { name: "Seleccionar idioma: ES" }))
+    expect(screen.getByRole("menuitemradio", { name: "Español" })).toHaveAttribute("data-state", "checked")
+    await user.click(screen.getByRole("menuitemradio", { name: "English" }))
 
     expect(onValueChange).toHaveBeenCalledWith("en")
-    expect(screen.getByRole("radio", { name: "EN" })).toHaveAttribute("data-state", "on")
+    expect(screen.getByRole("button", { name: "Seleccionar idioma: EN" })).toBeInTheDocument()
   })
 
   it("syncs and writes the legacy Google Translate cookie when enabled", async () => {
@@ -143,14 +160,22 @@ describe("LanguageSwitcher", () => {
     document.cookie = "googtrans=/es/en; path=/"
 
     render(
-      <LanguageSwitcher languages={["es", "en", "qu"]} googleTranslate={{ loadScript: false, reload: false }} />
+      <LanguageSwitcher
+        languages={[
+          { code: "es", ariaLabel: "Español" },
+          { code: "en", ariaLabel: "English" },
+          { code: "qu", ariaLabel: "Quechua" },
+        ]}
+        googleTranslate={{ loadScript: false, reload: false }}
+      />
     )
 
     await waitFor(() => {
-      expect(screen.getByRole("radio", { name: "EN" })).toHaveAttribute("data-state", "on")
+      expect(screen.getByRole("button", { name: "Seleccionar idioma: EN" })).toBeInTheDocument()
     })
 
-    await user.click(screen.getByRole("radio", { name: "QU" }))
+    await user.click(screen.getByRole("button", { name: "Seleccionar idioma: EN" }))
+    await user.click(screen.getByRole("menuitemradio", { name: "Quechua" }))
     expect(document.cookie).toContain("googtrans=/es/qu")
   })
 })

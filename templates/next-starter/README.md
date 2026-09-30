@@ -61,6 +61,18 @@ Tailwind se utiliza principalmente para layout. La identidad visual proviene de 
 
 `AuthLayout` y `DashboardLayout` son shells visuales. La aplicación pasa su contenido, acciones, navegación y autenticación mediante props/children; actualizar el paquete no sobrescribe ese código.
 
+El header puede mostrar la versión pública de la aplicación con `DashboardVersion`:
+
+```tsx
+import { DashboardHeader, DashboardVersion } from "official-uikit-iimp"
+import { appVersion } from "@/lib/project"
+
+;<DashboardHeader
+  navigation={<AppBreadcrumb />}
+  status={<DashboardVersion version={appVersion} />}
+/>
+```
+
 ## Skills
 
 ```bash
@@ -82,3 +94,14 @@ No cambies todas las dependencias a `latest` directamente en una rama funcional.
 ## Variables de entorno
 
 Copia `.env.example` a `.env.local`. Solo variables deliberadamente públicas pueden usar el prefijo `NEXT_PUBLIC_`. Valida datos externos en runtime y mantén secretos dentro de módulos server-only.
+
+`NEXT_PUBLIC_APP_VERSION` es la versión que se muestra en el dashboard. Si no existe `.env.local`, el starter usa automáticamente la versión de `package.json`; en ambos casos inicia en `v0.0.1` y se mantiene sincronizada con `.env.example`:
+
+```bash
+npm run version:check      # falla si package.json y .env.example difieren
+npm run release:patch      # 0.0.1 → 0.0.2
+npm run release:minor      # 0.0.1 → 0.1.0
+npm run release:major      # 0.0.1 → 1.0.0
+```
+
+No se incrementa la versión en cada guardado o commit: eso genera versiones inútiles. El incremento ocurre al preparar una entrega y `npm version` actualiza el número, genera el tag Git y ejecuta el script que sincroniza `NEXT_PUBLIC_APP_VERSION`. El quality gate no permite un desajuste.

@@ -198,7 +198,7 @@ DashboardLayout
 │  ├─ navegación (primitives Sidebar*)
 │  └─ DashboardSidebarUser
 └─ Main
-   ├─ DashboardHeader + LanguageSwitcher + DashboardNotifications
+   ├─ DashboardHeader + DashboardVersion + LanguageSwitcher + DashboardNotifications
    └─ Route content
 ```
 
@@ -211,6 +211,7 @@ Responsabilidad del pattern:
 - footer estándar de identidad y salida;
 - campana accesible con Popover de notificaciones;
 - selector de idioma opcional inmediatamente antes de la campana;
+- indicador de versión pública en el slot de estado del header;
 - logo institucional PNG por defecto en el bloque de marca;
 - cierre desktop tipo off-canvas: el sidebar desaparece y el main recupera todo el ancho;
 - gutters y ancho seguro del contenido;

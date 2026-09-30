@@ -32,11 +32,11 @@ El starter incluye Next.js App Router, Tailwind v4, TypeScript estricto, ESLint 
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.7.0 --save-exact
+npm install official-uikit-iimp@0.8.0 --save-exact
 npm run check
 ```
 
-La versión 0.7 añade `LanguageSwitcher` y hace que `DashboardSidebarBrand` muestre el logo institucional por defecto. El prop anterior `icon` continúa por compatibilidad, pero está deprecado; reemplázalo gradualmente por `logoSrc`/`logoAlt` solo cuando realmente exista otra marca autorizada.
+La versión 0.8 añade `DashboardVersion`, mejora la truncación de breadcrumbs y convierte `LanguageSwitcher` en un menú accesible. `DashboardSidebarBrand` muestra el logo institucional por defecto. El prop anterior `icon` continúa por compatibilidad, pero está deprecado; reemplázalo gradualmente por `logoSrc`/`logoAlt` solo cuando realmente exista otra marca autorizada.
 
 ### Proyectos existentes: CLI de adopción
 
@@ -120,8 +120,8 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 | `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                              |
 | `InfoDialog`         | Mostrar información sin acción.                                                                                                                              |
 | `AuthLayout`         | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación.                                  |
-| Familia `Dashboard*` | Shell autenticado con sidebar responsive, logo institucional, usuario/logout, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
-| `LanguageSwitcher` | Selector compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate. |
+| Familia `Dashboard*` | Shell autenticado con sidebar responsive, logo institucional, usuario/logout, versión, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
+| `LanguageSwitcher` | Menú compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate. |
 
 ### Primitives
 
@@ -143,6 +143,7 @@ import {
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
+  DashboardVersion,
   Sidebar,
   SidebarContent,
 } from "official-uikit-iimp";
@@ -165,6 +166,7 @@ import {
   header={
     <DashboardHeader
       navigation={<AppBreadcrumb />}
+      status={<DashboardVersion version={appVersion} />}
       languageSwitcher={
         <LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={changeLocale} />
       }
@@ -183,7 +185,7 @@ import {
 
 ### Idioma y Google Translate
 
-`LanguageSwitcher` crea los botones desde los códigos que recibe y se ubica inmediatamente a la izquierda de la campana cuando se pasa mediante `DashboardHeader.languageSwitcher`. Por defecto solo selecciona y emite `onValueChange`: es la integración recomendada con el proveedor i18n de la aplicación.
+`LanguageSwitcher` crea un menú accesible desde los códigos que recibe y se ubica inmediatamente a la izquierda de la campana cuando se pasa mediante `DashboardHeader.languageSwitcher`. Al seleccionar, actualiza su estado y emite `onValueChange`; la integración recomendada es conectarlo al proveedor i18n de la aplicación.
 
 Para una integración existente con Google Website Translator, activa su bridge de cookie:
 

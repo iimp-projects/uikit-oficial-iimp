@@ -8,7 +8,6 @@ import {
   Stack,
   UsersThree,
 } from "@phosphor-icons/react"
-import { Badge } from "../ui/badge"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -34,6 +33,7 @@ import {
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
+  DashboardVersion,
   type DashboardSidebarTone,
 } from "./DashboardLayout"
 import { LanguageSwitcher } from "./LanguageSwitcher"
@@ -107,7 +107,7 @@ function DashboardDemo({ sidebarTone }: { sidebarTone: DashboardSidebarTone }) {
       header={
         <DashboardHeader
           navigation={
-            <Breadcrumb className="hidden min-w-0 sm:flex">
+            <Breadcrumb className="hidden min-w-0 flex-1 sm:block">
               <BreadcrumbList>
                 <BreadcrumbItem>Tesorería</BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -117,15 +117,7 @@ function DashboardDemo({ sidebarTone }: { sidebarTone: DashboardSidebarTone }) {
               </BreadcrumbList>
             </Breadcrumb>
           }
-          status={
-            <Badge variant="success" className="hidden gap-2 md:inline-flex">
-              <span className="relative flex size-2" aria-hidden="true">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
-                <span className="relative inline-flex size-2 rounded-full bg-success" />
-              </span>
-              Sistema operativo
-            </Badge>
-          }
+          status={<DashboardVersion version="0.0.1" />}
           languageSwitcher={<LanguageSwitcher languages={["es", "en", "qu"]} />}
           notifications={<DashboardNotifications />}
           actions={

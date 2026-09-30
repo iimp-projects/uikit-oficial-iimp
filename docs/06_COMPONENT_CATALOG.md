@@ -127,7 +127,7 @@ Ejemplos:
 - Empty → primitive
 - EmptyState con acción/contexto IIMP → puede ser pattern si aporta composición real
 - Sidebar → primitive
-- DashboardLayout + DashboardHeader + DashboardSidebarBrand + DashboardSidebarUser + DashboardNotifications + LanguageSwitcher → patterns de shell autenticado e idioma
+- DashboardLayout + DashboardHeader + DashboardSidebarBrand + DashboardSidebarUser + DashboardNotifications + DashboardVersion + LanguageSwitcher → patterns de shell autenticado, versión e idioma
 - Card + layout responsive → primitives/composición
 - AuthLayout → pattern de shell de autenticación
 

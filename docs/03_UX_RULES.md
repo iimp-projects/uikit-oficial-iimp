@@ -176,6 +176,7 @@ Reglas:
 - `DashboardSidebarBrand` muestra el logo PNG institucional en un recuadro blanco por defecto; para otra marca autorizada pasar `logoSrc` y `logoAlt`, no un icono por sistema;
 - usar `DashboardSidebarUser` para nombre, email, avatar y salida; recibe `onSignOut` o `signOutAction` de la app;
 - usar `DashboardHeader` para obtener `SidebarTrigger`, separación y distribución responsive estándar;
+- usar `DashboardVersion` en `status` para mostrar la versión pública (`v0.0.1`), no mensajes operativos permanentes;
 - usar `DashboardNotifications` para campana y Popover; la lista y conteo siguen perteneciendo a la app;
 - usar `LanguageSwitcher` en el slot `languageSwitcher` si la app ofrece idiomas; queda a la izquierda de la campana;
 - pasar breadcrumb/título en `navigation` y acciones de página en `actions`;
@@ -195,6 +196,7 @@ import {
   DashboardNotifications,
   DashboardSidebarBrand,
   DashboardSidebarUser,
+  DashboardVersion,
   Sidebar,
   SidebarContent,
 } from "official-uikit-iimp"
@@ -220,7 +222,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       header={
         <DashboardHeader
           navigation={<AppBreadcrumb />}
-          status={<SystemStatus />}
+          status={<DashboardVersion version={appVersion} />}
           languageSwitcher={<LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={changeLocale} />}
           notifications={<DashboardNotifications count={alerts.length}>{/* lista */}</DashboardNotifications>}
           actions={<PageActions />}
@@ -243,7 +245,7 @@ Cambiar el color del sidebar no requiere otra implementación:
 
 Ver los tres tonos en Storybook: **Patterns → DashboardLayout**.
 
-`LanguageSwitcher` no traduce por sí mismo: emite el ISO seleccionado a `onValueChange` para el i18n de la aplicación. Para sistemas existentes puede usar `googleTranslate={{ sourceLanguage: "es" }}`; consulta la implementación, privacidad y retiro programado del servicio en [`17_LANGUAGE_SWITCHER.md`](./17_LANGUAGE_SWITCHER.md).
+`LanguageSwitcher` es un menú con opciones exclusivas: selecciona el ISO, actualiza el trigger y emite `onValueChange` para el i18n de la aplicación. Para sistemas existentes puede usar `googleTranslate={{ sourceLanguage: "es" }}`; consulta la implementación, privacidad y retiro programado del servicio en [`17_LANGUAGE_SWITCHER.md`](./17_LANGUAGE_SWITCHER.md).
 
 ## Dialogs
 

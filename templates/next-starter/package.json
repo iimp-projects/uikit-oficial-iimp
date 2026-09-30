@@ -1,6 +1,6 @@
 {
   "name": "iimp-next-app",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,13 +13,18 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
+    "version": "node scripts/sync-app-version.mjs",
+    "version:check": "node scripts/sync-app-version.mjs --check",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major",
+    "check": "npm run format:check && npm run version:check && npm run typecheck && npm run lint && npm run test && npm run build",
     "setup": "iimp-adopt --skills-only",
     "skills:recommend": "iimp-adopt --skills-only --recommend-skills"
   },
   "dependencies": {
     "next": "16.3.8",
-    "official-uikit-iimp": "0.7.0",
+    "official-uikit-iimp": "0.8.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5"

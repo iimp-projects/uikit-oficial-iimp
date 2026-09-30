@@ -2,7 +2,7 @@
 
 ## Propósito
 
-`LanguageSwitcher` es el control oficial para elegir el idioma de una aplicación. Recibe códigos ISO/BCP 47 y crea un botón por cada idioma; no hay que mantener un componente distinto para cada combinación.
+`LanguageSwitcher` es el control oficial para elegir el idioma de una aplicación. Recibe códigos ISO/BCP 47 y crea un menú accesible con una opción exclusiva por idioma; no hay que mantener un componente distinto para cada combinación.
 
 Por defecto **solo es un selector visual**. La aplicación recibe el código en `onValueChange` y lo conecta a su solución de internacionalización. Esta es la opción preferida para aplicaciones nuevas.
 
@@ -39,11 +39,11 @@ import {
 />
 ```
 
-El slot `languageSwitcher` siempre se renderiza a la izquierda de `notifications`. Si no hay campana, conserva su posición natural antes de las acciones.
+El slot `languageSwitcher` siempre se renderiza a la izquierda de `notifications`. El trigger muestra el icono de traducción y el ISO activo; al elegir una opción, actualiza el trigger, cierra el menú y ejecuta `onValueChange`. Si no hay campana, conserva su posición natural antes de las acciones.
 
 ### Etiquetas visibles y accesibles
 
-Un string se muestra en mayúsculas automáticamente. Para personalizar el texto o el nombre que leerá un lector de pantalla, pasa objetos:
+Con un código string, el menú intenta mostrar el nombre del idioma en español (por ejemplo, `es` → `español`) y conserva el ISO en el extremo derecho. Si el navegador no puede resolverlo, muestra el ISO en mayúsculas. Para personalizar el texto o el nombre que leerá un lector de pantalla, pasa objetos:
 
 ```tsx
 <LanguageSwitcher

@@ -61,6 +61,12 @@ El estándar exige:
 
 No se reduce la severidad para hacer pasar un proyecto legacy. Los hallazgos se corrigen progresivamente y quedan visibles en `.iimp/ADOPTION_REPORT.md`.
 
+## Versión pública de la aplicación
+
+El starter incluye `NEXT_PUBLIC_APP_VERSION=v0.0.1` en `.env.example` y expone `appVersion` desde `src/lib/project.ts`. Si no existe una variable de entorno, usa la versión de `package.json`. Pásala a `DashboardVersion` dentro del slot `DashboardHeader.status`.
+
+Las entregas usan los scripts `npm run release:patch`, `npm run release:minor` o `npm run release:major`. `npm version` mantiene la correlación entre `package.json` y `.env.example`; `npm run check` falla si no coinciden. No se incrementa el número por cada guardado o commit.
+
 ## Política de actualización
 
 - El starter utiliza versiones exactas aprobadas.
