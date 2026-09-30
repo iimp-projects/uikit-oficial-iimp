@@ -25,6 +25,8 @@ CLI npm para proyectos existentes. Analiza, instala dependencias, conecta el est
 
 ## Proyecto nuevo
 
+Requisito: Node.js 22.22.2 o superior.
+
 ```bash
 npx create-next-app@latest \
   --example "https://github.com/iimp-projects/uikit-oficial-iimp" \

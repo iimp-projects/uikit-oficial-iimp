@@ -2,6 +2,8 @@
 
 Boilerplate oficial para proyectos nuevos de Eventos IIMP. Crea una aplicación Next.js con App Router, React, TypeScript estricto, Tailwind CSS v4, `official-uikit-iimp`, pruebas, CI y skills de agentes.
 
+Requiere Node.js 22.22.2 o superior.
+
 ## Crear un proyecto
 
 ```bash
