@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Engineering/Bootstrap y Zero Errors" />
+
+# Bootstrap y Zero Errors
+
+El ecosistema IIMP separa tres responsabilidades:
+
+1. `official-uikit-iimp`: componentes, tokens, layouts y configuración compartida.
+2. `iimp-next-starter`: inicio limpio para aplicaciones nuevas.
+3. `@iimp/adopt`: adopción segura para aplicaciones existentes.
+
+## Proyecto nuevo
+
+```bash
+npx create-next-app@latest \
+  --example "https://github.com/iimp-projects/uikit-oficial-iimp" \
+  --example-path templates/next-starter \
+  mi-proyecto
+
+cd mi-proyecto
+npm run setup
+npm run check
+```
+
+## Proyecto existente
+
+```bash
+npx @iimp/adopt@latest --dry-run
+npx @iimp/adopt@latest
+npm run check
+```
+
+## Contrato de calidad
+
+- TypeScript strict.
+- ESLint type-aware y Core Web Vitals.
+- Guardrails que exigen componentes oficiales.
+- Cero warnings.
+- Formato, pruebas y build en cada PR.
+- Migraciones visuales sin cambios de negocio.
+
+## Skills
+
+El setup instala solo las skills faltantes. Después analiza el stack y presenta una lista consolidada de recomendaciones; el desarrollador puede instalar todas, algunas o ninguna sin elegir categorías previamente.
+
+## Actualizaciones
+
+El starter se copia una sola vez. El UI Kit se actualiza por npm y no sobrescribe páginas, props, acciones o lógica del proyecto consumidor. Las actualizaciones mayores de Next.js entran mediante PR y deben superar `npm run check`.

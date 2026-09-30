@@ -1,0 +1,37 @@
+{
+  "name": "@iimp/adopt",
+  "version": "0.1.0",
+  "description": "Adopta los estándares oficiales IIMP en proyectos Next.js existentes",
+  "type": "module",
+  "bin": {
+    "iimp-adopt": "./bin/iimp-adopt.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1",
+    "ts-morph": "^27.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iimp-projects/uikit-oficial-iimp.git",
+    "directory": "packages/adopt"
+  },
+  "license": "UNLICENSED"
+}

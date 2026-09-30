@@ -1,0 +1,130 @@
+import assert from "node:assert/strict";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import test from "node:test";
+import { analyzeProject } from "../src/analyze.mjs";
+import { applyConfiguration, dependencyCommands } from "../src/configure.mjs";
+import { BASELINE_SKILLS } from "../src/constants.mjs";
+import { migrateSafeNativeControls } from "../src/migrate-ui.mjs";
+import { missingBaselineSkills, parseSkillSearch } from "../src/skills.mjs";
+
+async function fixture() {
+  const cwd = await mkdtemp(join(tmpdir(), "iimp-adopt-"));
+  mkdirSync(join(cwd, "src", "app"), { recursive: true });
+  writeFileSync(
+    join(cwd, "package.json"),
+    JSON.stringify({
+      name: "legacy",
+      scripts: { build: "next build" },
+      dependencies: { next: "15.0.0", react: "19.0.0" },
+    }),
+  );
+  writeFileSync(
+    join(cwd, "tsconfig.json"),
+    '{\n  // legacy comment\n  "compilerOptions": { "strict": false }\n}\n',
+  );
+  writeFileSync(
+    join(cwd, "src", "app", "page.tsx"),
+    "export default function Page() { return <button>Guardar</button> }",
+  );
+  writeFileSync(join(cwd, "src", "app", "globals.css"), "body {}\n");
+  return cwd;
+}
+
+test("analiza stack y controles nativos", async () => {
+  const cwd = await fixture();
+  const result = analyzeProject(cwd);
+  assert.equal(result.detected.next, "15.0.0");
+  assert.equal(result.nativeUsage[0].replacement, "Button");
+});
+
+test("configura strict mode sin borrar comentarios ni scripts", async () => {
+  const cwd = await fixture();
+  applyConfiguration(cwd);
+  const tsconfig = readFileSync(join(cwd, "tsconfig.json"), "utf8");
+  const packageJson = JSON.parse(
+    readFileSync(join(cwd, "package.json"), "utf8"),
+  );
+  assert.match(tsconfig, /legacy comment/);
+  assert.match(tsconfig, /noUncheckedIndexedAccess/);
+  assert.equal(packageJson.scripts.build, "next build");
+  assert.equal(packageJson.scripts.lint, "eslint . --max-warnings=0");
+  assert.match(
+    readFileSync(join(cwd, "AGENTS.md"), "utf8"),
+    /Estándar IIMP obligatorio/,
+  );
+  assert.match(
+    readFileSync(join(cwd, "src", "app", "globals.css"), "utf8"),
+    /official-uikit-iimp\/theme.css/,
+  );
+});
+
+test("la adopción es idempotente", async () => {
+  const cwd = await fixture();
+  applyConfiguration(cwd);
+  applyConfiguration(cwd);
+  const agents = readFileSync(join(cwd, "AGENTS.md"), "utf8");
+  assert.equal(agents.match(/iimp-adopt:start/g)?.length, 1);
+});
+
+test("omite skills ya instaladas", async () => {
+  const cwd = await fixture();
+  mkdirSync(join(cwd, ".agents", "skills", "caveman"), { recursive: true });
+  writeFileSync(
+    join(cwd, ".agents", "skills", "caveman", "SKILL.md"),
+    "# Caveman",
+  );
+  const missing = missingBaselineSkills(cwd);
+  assert.equal(
+    missing.some(({ name }) => name === "caveman"),
+    false,
+  );
+  assert.equal(missing.length, BASELINE_SKILLS.length - 1);
+});
+
+test("interpreta resultados de find-skills y popularidad", () => {
+  const parsed = parseSkillSearch(
+    "vercel-labs/agent-skills@vercel-react-best-practices 756.6K installs\n",
+  );
+  assert.deepEqual(parsed, [
+    {
+      source: "https://github.com/vercel-labs/agent-skills",
+      name: "vercel-react-best-practices",
+      installs: 756600,
+    },
+  ]);
+});
+
+test("no actualiza Next mayor sin autorización explícita", async () => {
+  const cwd = await fixture();
+  const analysis = analyzeProject(cwd);
+  assert.equal(
+    dependencyCommands(analysis).flat().includes("next@latest"),
+    false,
+  );
+  assert.equal(
+    dependencyCommands(analysis, { upgradeNext: true })
+      .flat()
+      .includes("next@latest"),
+    true,
+  );
+});
+
+test("convierte solamente controles HTML seguros", async () => {
+  const cwd = await fixture();
+  writeFileSync(
+    join(cwd, "src", "app", "page.tsx"),
+    'export default function Page() { return <><button>Guardar</button><input type="email" /><input type="checkbox" /><hr /></> }',
+  );
+  const result = migrateSafeNativeControls(cwd);
+  const content = readFileSync(join(cwd, "src", "app", "page.tsx"), "utf8");
+  assert.equal(result[0].replacements, 3);
+  assert.match(
+    content,
+    /import \{ Button, Input, Separator \} from "official-uikit-iimp"/,
+  );
+  assert.match(content, /<Button>Guardar<\/Button>/);
+  assert.match(content, /<input type="checkbox"/);
+});

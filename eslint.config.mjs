@@ -15,5 +15,14 @@ export default defineConfig([
       ...reactHooks.configs.recommended.rules,
     },
   },
+  {
+    files: ["packages/**/*.mjs", "scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        console: "readonly",
+        process: "readonly",
+      },
+    },
+  },
   ...storybook.configs["flat/recommended"],
 ])

@@ -12,6 +12,30 @@ npm install official-uikit-iimp
 
 Requiere React 19 y react-dom 19.
 
+### Proyectos nuevos: starter oficial
+
+```bash
+npx create-next-app@latest \
+  --example "https://github.com/iimp-projects/uikit-oficial-iimp" \
+  --example-path templates/next-starter \
+  mi-proyecto
+
+cd mi-proyecto
+npm run setup
+npm run check
+```
+
+El starter incluye Next.js App Router, Tailwind v4, TypeScript estricto, ESLint sin warnings, tests, CI, seguridad base y la instalación idempotente de skills. Consulta [`templates/next-starter/README.md`](./templates/next-starter/README.md).
+
+### Proyectos existentes: CLI de adopción
+
+```bash
+npx @iimp/adopt@latest --dry-run
+npx @iimp/adopt@latest
+```
+
+El primer comando solo analiza. El segundo conecta el proyecto al estándar, instala las skills faltantes y genera `.iimp/ADOPTION_REPORT.md`. No actualiza una versión mayor de Next.js ni sobrescribe skills existentes silenciosamente. Consulta [`packages/adopt/README.md`](./packages/adopt/README.md).
+
 Importa los estilos **una sola vez** en la raíz de la app. El CSS ya viene compilado: no necesitas configurar Tailwind para que los componentes se vean bien.
 
 ### Tailwind v4 en tu app (recomendado)
@@ -30,14 +54,18 @@ Y en la raíz de la app (`layout.tsx`), `import "official-uikit-iimp/style.css"`
 
 ```tsx
 // app/layout.tsx
-import "official-uikit-iimp/style.css"
+import "official-uikit-iimp/style.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="es">
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -47,11 +75,11 @@ El paquete se distribuye con la directiva `"use client"`, así que puedes import
 
 ```tsx
 // src/main.tsx
-import "official-uikit-iimp/style.css"
-import { createRoot } from "react-dom/client"
-import App from "./App"
+import "official-uikit-iimp/style.css";
+import { createRoot } from "react-dom/client";
+import App from "./App";
 
-createRoot(document.getElementById("root")!).render(<App />)
+createRoot(document.getElementById("root")!).render(<App />);
 ```
 
 Sin más configuración, la app ya usa los colores por defecto de IIMP. El provider de tema (sección 4) es opcional.
@@ -62,25 +90,25 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 
 ### Patterns (composiciones listas)
 
-| Componente | Cuándo usarlo |
-|---|---|
-| `PageHeader` | Título de página con descripción, breadcrumb y acciones. |
-| `FormField` | Un campo con label, descripción, error y marca de obligatorio. Envuelve un `Input`, `Select`, etc. |
-| `FormSection` | Agrupar campos relacionados bajo un título. |
-| `SearchField` | Búsqueda con debounce (300 ms por defecto). |
-| `FilterBar` | Barra de filtros con contador de filtros activos y botón "Limpiar filtros". |
-| `DataCard` | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho. |
-| `DataTable` | Tabla de datos con carga (skeleton), estado vacío y click en fila. |
-| `StatCard` | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono. |
-| `StatusBadge` | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`. |
-| `EmptyState` | Cuando no hay datos: título, descripción y hasta dos acciones. |
-| `ErrorState` | Error de página (`page`) o de bloque (`inline`) con botón de reintento. |
-| `LoadingState` | Carga con `spinner` o `skeleton`. |
-| `ConfirmDialog` | Confirmar una acción normal (guardar, enviar). |
-| `DestructiveDialog` | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar". |
-| `FormDialog` | Formulario dentro de un diálogo, con botones cancelar y enviar. |
-| `InfoDialog` | Mostrar información sin acción. |
-| `AuthLayout` | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación. |
+| Componente           | Cuándo usarlo                                                                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PageHeader`         | Título de página con descripción, breadcrumb y acciones.                                                                                                     |
+| `FormField`          | Un campo con label, descripción, error y marca de obligatorio. Envuelve un `Input`, `Select`, etc.                                                           |
+| `FormSection`        | Agrupar campos relacionados bajo un título.                                                                                                                  |
+| `SearchField`        | Búsqueda con debounce (300 ms por defecto).                                                                                                                  |
+| `FilterBar`          | Barra de filtros con contador de filtros activos y botón "Limpiar filtros".                                                                                  |
+| `DataCard`           | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho.                                                           |
+| `DataTable`          | Tabla de datos con carga (skeleton), estado vacío y click en fila.                                                                                           |
+| `StatCard`           | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono.                                                                                 |
+| `StatusBadge`        | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`.                                                                  |
+| `EmptyState`         | Cuando no hay datos: título, descripción y hasta dos acciones.                                                                                               |
+| `ErrorState`         | Error de página (`page`) o de bloque (`inline`) con botón de reintento.                                                                                      |
+| `LoadingState`       | Carga con `spinner` o `skeleton`.                                                                                                                            |
+| `ConfirmDialog`      | Confirmar una acción normal (guardar, enviar).                                                                                                               |
+| `DestructiveDialog`  | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar".                                                        |
+| `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                              |
+| `InfoDialog`         | Mostrar información sin acción.                                                                                                                              |
+| `AuthLayout`         | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación.                                  |
 | Familia `Dashboard*` | Shell autenticado con sidebar responsive, marca, usuario/logout, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
 
 ### Primitives
@@ -104,15 +132,21 @@ import {
   DashboardSidebarUser,
   Sidebar,
   SidebarContent,
-} from "official-uikit-iimp"
+} from "official-uikit-iimp";
 
 <DashboardLayout
   sidebarTone="primary"
   sidebar={
     <Sidebar collapsible="offcanvas">
       <DashboardSidebarBrand icon={<ProductIcon />} title="Sistema IIMP" />
-      <SidebarContent><AppNavigation /></SidebarContent>
-      <DashboardSidebarUser name={user.name} email={user.email} signOutAction={logout} />
+      <SidebarContent>
+        <AppNavigation />
+      </SidebarContent>
+      <DashboardSidebarUser
+        name={user.name}
+        email={user.email}
+        signOutAction={logout}
+      />
     </Sidebar>
   }
   header={
@@ -124,7 +158,7 @@ import {
   }
 >
   {children}
-</DashboardLayout>
+</DashboardLayout>;
 ```
 
 `AppSidebar` compone los primitives `Sidebar*` oficiales. Routing, permisos, sesión, navegación y logout permanecen en la app. Ver receta completa en `docs/03_UX_RULES.md`.
@@ -132,12 +166,25 @@ import {
 ### Formulario
 
 ```tsx
-import { Button, FormField, FormSection, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "official-uikit-iimp"
+import {
+  Button,
+  FormField,
+  FormSection,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "official-uikit-iimp";
 
 export function ParticipanteForm() {
   return (
     <form className="flex flex-col gap-6">
-      <FormSection title="Datos personales" description="Se usan para la acreditación.">
+      <FormSection
+        title="Datos personales"
+        description="Se usan para la acreditación."
+      >
         <FormField label="Nombre" required error={undefined}>
           <Input name="nombre" />
         </FormField>
@@ -155,7 +202,7 @@ export function ParticipanteForm() {
       </FormSection>
       <Button type="submit">Guardar</Button>
     </form>
-  )
+  );
 }
 ```
 
@@ -164,20 +211,43 @@ export function ParticipanteForm() {
 ### Tabla con filtros, carga y estado vacío
 
 ```tsx
-import { useState } from "react"
-import { DataTable, EmptyState, FilterBar, PageHeader, SearchField, StatusBadge } from "official-uikit-iimp"
+import { useState } from "react";
+import {
+  DataTable,
+  EmptyState,
+  FilterBar,
+  PageHeader,
+  SearchField,
+  StatusBadge,
+} from "official-uikit-iimp";
 
-type Participante = { id: number; nombre: string; estado: "success" | "warning" }
+type Participante = {
+  id: number;
+  nombre: string;
+  estado: "success" | "warning";
+};
 
-export function Participantes({ data, loading }: { data: Participante[]; loading: boolean }) {
-  const [query, setQuery] = useState("")
-  const rows = data.filter((p) => p.nombre.toLowerCase().includes(query.toLowerCase()))
+export function Participantes({
+  data,
+  loading,
+}: {
+  data: Participante[];
+  loading: boolean;
+}) {
+  const [query, setQuery] = useState("");
+  const rows = data.filter((p) =>
+    p.nombre.toLowerCase().includes(query.toLowerCase()),
+  );
 
   return (
     <>
       <PageHeader title="Participantes" description="Inscritos al evento" />
       <FilterBar activeCount={query ? 1 : 0} onClear={() => setQuery("")}>
-        <SearchField value={query} onSearch={setQuery} placeholder="Buscar participante…" />
+        <SearchField
+          value={query}
+          onSearch={setQuery}
+          placeholder="Buscar participante…"
+        />
       </FilterBar>
       <DataTable
         loading={loading}
@@ -188,13 +258,22 @@ export function Participantes({ data, loading }: { data: Participante[]; loading
           {
             key: "estado",
             header: "Estado",
-            cell: (row) => <StatusBadge status={row.estado}>{row.estado === "success" ? "Confirmado" : "Pendiente"}</StatusBadge>,
+            cell: (row) => (
+              <StatusBadge status={row.estado}>
+                {row.estado === "success" ? "Confirmado" : "Pendiente"}
+              </StatusBadge>
+            ),
           },
         ]}
-        emptyState={<EmptyState title="Sin participantes" description="Prueba con otra búsqueda." />}
+        emptyState={
+          <EmptyState
+            title="Sin participantes"
+            description="Prueba con otra búsqueda."
+          />
+        }
       />
     </>
-  )
+  );
 }
 ```
 
@@ -249,7 +328,7 @@ Por defecto el kit usa el preset de shadcn `b1aIuQ2XC` (estilo luma, iconos Remi
 Para cambiar colores o radio por vertical, envuelve la app:
 
 ```tsx
-import { IimpThemeProvider } from "official-uikit-iimp"
+import { IimpThemeProvider } from "official-uikit-iimp";
 
 <IimpThemeProvider
   theme={{
@@ -260,7 +339,7 @@ import { IimpThemeProvider } from "official-uikit-iimp"
   }}
 >
   <App />
-</IimpThemeProvider>
+</IimpThemeProvider>;
 ```
 
 - `primary` y `secondary` son obligatorios dentro de `theme`; `radius`, `primaryForeground` y `secondaryForeground` son opcionales.
@@ -292,28 +371,45 @@ Como regla general, usa como máximo un Primary dominante por dialog, formulario
 
 ```js
 // eslint.config.js de la app consumidora
-import { iimpGuardrails } from "official-uikit-iimp/eslint"
+import { iimpGuardrails } from "official-uikit-iimp/eslint";
 
 export default [
   // ...tu config existente
   ...iimpGuardrails,
-]
+];
 ```
 
 El maquetado se hace **siempre con el componente equivalente del kit** (shadcn/ui), no con HTML nativo. El linter falla y te dice cuál usar:
 
-| En vez de | Usa |
-|---|---|
-| `<button>` | `Button` |
-| `<input>` / `<select>` / `<textarea>` | `Input` / `Select` / `Textarea` |
-| `<label>` | `Label` o `FormField` |
-| `<table>`, `<tr>`, `<td>`… | `Table` o `DataTable` |
-| `<hr>` | `Separator` |
-| `<progress>` | `Progress` |
-| `<dialog>` | `Dialog`, `ConfirmDialog`, `FormDialog` |
-| `<details>` | `Accordion` / `Collapsible` |
+| En vez de                             | Usa                                     |
+| ------------------------------------- | --------------------------------------- |
+| `<button>`                            | `Button`                                |
+| `<input>` / `<select>` / `<textarea>` | `Input` / `Select` / `Textarea`         |
+| `<label>`                             | `Label` o `FormField`                   |
+| `<table>`, `<tr>`, `<td>`…            | `Table` o `DataTable`                   |
+| `<hr>`                                | `Separator`                             |
+| `<progress>`                          | `Progress`                              |
+| `<dialog>`                            | `Dialog`, `ConfirmDialog`, `FormDialog` |
+| `<details>`                           | `Accordion` / `Collapsible`             |
 
 Además bloquea `className` con bordes sin color (`border-b` a secas se pinta negro; usa `border-border` o `Separator`), imports directos de Radix/Base UI/shadcn, rutas internas del paquete e imports de copias locales de `AuthLayout` o la familia `Dashboard*` oficial.
+
+### Perfil completo “zero errors” para Next.js
+
+```js
+// eslint.config.mjs
+import iimpNextStrict from "official-uikit-iimp/eslint/next-strict";
+
+export default iimpNextStrict;
+```
+
+```json
+{
+  "extends": "official-uikit-iimp/tsconfig/next-strict.json"
+}
+```
+
+Ejecuta ESLint con `--max-warnings=0` y usa un quality gate que incluya formato, typecheck, lint, pruebas y build. La arquitectura completa está documentada en [`docs/16_PROJECT_BOOTSTRAP.md`](./docs/16_PROJECT_BOOTSTRAP.md).
 
 ## Contribuir
 
