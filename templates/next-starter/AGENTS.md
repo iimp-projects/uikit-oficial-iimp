@@ -33,6 +33,14 @@ Estas reglas son obligatorias para cualquier agente o desarrollador que modifiqu
 
 Una migración visual no modifica APIs, routing, permisos, reglas de negocio, estado, validaciones ni side effects.
 
+## Bitácora obligatoria
+
+- Leer `bitacora.md` antes de iniciar o continuar una tarea.
+- Por cada avance relevante, agregar fecha/hora America/Lima, cambio y validación ejecutada.
+- Usar `npm run bitacora -- "descripción del avance"` para registrar entradas manuales.
+- No borrar ni reescribir entradas anteriores; las reversiones se anotan como una entrada nueva.
+- Codex, Claude y Gemini comparten esta regla mediante `AGENTS.md`, `CLAUDE.md` y `GEMINI.md`.
+
 ## Comunicación
 
 Usar caveman full por defecto salvo que el usuario solicite otro estilo.

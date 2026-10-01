@@ -42,7 +42,17 @@ npm run check
 
 ## Skills
 
-El setup instala solo las skills faltantes. Después analiza el stack y presenta una lista consolidada de recomendaciones; el desarrollador puede instalar todas, algunas o ninguna sin elegir categorías previamente.
+El setup instala solo las skills faltantes. Después analiza el stack y presenta una lista consolidada de recomendaciones; el desarrollador puede instalar todas, algunas o ninguna sin elegir categorías previamente. Las skills se instalan para los agentes compatibles, incluidos Codex, Claude y Gemini, y se detectan previamente en `.agents/skills`, `.codex/skills`, `.claude/skills` y `.gemini/skills`.
+
+## Bitácora compartida
+
+El starter y la adopción completa crean `bitacora.md`. Antes de continuar, Codex, Claude y Gemini leen el historial; al cerrar un avance relevante, agregan fecha/hora America/Lima, cambio y validación sin reescribir entradas previas.
+
+```bash
+npm run bitacora -- "Se terminó el ajuste y npm run check pasó."
+```
+
+`AGENTS.md` contiene el contrato común y `CLAUDE.md`/`GEMINI.md` lo hacen explícito para cada agente.
 
 ## Actualizaciones
 

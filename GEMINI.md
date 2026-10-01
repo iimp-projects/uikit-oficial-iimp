@@ -2,7 +2,10 @@
 
 Para cualquier tarea visual, seguir obligatoriamente `AGENTS.md`.
 
+Antes de continuar una tarea, leer `bitacora.md`. Al completar cada avance relevante, registrar fecha/hora, cambio y validación; nunca borrar el historial.
+
 No interpretar mocks o diseños como autorización para inventar:
+
 - colores,
 - tamaños,
 - radius,
@@ -13,6 +16,7 @@ No interpretar mocks o diseños como autorización para inventar:
 - motion.
 
 Al implementar una pantalla:
+
 1. mapear cada elemento al componente oficial de `official-uikit-iimp`;
 2. usar patterns existentes;
 3. usar tokens semánticos;

@@ -7,9 +7,15 @@ import { BASELINE_SKILLS } from "./constants.mjs";
 import { recommendationQueries } from "./analyze.mjs";
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, "g");
+const SKILL_DIRECTORIES = [
+  ".agents/skills",
+  ".codex/skills",
+  ".claude/skills",
+  ".gemini/skills",
+];
 
 export function isSkillInstalled(cwd, name) {
-  return [".agents/skills", ".codex/skills", ".claude/skills"].some((base) =>
+  return SKILL_DIRECTORIES.some((base) =>
     existsSync(join(cwd, base, name, "SKILL.md")),
   );
 }
@@ -39,9 +45,8 @@ export function installSkills(cwd, skills) {
         source,
         "--skill",
         ...names,
-      "--agent",
-      "codex",
-      "claude-code",
+        "--agent",
+        "*",
         "--copy",
         "-y",
       ],

@@ -62,6 +62,7 @@ npx @nrivera-iimp/adopt@latest --yes
 - Agrega reglas institucionales a `AGENTS.md` mediante un bloque administrado.
 - Agrega `.github/workflows/iimp-quality.yml`.
 - Genera `.iimp/ADOPTION_REPORT.md`.
+- Crea `bitacora.md`, `scripts/append-bitacora.mjs`, y enlaza la regla desde `AGENTS.md`, `CLAUDE.md` y `GEMINI.md`.
 - Puede convertir controles HTML inequívocos mediante `--fix-safe`.
 - Instala solamente las skills base que falten.
 - Ejecuta búsquedas de `find-skills`, consolida resultados y permite elegir todas, algunas o ninguna.
@@ -74,9 +75,22 @@ La instalación es idempotente. Se busca cada skill en:
 .agents/skills
 .codex/skills
 .claude/skills
+.gemini/skills
 ```
 
 Si una skill ya existe, se conserva. No se actualiza ni sobrescribe silenciosamente.
+
+Para instalar una skill nueva, el CLI delega en `npx skills add --agent "*" --copy`. Así se replica en los agentes compatibles (incluidos Codex, Claude y Gemini) sin depender de un nombre de agente particular.
+
+## Bitácora
+
+Al aplicar la adopción completa, se crea `bitacora.md` y una entrada inicial con la fecha/hora America/Lima. Antes de cada tarea, Codex, Claude y Gemini deben leerla; después de cada avance relevante, se registra el cambio y la validación sin borrar entradas previas:
+
+```bash
+npm run bitacora -- "Se corrigió el flujo de aprobación y npm run check pasó."
+```
+
+El script se crea solo si todavía no existe, para no reemplazar una implementación propia.
 
 Instalar/revisar solo skills:
 

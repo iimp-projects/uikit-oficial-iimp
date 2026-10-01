@@ -9,6 +9,7 @@ import {
 import { dirname, join } from "node:path";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import { STRICT_COMPILER_OPTIONS, UI_KIT_VERSION } from "./constants.mjs";
+import { ensureBitacora } from "./bitacora.mjs";
 
 function write(path, content) {
   mkdirSync(dirname(path), { recursive: true });
@@ -79,6 +80,7 @@ function configurePackageJson(cwd) {
     test: parsed.scripts?.test ?? "vitest run --passWithNoTests",
     check:
       "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
+    bitacora: parsed.scripts?.bitacora ?? "node scripts/append-bitacora.mjs",
     "skills:recommend": "iimp-adopt --skills-only --recommend-skills",
   };
   write(path, `${JSON.stringify(parsed, null, 2)}\n`);
@@ -200,8 +202,32 @@ function configureAgents(cwd) {
     ? readFileSync(path, "utf8")
     : "# AGENTS.md\n";
   if (current.includes(marker)) return;
-  const block = `\n${marker}\n## Estándar IIMP obligatorio\n\n- Ejecutar \`npm run check\` antes de finalizar cualquier cambio.\n- Cero errores y cero warnings; no desactivar reglas para ocultar problemas.\n- Usar componentes desde \`official-uikit-iimp\`; no duplicar primitives shadcn localmente.\n- Buscar primero un pattern, luego un primitive y finalmente proponer una extensión del UI Kit.\n- No hardcodear colores de marca ni modificar lógica de negocio durante migraciones visuales.\n- Usar caveman full como estilo de comunicación predeterminado salvo indicación contraria del usuario.\n${"<!-- iimp-adopt:end -->"}\n`;
+  const block = `\n${marker}\n## Estándar IIMP obligatorio\n\n- Ejecutar \`npm run check\` antes de finalizar cualquier cambio.\n- Cero errores y cero warnings; no desactivar reglas para ocultar problemas.\n- Usar componentes desde \`official-uikit-iimp\`; no duplicar primitives shadcn localmente.\n- Buscar primero un pattern, luego un primitive y finalmente proponer una extensión del UI Kit.\n- No hardcodear colores de marca ni modificar lógica de negocio durante migraciones visuales.\n- Antes de continuar, leer \`bitacora.md\`. Por cada avance relevante, registrar fecha/hora, cambio y validación con \`npm run bitacora -- "descripción"\`. No eliminar entradas previas.\n- Usar caveman full como estilo de comunicación predeterminado salvo indicación contraria del usuario.\n${"<!-- iimp-adopt:end -->"}\n`;
   write(path, `${current.trimEnd()}\n${block}`);
+}
+
+function configureAgentEntrypoints(cwd) {
+  const marker = "<!-- iimp-agent-context:start -->";
+  const targets = ["CLAUDE.md", "GEMINI.md"];
+  const block = `\n${marker}\n## Contexto IIMP obligatorio\n\n1. Leer y obedecer \`AGENTS.md\`.\n2. Leer \`bitacora.md\` antes de modificar el proyecto.\n3. Al finalizar cada avance relevante, agregar fecha/hora, cambio y validación con \`npm run bitacora -- "descripción"\`.\n4. No borrar ni reescribir entradas históricas de la bitácora.\n${"<!-- iimp-agent-context:end -->"}\n`;
+  for (const name of targets) {
+    const path = join(cwd, name);
+    const current = existsSync(path)
+      ? readFileSync(path, "utf8")
+      : `# ${name}\n`;
+    if (!current.includes(marker))
+      write(path, `${current.trimEnd()}\n${block}`);
+  }
+}
+
+function configureBitacoraScript(cwd) {
+  ensureBitacora(cwd);
+  const path = join(cwd, "scripts", "append-bitacora.mjs");
+  if (existsSync(path)) return;
+  write(
+    path,
+    `import { appendFileSync, existsSync, writeFileSync } from "node:fs";\nimport { join } from "node:path";\n\nconst path = join(globalThis.process.cwd(), "bitacora.md");\nconst template = "# Bitácora del proyecto\\n\\nRegistro cronológico de cambios, decisiones y validaciones.\\n\\n## Regla de uso\\n\\n- Leer este archivo antes de continuar.\\n- Agregar una entrada por cada avance relevante.\\n- No eliminar entradas anteriores.\\n\\n## Entradas\\n\\n";\nconst summary = globalThis.process.argv.slice(2).join(" ").trim();\n\nif (!summary) {\n  globalThis.console.error('Uso: npm run bitacora -- "descripción del avance"');\n  globalThis.process.exitCode = 1;\n} else {\n  if (!existsSync(path)) writeFileSync(path, template);\n  const timestamp = new Intl.DateTimeFormat("sv-SE", { dateStyle: "short", timeStyle: "medium", timeZone: "America/Lima", hour12: false }).format(new Date());\n  appendFileSync(path, \`- \${timestamp} America/Lima — \${summary}\\n\`);\n  globalThis.console.log(\`Bitácora actualizada: \${path}\`);\n}\n`,
+  );
 }
 
 function configureWorkflow(cwd) {
@@ -215,10 +241,12 @@ function configureWorkflow(cwd) {
 
 export function applyConfiguration(cwd) {
   configurePackageJson(cwd);
+  configureBitacoraScript(cwd);
   configureTsconfig(cwd);
   configureEslint(cwd);
   configureStyles(cwd);
   configurePrettier(cwd);
   configureAgents(cwd);
+  configureAgentEntrypoints(cwd);
   configureWorkflow(cwd);
 }

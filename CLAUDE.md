@@ -2,6 +2,8 @@
 
 Antes de modificar cualquier interfaz:
 
+0. Lee `bitacora.md` y, al terminar cada avance relevante, agrega fecha/hora, cambio y validación. No elimines entradas históricas.
+
 1. Lee `AGENTS.md`.
 2. Lee los documentos enlazados como fuente de verdad.
 3. Inspecciona exports existentes de `official-uikit-iimp`.

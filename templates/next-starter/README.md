@@ -35,7 +35,8 @@ npm run dev
 - Validación runtime con Zod.
 - Headers HTTP defensivos básicos.
 - GitHub Actions ejecutando el quality gate.
-- `AGENTS.md` con gobernanza IIMP.
+- `AGENTS.md`, `CLAUDE.md` y `GEMINI.md` con la misma gobernanza IIMP.
+- `bitacora.md` y el comando `npm run bitacora` para conservar el contexto entre avances y agentes.
 
 ## Flujo diario
 
@@ -46,6 +47,16 @@ npm run check        # obligatorio antes de abrir o aprobar un PR
 ```
 
 `npm run check` ejecuta formato, TypeScript, ESLint, pruebas y el build de producción. El PR no debe fusionarse si alguna etapa falla.
+
+## Bitácora compartida
+
+Antes de modificar el proyecto, Codex, Claude y Gemini deben leer `bitacora.md`. Al completar cada avance relevante, registran fecha/hora America/Lima, el cambio y la validación; no se elimina el historial.
+
+```bash
+npm run bitacora -- "Se terminó la vista de proveedores y npm run check pasó."
+```
+
+`AGENTS.md` es la regla compartida y `CLAUDE.md`/`GEMINI.md` son los puntos de entrada para esos agentes.
 
 ## UI
 
@@ -83,7 +94,7 @@ import { appVersion } from "@/lib/project"
 npm run setup
 ```
 
-Instala las skills institucionales faltantes. Al final, `find-skills` analiza las tecnologías detectadas y muestra una lista única para instalar todas, algunas o ninguna.
+Instala las skills institucionales faltantes para los agentes compatibles, incluidos Codex, Claude y Gemini. Antes revisa `.agents/skills`, `.codex/skills`, `.claude/skills` y `.gemini/skills`, por lo que no reemplaza una skill existente. Al final, `find-skills` analiza las tecnologías detectadas y muestra una lista única para instalar todas, algunas o ninguna.
 
 Para volver a buscar recomendaciones:
 

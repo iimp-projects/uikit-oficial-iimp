@@ -14,6 +14,7 @@ import {
   missingBaselineSkills,
   selectRecommendedSkills,
 } from "./skills.mjs";
+import { appendBitacora } from "./bitacora.mjs";
 
 function help() {
   console.log(
@@ -122,6 +123,13 @@ export async function runCli(args) {
     const selected = await selectRecommendedSkills(recommendations);
     if (selected.length) installSkills(options.cwd, selected);
   }
+
+  appendBitacora(
+    options.cwd,
+    options.skillsOnly
+      ? "Skills IIMP instaladas o verificadas mediante el CLI de adopción."
+      : "Estándar IIMP aplicado mediante el CLI de adopción; revisar .iimp/ADOPTION_REPORT.md.",
+  );
 
   console.log(`\nAdopción IIMP aplicada. Reporte: ${reportPath}`);
   console.log("Siguiente paso: npm run check");

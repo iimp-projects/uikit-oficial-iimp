@@ -1,6 +1,6 @@
 {
   "name": "@nrivera-iimp/adopt",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Adopta los estándares oficiales IIMP en proyectos Next.js existentes",
   "type": "module",
   "bin": {

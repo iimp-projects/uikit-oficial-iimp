@@ -18,11 +18,11 @@ Este repositorio es la fuente de verdad: [ver código, documentación y starter 
 
 El estándar se distribuye en tres piezas complementarias; no son tres shells visuales:
 
-| Artefacto | Uso | Estado de distribución | Documentación |
-| --- | --- | --- | --- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.3`). | Este README |
-| [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas. | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI para adoptar el estándar en una aplicación existente. | Publicado en npm (`0.1.1`). | [README del CLI](./packages/adopt/README.md) |
+| Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
+| ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.7`).                                            | Este README                                              |
+| [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.2`).                                            | [README del CLI](./packages/adopt/README.md)             |
 
 La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
 
@@ -56,7 +56,7 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.8.3 --save-exact
+npm install official-uikit-iimp@0.8.7 --save-exact
 npm run check
 ```
 
@@ -79,6 +79,16 @@ node packages/adopt/bin/iimp-adopt.mjs --dry-run --cwd /ruta/a/tu-proyecto
 ```
 
 El primer comando solo analiza. El segundo conecta el proyecto al estándar, instala las skills faltantes y genera `.iimp/ADOPTION_REPORT.md`. No actualiza una versión mayor de Next.js ni sobrescribe skills existentes silenciosamente. Consulta [`packages/adopt/README.md`](./packages/adopt/README.md).
+
+### Bitácora y agentes
+
+El starter y el CLI de adopción crean `bitacora.md` en la raíz. Codex, Claude y Gemini deben leerla antes de continuar y registrar cada avance relevante —fecha/hora America/Lima, cambio y validación— sin borrar el historial:
+
+```bash
+npm run bitacora -- "Se ajustó el formulario de inscripción y npm run check pasó."
+```
+
+El contrato se replica en `AGENTS.md`, `CLAUDE.md` y `GEMINI.md`. Las skills base se instalan idempotentemente para todos los agentes compatibles; el instalador usa `.agents/skills`, `.codex/skills`, `.claude/skills` y `.gemini/skills` para detectar previamente lo que ya existe.
 
 Importa los estilos **una sola vez** en la raíz de la app. El CSS ya viene compilado: no necesitas configurar Tailwind para que los componentes se vean bien.
 
@@ -134,27 +144,27 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 
 ### Patterns (composiciones listas)
 
-| Componente           | Cuándo usarlo                                                                                                                                                |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `PageHeader`         | Título de página con descripción, breadcrumb y acciones.                                                                                                     |
-| `FormField`          | Un campo con label, descripción, error y marca de obligatorio. Envuelve un `Input`, `Select`, etc.                                                           |
-| `FormSection`        | Agrupar campos relacionados bajo un título.                                                                                                                  |
-| `SearchField`        | Búsqueda con debounce (300 ms por defecto).                                                                                                                  |
-| `FilterBar`          | Barra de filtros con contador de filtros activos y botón "Limpiar filtros".                                                                                  |
-| `DataCard`           | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho.                                                           |
-| `DataTable`          | Tabla de datos con carga (skeleton), estado vacío y click en fila.                                                                                           |
-| `StatCard`           | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono.                                                                                 |
-| `StatusBadge`        | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`.                                                                  |
-| `EmptyState`         | Cuando no hay datos: título, descripción y hasta dos acciones.                                                                                               |
-| `ErrorState`         | Error de página (`page`) o de bloque (`inline`) con botón de reintento.                                                                                      |
-| `LoadingState`       | Carga con `spinner` o `skeleton`.                                                                                                                            |
-| `ConfirmDialog`      | Confirmar una acción normal (guardar, enviar).                                                                                                               |
-| `DestructiveDialog`  | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar".                                                        |
-| `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                              |
-| `InfoDialog`         | Mostrar información sin acción.                                                                                                                              |
-| `AuthLayout`         | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación.                                  |
+| Componente           | Cuándo usarlo                                                                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PageHeader`         | Título de página con descripción, breadcrumb y acciones.                                                                                                                           |
+| `FormField`          | Un campo con label, descripción, error y marca de obligatorio. Envuelve un `Input`, `Select`, etc.                                                                                 |
+| `FormSection`        | Agrupar campos relacionados bajo un título.                                                                                                                                        |
+| `SearchField`        | Búsqueda con debounce (300 ms por defecto).                                                                                                                                        |
+| `FilterBar`          | Barra de filtros con contador de filtros activos y botón "Limpiar filtros".                                                                                                        |
+| `DataCard`           | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho.                                                                                 |
+| `DataTable`          | Tabla de datos con carga (skeleton), estado vacío y click en fila.                                                                                                                 |
+| `StatCard`           | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono.                                                                                                       |
+| `StatusBadge`        | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`.                                                                                        |
+| `EmptyState`         | Cuando no hay datos: título, descripción y hasta dos acciones.                                                                                                                     |
+| `ErrorState`         | Error de página (`page`) o de bloque (`inline`) con botón de reintento.                                                                                                            |
+| `LoadingState`       | Carga con `spinner` o `skeleton`.                                                                                                                                                  |
+| `ConfirmDialog`      | Confirmar una acción normal (guardar, enviar).                                                                                                                                     |
+| `DestructiveDialog`  | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar".                                                                              |
+| `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                                                    |
+| `InfoDialog`         | Mostrar información sin acción.                                                                                                                                                    |
+| `AuthLayout`         | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación.                                                        |
 | Familia `Dashboard*` | Shell autenticado con sidebar responsive, logo institucional, usuario/logout, versión, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
-| `LanguageSwitcher` | Menú compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate. |
+| `LanguageSwitcher`   | Menú compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate.                                               |
 
 ### Primitives
 
@@ -201,7 +211,10 @@ import {
       navigation={<AppBreadcrumb />}
       status={<DashboardVersion version={appVersion} />}
       languageSwitcher={
-        <LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={changeLocale} />
+        <LanguageSwitcher
+          languages={["es", "en", "qu"]}
+          onValueChange={changeLocale}
+        />
       }
       notifications={<DashboardNotifications count={alerts.length} />}
       actions={<PageActions />}

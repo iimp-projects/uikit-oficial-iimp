@@ -29,20 +29,20 @@ Antes de crear UI:
 
 **Todo maquetado se hace con el componente equivalente de `official-uikit-iimp` (basado en shadcn/ui).** No se arma UI con HTML nativo ni con estilos propios que dupliquen un componente. Equivalencias:
 
-| Nativo / maquetado manual | Usar |
-|---|---|
-| `<button>` | `Button` |
-| `<input>` | `Input` (`Checkbox`, `RadioGroup`, `Switch`, `Slider` según el tipo) |
-| `<select>` | `Select` / `NativeSelect` |
-| `<textarea>` | `Textarea` |
-| `<label>` | `Label` / `FormField` |
-| `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` | `Table` / `DataTable` |
-| `<hr>`, `border-b` a secas | `Separator` o `border-b border-border` |
-| `<progress>` | `Progress` |
-| `<dialog>` | `Dialog`, `AlertDialog`, `ConfirmDialog`, `FormDialog` |
-| `<details>` / `<summary>` | `Accordion` / `Collapsible` |
-| `<kbd>` | `Kbd` |
-| card, badge, alert, tabs armados con `div` | `Card`, `Badge`, `Alert`, `Tabs` |
+| Nativo / maquetado manual                               | Usar                                                                 |
+| ------------------------------------------------------- | -------------------------------------------------------------------- |
+| `<button>`                                              | `Button`                                                             |
+| `<input>`                                               | `Input` (`Checkbox`, `RadioGroup`, `Switch`, `Slider` según el tipo) |
+| `<select>`                                              | `Select` / `NativeSelect`                                            |
+| `<textarea>`                                            | `Textarea`                                                           |
+| `<label>`                                               | `Label` / `FormField`                                                |
+| `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` | `Table` / `DataTable`                                                |
+| `<hr>`, `border-b` a secas                              | `Separator` o `border-b border-border`                               |
+| `<progress>`                                            | `Progress`                                                           |
+| `<dialog>`                                              | `Dialog`, `AlertDialog`, `ConfirmDialog`, `FormDialog`               |
+| `<details>` / `<summary>`                               | `Accordion` / `Collapsible`                                          |
+| `<kbd>`                                                 | `Kbd`                                                                |
+| card, badge, alert, tabs armados con `div`              | `Card`, `Badge`, `Alert`, `Tabs`                                     |
 
 Esto lo hace cumplir `iimpGuardrails` (`official-uikit-iimp/eslint`): el linter falla y nombra el componente a usar.
 
@@ -65,6 +65,7 @@ if (vertical === "perumin")
 ```
 
 No inventar:
+
 - alturas,
 - radius,
 - shadow,
@@ -95,7 +96,7 @@ import {
   DashboardSidebarBrand,
   DashboardSidebarUser,
   DashboardNotifications,
-} from "official-uikit-iimp"
+} from "official-uikit-iimp";
 ```
 
 ## Login / Auth
@@ -167,6 +168,7 @@ No construir dialogs custom en features sin justificación.
 ## Forms
 
 Campos etiquetados:
+
 - `FormField`
 - control oficial (`Input`, `Select`, etc.)
 
@@ -189,9 +191,18 @@ No construir labels/error text con estilos manuales salvo caso no cubierto por e
 - respetar `prefers-reduced-motion`
 - motion comunica estado; no decorar gratuitamente
 
+## Bitácora obligatoria
+
+- Antes de iniciar o retomar una tarea, leer `bitacora.md` en la raíz.
+- Por cada avance relevante, registrar fecha, hora America/Lima, cambio realizado y validación ejecutada.
+- No borrar ni reescribir el historial. Si se revierte un cambio, registrar la reversión como una entrada nueva.
+- En proyectos generados por el starter o adoptados por el CLI, usar `npm run bitacora -- "descripción del avance"` para añadir la entrada.
+- Esta regla aplica a Codex, Claude y Gemini. `AGENTS.md`, `CLAUDE.md` y `GEMINI.md` deben apuntar al mismo contrato.
+
 ## Trabajo de migración
 
 Una migración visual NO debe alterar:
+
 - APIs,
 - business rules,
 - permisos,

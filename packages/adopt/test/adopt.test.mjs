@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { analyzeProject } from "../src/analyze.mjs";
+import { appendBitacora, ensureBitacora } from "../src/bitacora.mjs";
 import { applyConfiguration, dependencyCommands } from "../src/configure.mjs";
 import { BASELINE_SKILLS } from "../src/constants.mjs";
 import { migrateSafeNativeControls } from "../src/migrate-ui.mjs";
@@ -51,6 +52,10 @@ test("configura strict mode sin borrar comentarios ni scripts", async () => {
   assert.match(tsconfig, /noUncheckedIndexedAccess/);
   assert.equal(packageJson.scripts.build, "next build");
   assert.equal(packageJson.scripts.lint, "eslint . --max-warnings=0");
+  assert.equal(
+    packageJson.scripts.bitacora,
+    "node scripts/append-bitacora.mjs",
+  );
   assert.match(
     readFileSync(join(cwd, "AGENTS.md"), "utf8"),
     /Estándar IIMP obligatorio/,
@@ -59,6 +64,28 @@ test("configura strict mode sin borrar comentarios ni scripts", async () => {
     readFileSync(join(cwd, "src", "app", "globals.css"), "utf8"),
     /official-uikit-iimp\/theme.css/,
   );
+  assert.match(readFileSync(join(cwd, "bitacora.md"), "utf8"), /Bitácora/);
+  assert.match(
+    readFileSync(join(cwd, "CLAUDE.md"), "utf8"),
+    /Contexto IIMP obligatorio/,
+  );
+  assert.match(
+    readFileSync(join(cwd, "GEMINI.md"), "utf8"),
+    /Contexto IIMP obligatorio/,
+  );
+});
+
+test("la bitácora conserva el historial y registra la zona horaria", async () => {
+  const cwd = await fixture();
+  ensureBitacora(cwd);
+  appendBitacora(
+    cwd,
+    "Validación de la bitácora",
+    new Date("2026-10-01T15:30:00Z"),
+  );
+  const bitacora = readFileSync(join(cwd, "bitacora.md"), "utf8");
+  assert.match(bitacora, /Validación de la bitácora/);
+  assert.match(bitacora, /America\/Lima/);
 });
 
 test("la adopción es idempotente", async () => {
@@ -67,6 +94,17 @@ test("la adopción es idempotente", async () => {
   applyConfiguration(cwd);
   const agents = readFileSync(join(cwd, "AGENTS.md"), "utf8");
   assert.equal(agents.match(/iimp-adopt:start/g)?.length, 1);
+});
+
+test("conserva un comando de bitácora existente", async () => {
+  const cwd = await fixture();
+  const packagePath = join(cwd, "package.json");
+  const packageJson = JSON.parse(readFileSync(packagePath, "utf8"));
+  packageJson.scripts.bitacora = "node tools/mi-bitacora.mjs";
+  writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+  applyConfiguration(cwd);
+  const configured = JSON.parse(readFileSync(packagePath, "utf8"));
+  assert.equal(configured.scripts.bitacora, "node tools/mi-bitacora.mjs");
 });
 
 test("omite skills ya instaladas", async () => {
@@ -82,6 +120,19 @@ test("omite skills ya instaladas", async () => {
     false,
   );
   assert.equal(missing.length, BASELINE_SKILLS.length - 1);
+});
+
+test("reconoce una skill instalada para Gemini", async () => {
+  const cwd = await fixture();
+  mkdirSync(join(cwd, ".gemini", "skills", "caveman"), { recursive: true });
+  writeFileSync(
+    join(cwd, ".gemini", "skills", "caveman", "SKILL.md"),
+    "# Caveman",
+  );
+  assert.equal(
+    missingBaselineSkills(cwd).some(({ name }) => name === "caveman"),
+    false,
+  );
 });
 
 test("interpreta resultados de find-skills y popularidad", () => {
