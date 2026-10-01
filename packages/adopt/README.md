@@ -2,7 +2,15 @@
 
 CLI oficial para incorporar las reglas de ingeniería IIMP en un proyecto Next.js existente sin copiar el boilerplate sobre su código.
 
-> **Estado de distribución:** publicado en npm como `@nrivera-iimp/adopt`. Consulta el [mapa de artefactos](../../README.md#mapa-de-artefactos-y-documentación).
+> **Estado de distribución:** publicado en npm como [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt).
+
+## Antes de ejecutar: qué elegir
+
+- **Proyecto nuevo:** no uses este CLI; crea el [starter oficial](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter).
+- **Proyecto Next.js existente:** usa este CLI primero con `--dry-run` y revisa su reporte.
+- **Solo quieres componentes:** instala [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) sin ejecutar una migración.
+
+La explicación completa, reglas y código fuente viven en el [repositorio oficial](https://github.com/iimp-projects/uikit-oficial-iimp) y en la [guía de bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md).
 
 ## Ejecutar desde este repositorio
 

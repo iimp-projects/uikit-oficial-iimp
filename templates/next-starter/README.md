@@ -2,7 +2,7 @@
 
 Boilerplate oficial para proyectos nuevos de Eventos IIMP. Crea una aplicación Next.js con App Router, React, TypeScript estricto, Tailwind CSS v4, `official-uikit-iimp`, pruebas, CI y skills de agentes.
 
-Este es el segundo de los tres artefactos del estándar IIMP. Para el mapa completo consulta el [README del UI Kit](../../README.md#mapa-de-artefactos-y-documentación) y [Bootstrap y adopción](../../docs/16_PROJECT_BOOTSTRAP.md).
+Este es el segundo de los tres artefactos del estándar IIMP. Para el mapa completo consulta el [README del UI Kit](https://github.com/iimp-projects/uikit-oficial-iimp#empieza-aquí--elige-solo-una-ruta) y la [guía de bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md).
 
 Requiere Node.js 22.22.2 o superior.
 

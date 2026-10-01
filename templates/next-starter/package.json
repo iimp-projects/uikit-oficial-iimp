@@ -24,13 +24,13 @@
   },
   "dependencies": {
     "next": "16.3.8",
-    "official-uikit-iimp": "0.8.2",
+    "official-uikit-iimp": "0.8.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
-    "@nrivera-iimp/adopt": "0.1.0",
+    "@nrivera-iimp/adopt": "0.1.1",
     "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",

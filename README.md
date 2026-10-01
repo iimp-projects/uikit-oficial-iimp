@@ -4,17 +4,27 @@ UI Kit oficial de Eventos IIMP. Basado en shadcn/ui y Tailwind CSS. Incluye **pr
 
 > Regla principal: las apps **componen** con este kit. No crean un sistema visual paralelo ni usan `<button>`, `<input>`, `<select>` o `<textarea>` nativos.
 
+## Empieza aquí — elige solo una ruta
+
+No necesitas instalar todo manualmente ni copiar archivos de este repositorio.
+
+1. **Vas a crear un proyecto nuevo:** usa el [starter oficial](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter). Crea el proyecto, ejecuta `npm run setup` una vez y luego trabaja normalmente.
+2. **Ya tienes un proyecto Next.js:** ejecuta el [CLI de adopción en npm](https://www.npmjs.com/package/@nrivera-iimp/adopt) primero con `--dry-run`. Te dice qué cambiaría antes de tocar archivos.
+3. **Solo necesitas componentes o tokens en una app existente:** instala el [UI Kit en npm](https://www.npmjs.com/package/official-uikit-iimp).
+
+Este repositorio es la fuente de verdad: [ver código, documentación y starter en GitHub](https://github.com/iimp-projects/uikit-oficial-iimp).
+
 ## Mapa de artefactos y documentación
 
 El estándar se distribuye en tres piezas complementarias; no son tres shells visuales:
 
 | Artefacto | Uso | Estado de distribución | Documentación |
 | --- | --- | --- | --- |
-| `official-uikit-iimp` | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.2`). | Este README |
-| `templates/next-starter` | Boilerplate Git para aplicaciones Next.js nuevas. | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| `@nrivera-iimp/adopt` | CLI para adoptar el estándar en una aplicación existente. | Publicado en npm (`0.1.0`). | [README del CLI](./packages/adopt/README.md) |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.3`). | Este README |
+| [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas. | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI para adoptar el estándar en una aplicación existente. | Publicado en npm (`0.1.1`). | [README del CLI](./packages/adopt/README.md) |
 
-La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](./docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
+La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
 
 ## 1. Instalación
 
@@ -46,7 +56,7 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.8.2 --save-exact
+npm install official-uikit-iimp@0.8.3 --save-exact
 npm run check
 ```
 
