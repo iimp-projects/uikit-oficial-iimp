@@ -73,7 +73,16 @@ Con esa prop el componente:
 1. inserta el destino oculto `#google_translate_element`;
 2. carga `translate.google.com/translate_a/element.js` una sola vez (si aún no existe);
 3. lee la cookie existente `googtrans=/es/<idioma>` al abrir;
-4. al cambiar de idioma, actualiza la cookie y recarga la página.
+4. al cambiar de idioma, actualiza la cookie y recarga la página;
+5. inyecta una vez un `<style>` que oculta el banner superior de Google (`.goog-te-banner-frame`, el iframe suelto que cuelga de `<body>`, el tooltip de hover y el resaltado amarillo) y deshace el `body { top: ... }` que Google escribe inline. No necesitas CSS propio para esto — ocurre automáticamente cada vez que `googleTranslate` está activo, incluidas recargas repetidas (la etiqueta se identifica por id y nunca se duplica).
+
+### Banner e iframe de Google visibles encima de la página
+
+Si ves un iframe suelto (clase `skiptranslate`, a veces con un nombre ofuscado como `VIpgJd-...`) empujando tu contenido hacia abajo al traducir: eso es el banner nativo de Google Website Translator, no un bug del selector. Desde que el bridge inyecta el `<style>` del punto 5 arriba, se oculta solo. Si lo sigues viendo:
+
+- Confirma que estás en `official-uikit-iimp@0.8.4` o superior (`npm ls official-uikit-iimp`).
+- Revisa que no haya otra hoja de estilos de tu app sobrescribiendo con una especificidad/`!important` mayor sobre `.goog-te-banner-frame` o `body { top }`.
+- El bridge solo inyecta el `<style>` mientras `googleTranslate` esté activo en algún `LanguageSwitcher` montado; si lo quitaste de un layout pero sigue cargado en otro, revisa ese otro.
 
 El valor por defecto de `reload` es `true`. Para una demo o una integración que manejará la recarga por su cuenta:
 
@@ -106,14 +115,23 @@ Para proyectos nuevos, migra progresivamente a traducciones controladas por la a
 
 ## Props
 
-| Prop | Uso |
-| --- | --- |
-| `languages` | Obligatoria. `string[]` u objetos `{ code, label?, ariaLabel? }`. |
-| `value` / `defaultValue` | Selector controlado o no controlado. |
-| `onValueChange` | Recibe el código seleccionado. |
-| `googleTranslate` | `true` o `{ sourceLanguage?, loadScript?, reload? }` para el bridge legado. |
-| `ariaLabel` | Nombre accesible del grupo; por defecto `Seleccionar idioma`. |
-| `disabled` | Deshabilita todos los idiomas. |
+| Prop | Tipo | Obligatoria | Default | Uso |
+| --- | --- | --- | --- | --- |
+| `languages` | `(string \| { code, label?, ariaLabel? })[]` | Sí | — | Incluye **todos** los idiomas visibles, incluido el idioma fuente/original de la página (ej. `"es"`). Con menos de 2 idiomas el componente no renderiza nada. |
+| `value` | `string` | No | — | Hace el selector controlado. Si lo pasas, tú decides el idioma activo y debes actualizarlo tú mismo en `onValueChange`. |
+| `defaultValue` | `string` | No | primer código de `languages` | Idioma inicial en modo no controlado. |
+| `onValueChange` | `(language: string) => void` | No | — | Recibe el código elegido. Conéctalo a tu router/i18n (`next-intl`, etc.) para que el selector haga algo más que cambiar su propio texto. |
+| `googleTranslate` | `boolean \| { sourceLanguage?, loadScript?, reload? }` | No | `undefined` (desactivado) | `true` equivale a `{}` (usa los defaults: `sourceLanguage: "es"`, `loadScript: true`, `reload: true`). Ver sección del bridge. |
+| `ariaLabel` | `string` | No | `"Seleccionar idioma"` | Nombre accesible del grupo de opciones. |
+| `disabled` | `boolean` | No | `false` | Deshabilita el trigger y todas las opciones. |
+| `className` | `string` | No | — | Clases extra para el botón trigger. |
+
+### Por qué "no funciona" casi siempre es una prop faltante
+
+- **El menú no aparece:** `languages` tiene menos de 2 entradas (el componente retorna `null` a propósito). Pasa al menos el idioma fuente + uno más.
+- **Seleccionar un idioma no traduce nada:** falta `googleTranslate` (sin él, el componente es solo visual — es el comportamiento esperado para apps nuevas con i18n propio) o falta conectar `onValueChange` a tu proveedor de i18n si no usas el bridge de Google.
+- **El bridge de Google no traduce al idioma correcto / vuelve a español:** `sourceLanguage` no coincide con el idioma real de tu página (el `lang` de tu `<html>`). Si tu app está en español, usa `{ sourceLanguage: "es" }`; si no, ajústalo al idioma real del contenido original, no al idioma destino.
+- **Dos selectores en la misma página no se comportan igual:** usa `googleTranslate` en **una sola instancia** por página (ver advertencia arriba) — el resto, sin esa prop, solo visual u observando el mismo `value` controlado.
 
 ## Validación
 

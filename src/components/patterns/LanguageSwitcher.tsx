@@ -73,6 +73,38 @@ declare global {
 
 const GOOGLE_TRANSLATE_SCRIPT_ID = "iimp-google-translate-script"
 const GOOGLE_TRANSLATE_ELEMENT_ID = "google_translate_element"
+const GOOGLE_TRANSLATE_STYLE_ID = "iimp-google-translate-style"
+
+// Google's Website Translator injects its own top banner iframe directly into <body> (outside
+// #google_translate_element) and pushes the whole page down via an inline `body.style.top`. Both
+// are hidden/undone here so the bridge never shows Google's UI chrome — only our own menu.
+const GOOGLE_TRANSLATE_HIDE_CSS = `
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+body > iframe.skiptranslate,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-text-highlight,
+#goog-gt-tt {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+}
+body {
+  top: 0 !important;
+}
+`.trim()
+
+function ensureGoogleTranslateStylesHidden() {
+  if (typeof document === "undefined") return
+  if (document.getElementById(GOOGLE_TRANSLATE_STYLE_ID)) return
+
+  const style = document.createElement("style")
+  style.id = GOOGLE_TRANSLATE_STYLE_ID
+  style.textContent = GOOGLE_TRANSLATE_HIDE_CSS
+  document.head.append(style)
+}
 
 function normalizeLanguages(
   languages: LanguageSwitcherProps["languages"],
@@ -239,6 +271,11 @@ function LanguageSwitcher({
       if (matchedLanguage) setUncontrolledValue(matchedLanguage.code)
     }
   }, [googleConfig, googleSourceLanguage, languages, value])
+
+  React.useEffect(() => {
+    if (!googleConfig) return
+    ensureGoogleTranslateStylesHidden()
+  }, [googleConfig])
 
   React.useEffect(() => {
     if (!googleConfig || !googleLoadScript) return

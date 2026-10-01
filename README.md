@@ -229,7 +229,7 @@ Para una integración existente con Google Website Translator, activa su bridge 
 />
 ```
 
-El componente añade el objetivo oculto que requiere Google, carga el script una vez si aún no existe, guarda `googtrans` y recarga la página. Es una compatibilidad temporal: consulta la guía y los límites de Google en [`docs/17_LANGUAGE_SWITCHER.md`](./docs/17_LANGUAGE_SWITCHER.md).
+El componente añade el objetivo oculto que requiere Google, carga el script una vez si aún no existe, guarda `googtrans`, recarga la página y oculta automáticamente el banner/iframe superior que Google inyecta en `<body>` (no hace falta CSS propio para eso). Es una compatibilidad temporal: consulta la guía completa de props, el bridge y solución de problemas en [`docs/17_LANGUAGE_SWITCHER.md`](./docs/17_LANGUAGE_SWITCHER.md).
 
 ### Formulario
 
