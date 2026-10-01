@@ -401,14 +401,14 @@ function LanguageSwitcher({
               onValueChange={handleValueChange}
             >
               {languages.map((language) => (
-                <DropdownMenuRadioItem
+                <DropdownMenuRadioItem className="notranslate"
                   key={language.code}
                   value={language.code}
                   aria-label={getLanguageAriaLabel(language)}
                   disabled={disabled}
                 >
                   {getLanguageLabel(language)}
-                  <DropdownMenuShortcut>
+                  <DropdownMenuShortcut className="notranslate">
                     {language.code.toUpperCase()}
                   </DropdownMenuShortcut>
                 </DropdownMenuRadioItem>
