@@ -105,6 +105,16 @@ El valor por defecto de `reload` es `true`. Para una demo o una integración que
 
 Usa **una sola** instancia con `googleTranslate` por página, porque el widget de Google usa el id global `google_translate_element`.
 
+## Excluir elementos de la traducción: `.no-translate`
+
+Para RUCs, códigos, nombres propios u otro contenido que nunca debe traducirse, aplica la clase `no-translate`:
+
+```tsx
+<p className="no-translate">RUC: 20123456789</p>
+```
+
+Google y la traducción nativa del navegador solo respetan la clase literal `notranslate` y el atributo `translate="no"` — no reconocen nombres de clase arbitrarios. Por eso `.no-translate` no es solo CSS: mientras haya un `LanguageSwitcher` montado en la página, el componente busca todos los elementos `.no-translate` (al montar y cada vez que se agrega contenido nuevo al DOM, vía `MutationObserver`) y les añade `translate="no"` y la clase `notranslate` automáticamente. No necesitas usar `notranslate` directamente ni recordar el atributo — solo `no-translate`, consistente con el resto del kit.
+
 ## Límites, privacidad y migración
 
 Google anunció que Website Translator deja de tener soporte el **1 de octubre de 2026**. El bridge se conserva porque una instalación existente puede seguir funcionando hoy, pero no debe ser la única estrategia de localización a largo plazo. Revisa el anuncio oficial de [Google Search Central](https://developers.google.com/search/blog/2020/05/google-translates-website-translator?hl=en).

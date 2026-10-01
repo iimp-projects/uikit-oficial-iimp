@@ -1,6 +1,6 @@
 {
   "name": "official-uikit-iimp",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "Design System / UI Kit oficial de Eventos IIMP",
   "type": "module",
   "sideEffects": [

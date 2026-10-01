@@ -108,6 +108,44 @@ function ensureGoogleTranslateStylesHidden() {
   document.head.append(style)
 }
 
+// `.no-translate` is the kit's own helper for excluding an element from translation (a RUC, a
+// code, a proper noun). It only does something once marked: Google's Website Translator and
+// browsers' native translate only ever honor the literal class `notranslate` and the
+// `translate="no"` attribute, not arbitrary class names — so every `.no-translate` element found
+// is stamped with both, here and whenever new matching elements are added to the page later.
+const NO_TRANSLATE_CLASS = "no-translate"
+let noTranslateObserver: MutationObserver | undefined
+
+function markNoTranslateElement(element: Element) {
+  if (!(element instanceof HTMLElement)) return
+  if (!element.classList.contains(NO_TRANSLATE_CLASS)) return
+
+  if (element.getAttribute("translate") !== "no") element.setAttribute("translate", "no")
+  if (!element.classList.contains("notranslate")) element.classList.add("notranslate")
+}
+
+function markNoTranslateElementsIn(root: ParentNode) {
+  root.querySelectorAll(`.${NO_TRANSLATE_CLASS}`).forEach(markNoTranslateElement)
+}
+
+function ensureNoTranslateElementsMarked() {
+  if (typeof document === "undefined") return
+
+  markNoTranslateElementsIn(document)
+  if (noTranslateObserver) return
+
+  noTranslateObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      mutation.addedNodes.forEach((node) => {
+        if (!(node instanceof Element)) return
+        markNoTranslateElement(node)
+        markNoTranslateElementsIn(node)
+      })
+    }
+  })
+  noTranslateObserver.observe(document.body, { childList: true, subtree: true })
+}
+
 function normalizeLanguages(
   languages: LanguageSwitcherProps["languages"],
 ): NormalizedLanguage[] {
@@ -280,6 +318,7 @@ function LanguageSwitcher({
   // translating, so there is no downside to always guarding against the banner.
   React.useEffect(() => {
     ensureGoogleTranslateStylesHidden()
+    ensureNoTranslateElementsMarked()
   }, [])
 
   React.useEffect(() => {
