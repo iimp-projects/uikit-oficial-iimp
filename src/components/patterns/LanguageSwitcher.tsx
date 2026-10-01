@@ -75,13 +75,15 @@ const GOOGLE_TRANSLATE_SCRIPT_ID = "iimp-google-translate-script"
 const GOOGLE_TRANSLATE_ELEMENT_ID = "google_translate_element"
 const GOOGLE_TRANSLATE_STYLE_ID = "iimp-google-translate-style"
 
-// Google's Website Translator injects its own top banner iframe directly into <body> (outside
-// #google_translate_element) and pushes the whole page down via an inline `body.style.top`. Both
-// are hidden/undone here so the bridge never shows Google's UI chrome — only our own menu.
+// Google's Website Translator injects its own top banner iframe somewhere under <body> (outside
+// #google_translate_element) and pushes the whole page down via an inline `body.style.top`. Its
+// class names are obfuscated and change across Google's builds (e.g. "VIpgJd-ZVi9od-ORHb-OEVmcd"),
+// so `.goog-te-banner-frame` alone is not reliable — "skiptranslate" on the iframe itself is the
+// one class Google has kept stable across versions. Match on that generically (any nesting depth,
+// not just a direct child of <body>), plus the legacy semantic classes for older builds.
 const GOOGLE_TRANSLATE_HIDE_CSS = `
-.goog-te-banner-frame.skiptranslate,
-iframe.goog-te-banner-frame,
-body > iframe.skiptranslate,
+iframe.skiptranslate,
+.goog-te-banner-frame,
 .goog-te-balloon-frame,
 .goog-tooltip,
 .goog-tooltip:hover,
@@ -272,10 +274,13 @@ function LanguageSwitcher({
     }
   }, [googleConfig, googleSourceLanguage, languages, value])
 
+  // Runs regardless of `googleTranslate`: the page may be translated by Google's extension/native
+  // "Translate this page" prompt, or by a separate integration the app wired up itself, outside
+  // this component's own bridge. The hide rule is inert (matches nothing) when nothing is
+  // translating, so there is no downside to always guarding against the banner.
   React.useEffect(() => {
-    if (!googleConfig) return
     ensureGoogleTranslateStylesHidden()
-  }, [googleConfig])
+  }, [])
 
   React.useEffect(() => {
     if (!googleConfig || !googleLoadScript) return
