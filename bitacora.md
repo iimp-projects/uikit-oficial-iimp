@@ -13,3 +13,4 @@ Registro cronológico de cambios, decisiones y validaciones.
 - 2026-10-01 15:26:27 America/Lima — Se incorpora la bitácora como contrato transversal para UI Kit, starter y CLI de adopción; pendiente de validación y publicación.
 - 2026-10-01 15:30:05 America/Lima — Validación del script de bitácora del starter
 - 2026-10-01 15:32:06 America/Lima — Validaciones completadas: lint, TypeScript, 154 pruebas del UI Kit, pruebas del CLI, consumidor, build, Storybook y contrato del starter pasaron.
+- 2026-10-01 15:36:07 America/Lima — Se hizo push de `7914b72` a `main` y npm aceptó las publicaciones `official-uikit-iimp@0.8.7` y `@nrivera-iimp/adopt@0.1.2`; el índice público sigue propagándose.
