@@ -22,14 +22,16 @@ try {
   run("npm", ["pack", "--pack-destination", output], root);
   run(
     "npm",
-    ["pack", "--workspace", "@iimp/adopt", "--pack-destination", output],
+    ["pack", "--workspace", "@nrivera-iimp/adopt", "--pack-destination", output],
     root,
   );
   const tarballs = readdirSync(output).filter((name) => name.endsWith(".tgz"));
   const uiTarball = tarballs.find((name) =>
     name.startsWith("official-uikit-iimp-"),
   );
-  const adoptTarball = tarballs.find((name) => name.startsWith("iimp-adopt-"));
+  const adoptTarball = tarballs.find((name) =>
+    name.startsWith("nrivera-iimp-adopt-"),
+  );
   if (!uiTarball || !adoptTarball)
     throw new Error("No se generaron los tarballs esperados");
 
@@ -38,7 +40,7 @@ try {
   const packageJson = JSON.parse(readFileSync(packagePath, "utf8"));
   packageJson.dependencies["official-uikit-iimp"] =
     `file:${join(output, uiTarball)}`;
-  packageJson.devDependencies["@iimp/adopt"] =
+  packageJson.devDependencies["@nrivera-iimp/adopt"] =
     `file:${join(output, adoptTarball)}`;
   writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
 

@@ -1,6 +1,6 @@
 {
   "name": "official-uikit-iimp",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Design System / UI Kit oficial de Eventos IIMP",
   "type": "module",
   "sideEffects": [
@@ -46,7 +46,7 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:adopt": "npm test --workspace @iimp/adopt",
+    "test:adopt": "npm test --workspace @nrivera-iimp/adopt",
     "test:starter": "node scripts/starter-test.mjs",
     "test:e2e": "playwright test",
     "test:consumer": "node scripts/consumer-test.mjs",

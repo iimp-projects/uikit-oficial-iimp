@@ -17,7 +17,7 @@ import {
 
 function help() {
   console.log(
-    `@iimp/adopt — adopta el estándar oficial IIMP\n\nUso:\n  npx @iimp/adopt@latest [opciones]\n\nOpciones:\n  --dry-run              analiza sin modificar\n  --yes                  aplica sin confirmación\n  --cwd <ruta>           proyecto a analizar\n  --skills-only          instala skills sin tocar configuración\n  --skip-skills          no instala skills base\n  --skip-deps            no instala dependencias npm\n  --fix-safe             convierte controles HTML inequívocos\n  --recommend-skills     busca recomendaciones al terminar\n  --no-recommend-skills  omite recomendaciones\n  --upgrade-next         actualiza Next/React explícitamente\n  --help                 muestra esta ayuda\n`,
+    `@nrivera-iimp/adopt — adopta el estándar oficial IIMP\n\nUso:\n  npx @nrivera-iimp/adopt@latest [opciones]\n\nOpciones:\n  --dry-run              analiza sin modificar\n  --yes                  aplica sin confirmación\n  --cwd <ruta>           proyecto a analizar\n  --skills-only          instala skills sin tocar configuración\n  --skip-skills          no instala skills base\n  --skip-deps            no instala dependencias npm\n  --fix-safe             convierte controles HTML inequívocos\n  --recommend-skills     busca recomendaciones al terminar\n  --no-recommend-skills  omite recomendaciones\n  --upgrade-next         actualiza Next/React explícitamente\n  --help                 muestra esta ayuda\n`,
   );
 }
 

@@ -77,7 +77,7 @@ import { appVersion } from "@/lib/project"
 
 ## Skills
 
-`npm run setup` delega la instalación idempotente de skills a `@iimp/adopt`. La publicación de ese CLI bajo el scope `@iimp` sigue pendiente; por lo tanto, el comando se usa desde un checkout que contenga el workspace del CLI hasta que se complete esa publicación. No debe usarse como una instrucción pública de instalación todavía.
+`npm run setup` delega la instalación idempotente de skills a `@nrivera-iimp/adopt`, publicado en npm. El comando se puede ejecutar directamente en cada proyecto creado desde este starter.
 
 ```bash
 npm run setup

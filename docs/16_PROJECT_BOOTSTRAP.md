@@ -8,9 +8,9 @@ Todos los proyectos nuevos parten de una base Next.js reproducible. Los proyecto
 
 | Artefacto | Función | Estado actual | README |
 | --- | --- | --- | --- |
-| `official-uikit-iimp` | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.8.1`). | [README raíz](../README.md) |
+| `official-uikit-iimp` | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.8.2`). | [README raíz](../README.md) |
 | `templates/next-starter` | Boilerplate para aplicaciones Next.js nuevas. | Parte de este repositorio. | [README del starter](../templates/next-starter/README.md) |
-| `@iimp/adopt` | CLI de adopción para aplicaciones existentes. | Source y pruebas listos; publicación npm pendiente del scope `@iimp`. | [README del CLI](../packages/adopt/README.md) |
+| `@nrivera-iimp/adopt` | CLI de adopción para aplicaciones existentes. | Publicado en npm (`0.1.0`). | [README del CLI](../packages/adopt/README.md) |
 
 No son tres shells visuales. `AuthLayout` y `DashboardLayout` son patterns del primer artefacto; el starter y el CLI son mecanismos de distribución/adopción.
 
@@ -27,9 +27,9 @@ official-uikit-iimp/tsconfig/next-strict.json
 
 Boilerplate para proyectos nuevos. Se crea con `create-next-app --example`, por lo que cada aplicación recibe archivos propios que no serán sobrescritos al actualizar el UI Kit.
 
-### `@iimp/adopt`
+### `@nrivera-iimp/adopt`
 
-CLI para proyectos existentes. Analiza, instala dependencias, conecta el estándar, agrega skills faltantes y produce un reporte de migración. La versión bajo `@iimp` todavía no está publicada, por lo que se ejecuta localmente desde este checkout hasta completar la configuración del scope npm.
+CLI para proyectos existentes. Analiza, instala dependencias, conecta el estándar, agrega skills faltantes y produce un reporte de migración. Se instala públicamente desde npm bajo el scope personal institucional `@nrivera-iimp`.
 
 ## Proyecto nuevo
 
@@ -46,7 +46,7 @@ npm run setup
 npm run check
 ```
 
-El flujo de instalación pública queda completo cuando `@iimp/adopt` sea publicado. Antes de ello, valida el starter dentro de este repositorio con `npm run test:starter`.
+El flujo de instalación pública está completo. El starter se valida también dentro de este repositorio con `npm run test:starter`.
 
 ## Proyecto existente
 
@@ -57,11 +57,11 @@ node packages/adopt/bin/iimp-adopt.mjs --dry-run --cwd /ruta/a/tu-proyecto
 node packages/adopt/bin/iimp-adopt.mjs --cwd /ruta/a/tu-proyecto
 ```
 
-Cuando el paquete sea publicado bajo `@iimp`, la misma interfaz será:
+La interfaz pública es:
 
 ```bash
-npx @iimp/adopt@latest --dry-run
-npx @iimp/adopt@latest
+npx @nrivera-iimp/adopt@latest --dry-run
+npx @nrivera-iimp/adopt@latest
 npm run check
 ```
 

@@ -1,19 +1,19 @@
-# @iimp/adopt
+# @nrivera-iimp/adopt
 
 CLI oficial para incorporar las reglas de ingeniería IIMP en un proyecto Next.js existente sin copiar el boilerplate sobre su código.
 
-> **Estado de distribución:** el código y sus pruebas están listos en este workspace, pero el paquete aún no se publica bajo el scope npm `@iimp`. Hasta que la organización otorgue permisos de publicación, los ejemplos `npx @iimp/adopt@latest` son la interfaz prevista y no un comando público disponible. Consulta el [mapa de artefactos](../../README.md#mapa-de-artefactos-y-documentación).
+> **Estado de distribución:** publicado en npm como `@nrivera-iimp/adopt`. Consulta el [mapa de artefactos](../../README.md#mapa-de-artefactos-y-documentación).
 
 ## Ejecutar desde este repositorio
 
-Para probar el CLI antes de la publicación, desde la raíz de este repositorio:
+Para desarrollar o probar el CLI desde la raíz de este repositorio:
 
 ```bash
 npm install
 node packages/adopt/bin/iimp-adopt.mjs --dry-run --cwd /ruta/a/tu-proyecto
 ```
 
-Una vez publicado como `@iimp/adopt`, los comandos de las secciones siguientes funcionarán con `npx`.
+La interfaz pública se ejecuta con `npx`.
 
 ## Requisitos
 
@@ -24,7 +24,7 @@ Una vez publicado como `@iimp/adopt`, los comandos de las secciones siguientes f
 ## Analizar sin modificar
 
 ```bash
-npx @iimp/adopt@latest --dry-run
+npx @nrivera-iimp/adopt@latest --dry-run
 ```
 
 El comando detecta stack, package manager, configuración, skills faltantes y controles HTML que deberían migrarse al UI Kit. El dry-run no escribe archivos ni instala dependencias.
@@ -32,13 +32,13 @@ El comando detecta stack, package manager, configuración, skills faltantes y co
 ## Aplicar
 
 ```bash
-npx @iimp/adopt@latest
+npx @nrivera-iimp/adopt@latest
 ```
 
 Antes de escribir muestra el plan y solicita confirmación. Para CI o ejecución deliberadamente no interactiva:
 
 ```bash
-npx @iimp/adopt@latest --yes
+npx @nrivera-iimp/adopt@latest --yes
 ```
 
 ## Cambios realizados
@@ -73,29 +73,29 @@ Si una skill ya existe, se conserva. No se actualiza ni sobrescribe silenciosame
 Instalar/revisar solo skills:
 
 ```bash
-npx @iimp/adopt@latest --skills-only
+npx @nrivera-iimp/adopt@latest --skills-only
 ```
 
 Omitir skills completamente:
 
 ```bash
-npx @iimp/adopt@latest --skip-skills
+npx @nrivera-iimp/adopt@latest --skip-skills
 ```
 
 Volver a analizar recomendaciones:
 
 ```bash
-npx @iimp/adopt@latest --skills-only --recommend-skills
+npx @nrivera-iimp/adopt@latest --skills-only --recommend-skills
 ```
 
 `find-skills` se instala al final del baseline. Las recomendaciones se generan desde dependencias y archivos detectados —por ejemplo Prisma, PostgreSQL, AWS o Terraform—; el usuario no tiene que escoger categorías previamente.
 
 ## Next.js
 
-Por seguridad, `@iimp/adopt` no realiza una actualización mayor de Next.js de manera implícita. Para solicitarla explícitamente:
+Por seguridad, `@nrivera-iimp/adopt` no realiza una actualización mayor de Next.js de manera implícita. Para solicitarla explícitamente:
 
 ```bash
-npx @iimp/adopt@latest --upgrade-next
+npx @nrivera-iimp/adopt@latest --upgrade-next
 ```
 
 Después revisa los cambios oficiales de migración y ejecuta:
@@ -111,7 +111,7 @@ El reporte identifica controles nativos, pero el CLI no reescribe automáticamen
 Para aplicar exclusivamente conversiones conservadoras (`button`, inputs compatibles, `label`, `textarea` y `hr`):
 
 ```bash
-npx @iimp/adopt@latest --fix-safe
+npx @nrivera-iimp/adopt@latest --fix-safe
 ```
 
 Checkbox, radio, range, selects, tablas y dialogs se dejan para revisión explícita.
