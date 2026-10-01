@@ -2,6 +2,19 @@
 
 CLI oficial para incorporar las reglas de ingeniería IIMP en un proyecto Next.js existente sin copiar el boilerplate sobre su código.
 
+> **Estado de distribución:** el código y sus pruebas están listos en este workspace, pero el paquete aún no se publica bajo el scope npm `@iimp`. Hasta que la organización otorgue permisos de publicación, los ejemplos `npx @iimp/adopt@latest` son la interfaz prevista y no un comando público disponible. Consulta el [mapa de artefactos](../../README.md#mapa-de-artefactos-y-documentación).
+
+## Ejecutar desde este repositorio
+
+Para probar el CLI antes de la publicación, desde la raíz de este repositorio:
+
+```bash
+npm install
+node packages/adopt/bin/iimp-adopt.mjs --dry-run --cwd /ruta/a/tu-proyecto
+```
+
+Una vez publicado como `@iimp/adopt`, los comandos de las secciones siguientes funcionarán con `npx`.
+
 ## Requisitos
 
 - Node.js 20.9 o superior.

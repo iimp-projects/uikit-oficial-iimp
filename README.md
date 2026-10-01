@@ -4,6 +4,18 @@ UI Kit oficial de Eventos IIMP. Basado en shadcn/ui y Tailwind CSS. Incluye **pr
 
 > Regla principal: las apps **componen** con este kit. No crean un sistema visual paralelo ni usan `<button>`, `<input>`, `<select>` o `<textarea>` nativos.
 
+## Mapa de artefactos y documentación
+
+El estándar se distribuye en tres piezas complementarias; no son tres shells visuales:
+
+| Artefacto | Uso | Estado de distribución | Documentación |
+| --- | --- | --- | --- |
+| `official-uikit-iimp` | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.1`). | Este README |
+| `templates/next-starter` | Boilerplate Git para aplicaciones Next.js nuevas. | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
+| `@iimp/adopt` | CLI para adoptar el estándar en una aplicación existente. | Código listo y probado localmente; publicación npm pendiente del scope/organización `@iimp`. | [README del CLI](./packages/adopt/README.md) |
+
+La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](./docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
+
 ## 1. Instalación
 
 ```bash
@@ -27,12 +39,14 @@ npm run check
 
 El starter incluye Next.js App Router, Tailwind v4, TypeScript estricto, ESLint sin warnings, tests, CI, seguridad base y la instalación idempotente de skills. Consulta [`templates/next-starter/README.md`](./templates/next-starter/README.md).
 
+> **Disponibilidad actual:** el starter depende de `@iimp/adopt` para `npm run setup`. Antes de usarlo fuera de este repositorio, hay que publicar ese CLI bajo el scope `@iimp`; mientras tanto, el starter y el CLI se validan juntos desde este checkout. No se debe presentar ese comando como disponible públicamente hasta completar dicha publicación.
+
 ### Actualizar una aplicación existente
 
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.8.0 --save-exact
+npm install official-uikit-iimp@0.8.1 --save-exact
 npm run check
 ```
 
@@ -40,9 +54,18 @@ La versión 0.8 añade `DashboardVersion`, mejora la truncación de breadcrumbs 
 
 ### Proyectos existentes: CLI de adopción
 
+`@iimp/adopt` todavía no está publicado en npm bajo el scope `@iimp`; por ello estos comandos son la interfaz planificada, no una instalación pública disponible hoy:
+
 ```bash
 npx @iimp/adopt@latest --dry-run
 npx @iimp/adopt@latest
+```
+
+Para validar el CLI desde este repositorio antes de su publicación:
+
+```bash
+npm install
+node packages/adopt/bin/iimp-adopt.mjs --dry-run --cwd /ruta/a/tu-proyecto
 ```
 
 El primer comando solo analiza. El segundo conecta el proyecto al estándar, instala las skills faltantes y genera `.iimp/ADOPTION_REPORT.md`. No actualiza una versión mayor de Next.js ni sobrescribe skills existentes silenciosamente. Consulta [`packages/adopt/README.md`](./packages/adopt/README.md).

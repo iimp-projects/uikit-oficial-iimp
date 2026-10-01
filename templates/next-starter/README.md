@@ -2,6 +2,8 @@
 
 Boilerplate oficial para proyectos nuevos de Eventos IIMP. Crea una aplicación Next.js con App Router, React, TypeScript estricto, Tailwind CSS v4, `official-uikit-iimp`, pruebas, CI y skills de agentes.
 
+Este es el segundo de los tres artefactos del estándar IIMP. Para el mapa completo consulta el [README del UI Kit](../../README.md#mapa-de-artefactos-y-documentación) y [Bootstrap y adopción](../../docs/16_PROJECT_BOOTSTRAP.md).
+
 Requiere Node.js 22.22.2 o superior.
 
 ## Crear un proyecto
@@ -74,6 +76,8 @@ import { appVersion } from "@/lib/project"
 ```
 
 ## Skills
+
+`npm run setup` delega la instalación idempotente de skills a `@iimp/adopt`. La publicación de ese CLI bajo el scope `@iimp` sigue pendiente; por lo tanto, el comando se usa desde un checkout que contenga el workspace del CLI hasta que se complete esa publicación. No debe usarse como una instrucción pública de instalación todavía.
 
 ```bash
 npm run setup
