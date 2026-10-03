@@ -141,6 +141,8 @@ radius
 
 Los componentes consumen tokens; nunca reciben conocimiento de la vertical.
 
+**Regla de pares:** toda superficie que use `bg-secondary` (o `bg-primary`) debe llevar su pareja `text-secondary-foreground` (o `text-primary-foreground`) en el mismo elemento, incluidos iconos, hover y focus. Sobre `secondary` el foreground (blanco en el tema oscuro) debe predominar; nunca heredar `text-foreground` de una variante ghost/outline. Preferir `variant="secondary"` de `Button` antes que `ghost` + `bg-secondary` manual. Los botones de cierre de `Dialog`/`Sheet` ya cumplen esto y tienen prueba (`close-button.test.tsx`).
+
 ## Buttons
 
 Las variantes comunican jerarquía e intención, no colores corporativos.

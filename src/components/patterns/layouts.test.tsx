@@ -179,3 +179,34 @@ describe("LanguageSwitcher", () => {
     expect(document.cookie).toContain("googtrans=/es/qu")
   })
 })
+
+describe("DashboardSidebarBrand logo", () => {
+  function renderBrand(props: Partial<React.ComponentProps<typeof DashboardSidebarBrand>> = {}) {
+    const { container } = render(
+      <DashboardLayout
+        sidebar={
+          <Sidebar collapsible="offcanvas">
+            <DashboardSidebarBrand title="IIMP Tesorería" {...props} />
+          </Sidebar>
+        }
+        header={<DashboardHeader navigation="Dashboard" />}
+      >
+        {null}
+      </DashboardLayout>
+    )
+    return container.querySelector<HTMLImageElement>('[data-slot="dashboard-sidebar-brand"] img')
+  }
+
+  it("default logo src is never a relative path (breaks on deep routes)", () => {
+    const img = renderBrand()
+    const src = img?.getAttribute("src") ?? ""
+    expect(src).not.toBe("")
+    expect(src).not.toMatch(/^\.{1,2}\//)
+    expect(src).toMatch(/^(data:|https?:|\/)/)
+  })
+
+  it("merges logoClassName onto the img", () => {
+    const img = renderBrand({ logoClassName: "h-[35px]" })
+    expect(img).toHaveClass("size-full", "object-contain", "h-[35px]")
+  })
+})

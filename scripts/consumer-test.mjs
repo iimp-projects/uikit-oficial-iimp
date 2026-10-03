@@ -1,7 +1,7 @@
 // Consumer contract test: pack official-uikit-iimp, install the tarball in a clean fixture app,
 // typecheck + server-render a component that uses only the public API.
 import { execSync } from "node:child_process"
-import { mkdtempSync, writeFileSync, mkdirSync, readdirSync, rmSync } from "node:fs"
+import { mkdtempSync, writeFileSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
 
@@ -59,4 +59,8 @@ run("npx tsx main.tsx", app)
 run(`node -e "for (const f of ['style.css','theme.css']) require('fs').accessSync(require.resolve('official-uikit-iimp/'+f))"`, app)
 run(`node -e "const fs=require('fs');const t=fs.readFileSync('node_modules/official-uikit-iimp/dist/index.js','utf8');if(!t.startsWith('\\"use client\\"'))process.exit(2)"`, app)
 run(`node -e "import('official-uikit-iimp/style.css').catch(()=>{});require('fs').accessSync(require.resolve('official-uikit-iimp/style.css'))"`, app)
+const bundle = readFileSync(join(app, "node_modules/official-uikit-iimp/dist/index.js"), "utf8")
+if (/["']\.\/[^"']*\.png["']/.test(bundle) || !bundle.includes("data:image/png;base64")) {
+  throw new Error("default logo must be an inlined data URI, not a relative asset path")
+}
 rmSync(out, { recursive: true, force: true })

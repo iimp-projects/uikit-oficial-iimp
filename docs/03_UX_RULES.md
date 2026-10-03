@@ -49,6 +49,8 @@ Un contexto visual es una unidad de decisión comprensible por sí misma: un dia
 
 `destructive` no es el último peldaño de una escala visual: expresa riesgo. En una confirmación destructiva puede ser la acción dominante, pero nunca debe usarse como color decorativo o corporativo.
 
+Cualquier superficie con `bg-secondary` debe llevar `text-secondary-foreground` (y lo mismo con `primary`): el foreground predomina sobre el color de marca, también en icono, hover y focus. No combinar `ghost`/`outline` con `bg-secondary` manual (hereda texto oscuro y el hover vuelve a `muted`); usar `variant="secondary"`.
+
 No elegir `secondary` automáticamente porque exista un segundo botón. Dos acciones suelen resolverse como Primary + Outline o Primary + Ghost. Usar Primary + Secondary solo cuando la alternativa tenga importancia real dentro del mismo contexto.
 
 Para `Cancelar` o `Cerrar`:

@@ -9,4 +9,5 @@ export default defineConfig({
   clean: true,
   splitting: false,
   external: ["react", "react-dom"],
+  loader: { ".png": "dataurl" },
 })

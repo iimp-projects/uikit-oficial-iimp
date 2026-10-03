@@ -20,7 +20,7 @@ El estándar se distribuye en tres piezas complementarias; no son tres shells vi
 
 | Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.8`).                                            | Este README                                              |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.9`).                                            | Este README                                              |
 | [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
 | [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.3`).                                            | [README del CLI](./packages/adopt/README.md)             |
 
@@ -56,9 +56,11 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.8.8 --save-exact
+npm install official-uikit-iimp@0.8.9 --save-exact
 npm run check
 ```
+
+**0.8.9** — `DashboardSidebarBrand`: el logo por defecto ahora va incrustado (data URI) en el bundle, por lo que carga en cualquier ruta (`/a/b/c`) sin que la app copie archivos; nuevo prop `logoClassName` para ajustar el `<img>`. Los botones de cierre de `Dialog` y `Sheet` usan `variant="secondary"` (`text-secondary-foreground`, hover correcto) en lugar de `ghost` + `bg-secondary`.
 
 La versión 0.8 añade `DashboardVersion`, mejora la truncación de breadcrumbs y convierte `LanguageSwitcher` en un menú accesible. `DashboardSidebarBrand` muestra el logo institucional por defecto. El prop anterior `icon` continúa por compatibilidad, pero está deprecado; reemplázalo gradualmente por `logoSrc`/`logoAlt` solo cuando realmente exista otra marca autorizada.
 
