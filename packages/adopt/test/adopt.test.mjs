@@ -73,6 +73,10 @@ test("configura strict mode sin borrar comentarios ni scripts", async () => {
     readFileSync(join(cwd, "src", "app", "globals.css"), "utf8"),
     /official-uikit-iimp\/theme.css/,
   );
+  assert.match(
+    readFileSync(join(cwd, "src", "app", "globals.css"), "utf8"),
+    /@source "\.\.\/\.\.\/node_modules\/official-uikit-iimp\/dist"/,
+  );
   assert.match(readFileSync(join(cwd, "bitacora.md"), "utf8"), /Bitácora/);
   assert.match(
     readFileSync(join(cwd, "CLAUDE.md"), "utf8"),

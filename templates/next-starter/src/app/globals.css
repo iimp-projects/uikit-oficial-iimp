@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "official-uikit-iimp/theme.css";
+/* Tailwind no escanea node_modules: sin esto faltan las utilidades (lg:grid, lg:flex...) de los patterns del kit. */
+@source "../../node_modules/official-uikit-iimp/dist";
 
 body {
   margin: 0;

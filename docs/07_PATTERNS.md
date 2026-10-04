@@ -5,6 +5,7 @@ Patterns = composiciones de primitives que representan una intención UX repetib
 ## 1. FormDialog
 
 Uso:
+
 - crear,
 - editar,
 - configurar.
@@ -23,6 +24,7 @@ Footer
 ```
 
 Reglas:
+
 - header consistente;
 - body scrollable si excede viewport;
 - footer estable;
@@ -34,20 +36,24 @@ Reglas:
 ## 2. InfoDialog
 
 Uso:
+
 - detalle,
 - explicación,
 - información no destructiva.
 
 Generalmente:
+
 - una acción `Cerrar` de baja jerarquía (`outline` o `ghost` según el contexto);
 - evitar footer complejo.
 
 ## 3. ConfirmDialog
 
 Uso:
+
 - confirmar una acción relevante no destructiva.
 
 Copy:
+
 - título específico;
 - consecuencia explícita;
 - botones con verbos reales.
@@ -57,12 +63,14 @@ La confirmación no destructiva es la acción Primary del dialog; cancelar no de
 ## 4. DestructiveDialog
 
 Uso:
+
 - eliminar,
 - anular,
 - revocar,
 - operación irreversible.
 
 Debe:
+
 - usar semántica destructive;
 - usar `destructive` como acción dominante del dialog, no `default`/Primary por color de marca;
 - explicar impacto.
@@ -72,17 +80,13 @@ Debe:
 API conceptual:
 
 ```tsx
-<FormField
-  label="Nombre"
-  required
-  description="..."
-  error="..."
->
+<FormField label="Nombre" required description="..." error="...">
   <Input />
 </FormField>
 ```
 
 Responsabilidad:
+
 - label,
 - description,
 - error,
@@ -99,6 +103,7 @@ Evitar Cards anidadas innecesarias como único mecanismo de agrupación.
 ## 7. DataTable
 
 Debe estandarizar cuando aplique:
+
 - columns,
 - row actions,
 - loading,
@@ -127,6 +132,7 @@ Debe resolver responsive wrapping.
 ## 9. EmptyState
 
 Debe permitir:
+
 - title,
 - description,
 - media/icon opcional,
@@ -138,6 +144,7 @@ Los nombres de props describen prioridad conceptual: la presentación debe respe
 ## 10. LoadingState
 
 Definir cuándo usar:
+
 - skeleton,
 - spinner,
 - progress.
@@ -147,6 +154,7 @@ Evitar spinner gigante para toda situación.
 ## 11. ErrorState
 
 Debe distinguir:
+
 - error de campo,
 - error local,
 - error de página,
@@ -155,8 +163,9 @@ Debe distinguir:
 ## 12. StatCard
 
 Uso:
+
 - KPI.
-No usar para cualquier bloque visual.
+  No usar para cualquier bloque visual.
 
 ## 13. StatusBadge
 
@@ -169,6 +178,21 @@ Ejemplo conceptual:
 ```
 
 El mapeo de negocio puede residir en la app si los estados son específicos del dominio; el UI Kit define estilos semánticos.
+
+## 13b. Armazón: LoginScreen y AppShell
+
+Son las dos pantallas base de toda aplicación. Se usan en vez de componer `AuthLayout`/`DashboardLayout` a mano.
+
+- `LoginScreen`: panel de marca + card con logo, título, error, botón de Google (con estado `loading`) y enlaces legales. Props: textos, `onSignIn` o `action`, `error`, `legal`.
+- `AppShell`: sidebar (marca + versión, menú agrupado con íconos y badges, usuario con cierre de sesión) + header (breadcrumb, idioma, notificaciones) + `main`. Props: `brand`, `navigation`, `currentPath`, `user`, `signOutAction`/`onSignOut`, `breadcrumbs`, `languageSwitcher`, `notifications`, `LinkComponent`, `children`.
+
+Reglas:
+
+- la app pasa menú, usuario y contenido; no copia el shell;
+- el ítem activo es el de `href` más largo que coincide con `currentPath`;
+- `disabled: true` muestra una vista pendiente sin enlace;
+- `AppShell` con `children` vacío deja el `main` vacío;
+- sin autenticación: el kit solo recibe el handler.
 
 ## 14. AuthLayout
 
@@ -230,6 +254,7 @@ Responsabilidad de la app:
 ## Creación de nuevos patterns
 
 Antes de crear:
+
 1. demostrar repetición real;
 2. definir intención UX;
 3. documentar anatomy;

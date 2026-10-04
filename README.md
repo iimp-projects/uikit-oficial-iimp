@@ -4,6 +4,41 @@ UI Kit oficial de Eventos IIMP. Basado en shadcn/ui y Tailwind CSS. Incluye **pr
 
 > Regla principal: las apps **componen** con este kit. No crean un sistema visual paralelo ni usan `<button>`, `<input>`, `<select>` o `<textarea>` nativos.
 
+## El armazón: login + dashboard ya hechos
+
+Un proyecto nuevo arranca con **dos pantallas listas**: el **login** (`/`) y el **dashboard** (`/dashboard`) con sidebar, header y un `main` vacío. Tú solo pones el menú y el contenido.
+
+```text
+/            → Login  (LoginScreen)
+/dashboard   → Armazón (AppShell): sidebar + header + main vacío
+```
+
+**Qué cambias (3 archivos en `src/`):**
+
+| Quieres…                                     | Edita                           |
+| -------------------------------------------- | ------------------------------- |
+| Nombre, tagline y versión del sistema        | `src/config/app.ts`             |
+| El menú del sidebar (grupos, íconos, badges) | `src/config/navigation.tsx`     |
+| Textos del login y conectar tu autenticación | `src/components/login-form.tsx` |
+| Contenido de cada vista                      | `src/app/(app)/<ruta>/page.tsx` |
+
+**Qué NO tocas:** el sidebar, el header (breadcrumb, idioma, notificaciones), el usuario con cierre de sesión, el estado activo del menú y el responsive. Viene en `AppShell`.
+
+**Agregar una vista nueva** (ejemplo `/procesamientos`):
+
+1. Crea `src/app/(app)/procesamientos/page.tsx` con tu contenido.
+2. Añade el ítem en `src/config/navigation.tsx`:
+
+```tsx
+{ title: "Procesamientos", href: "/procesamientos", icon: <FilesIcon /> }
+```
+
+El ítem activo, el breadcrumb y el menú móvil se actualizan solos.
+
+**Conectar tu autenticación:** el login (`handleSignIn`) y el cierre de sesión (`src/lib/auth-actions.ts`) son _placeholders_. Reemplázalos por tu proveedor (NextAuth, Server Action, Google Workspace…). El kit no hace autenticación.
+
+Ver el armazón en Storybook: **Armazón → Login** y **Armazón → Dashboard** (`npm run storybook`).
+
 ## Empieza aquí — elige solo una ruta
 
 No necesitas instalar todo manualmente ni copiar archivos de este repositorio.
@@ -20,9 +55,9 @@ El estándar se distribuye en tres piezas complementarias; no son tres shells vi
 
 | Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.8.9`).                                            | Este README                                              |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.0`).                                            | Este README                                              |
 | [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.6`).                                            | [README del CLI](./packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.7`).                                            | [README del CLI](./packages/adopt/README.md)             |
 
 La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
 
@@ -56,9 +91,11 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.8.9 --save-exact
+npm install official-uikit-iimp@0.9.0 --save-exact
 npm run check
 ```
+
+**0.9.0** — Nuevo armazón completo: `LoginScreen` (login) y `AppShell` (sidebar + header + main) que se configuran solo con el menú, el usuario y el contenido; el starter los trae listos. Corrige `SidebarMenuButton`/`SidebarMenuSubButton`: ya no marcan todos los ítems como activos (`data-active` solo se renderiza cuando es verdadero).
 
 **0.8.9** — `DashboardSidebarBrand`: el logo por defecto ahora va incrustado (data URI) en el bundle, por lo que carga en cualquier ruta (`/a/b/c`) sin que la app copie archivos; nuevo prop `logoClassName` para ajustar el `<img>`. Los botones de cierre de `Dialog` y `Sheet` usan `variant="secondary"` (`text-secondary-foreground`, hover correcto) en lugar de `ghost` + `bg-secondary`.
 
@@ -146,27 +183,29 @@ Antes de crear UI: busca un **pattern**; si no hay, un **primitive**; si no alca
 
 ### Patterns (composiciones listas)
 
-| Componente           | Cuándo usarlo                                                                                                                                                                      |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PageHeader`         | Título de página con descripción, breadcrumb y acciones.                                                                                                                           |
-| `FormField`          | Un campo con label, descripción, error y marca de obligatorio. Envuelve un `Input`, `Select`, etc.                                                                                 |
-| `FormSection`        | Agrupar campos relacionados bajo un título.                                                                                                                                        |
-| `SearchField`        | Búsqueda con debounce (300 ms por defecto).                                                                                                                                        |
-| `FilterBar`          | Barra de filtros con contador de filtros activos y botón "Limpiar filtros".                                                                                                        |
-| `DataCard`           | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho.                                                                                 |
-| `DataTable`          | Tabla de datos con carga (skeleton), estado vacío y click en fila.                                                                                                                 |
-| `StatCard`           | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono.                                                                                                       |
-| `StatusBadge`        | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`.                                                                                        |
-| `EmptyState`         | Cuando no hay datos: título, descripción y hasta dos acciones.                                                                                                                     |
-| `ErrorState`         | Error de página (`page`) o de bloque (`inline`) con botón de reintento.                                                                                                            |
-| `LoadingState`       | Carga con `spinner` o `skeleton`.                                                                                                                                                  |
-| `ConfirmDialog`      | Confirmar una acción normal (guardar, enviar).                                                                                                                                     |
-| `DestructiveDialog`  | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar".                                                                              |
-| `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                                                    |
-| `InfoDialog`         | Mostrar información sin acción.                                                                                                                                                    |
-| `AuthLayout`         | Shell de login (panel de marca + tu propia card). `brandTone` permite `primary` o `secondary`. No implementa autenticación.                                                        |
-| Familia `Dashboard*` | Shell autenticado con sidebar responsive, logo institucional, usuario/logout, versión, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
-| `LanguageSwitcher`   | Menú compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate.                                               |
+| Componente           | Cuándo usarlo                                                                                                                                                                                                                           |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PageHeader`         | Título de página con descripción, breadcrumb y acciones.                                                                                                                                                                                |
+| `FormField`          | Un campo con label, descripción, error y marca de obligatorio. Envuelve un `Input`, `Select`, etc.                                                                                                                                      |
+| `FormSection`        | Agrupar campos relacionados bajo un título.                                                                                                                                                                                             |
+| `SearchField`        | Búsqueda con debounce (300 ms por defecto).                                                                                                                                                                                             |
+| `FilterBar`          | Barra de filtros con contador de filtros activos y botón "Limpiar filtros".                                                                                                                                                             |
+| `DataCard`           | Card de pantallas de datos: título, contador, acciones (búsqueda/filtros) y tabla a todo el ancho.                                                                                                                                      |
+| `DataTable`          | Tabla de datos con carga (skeleton), estado vacío y click en fila.                                                                                                                                                                      |
+| `StatCard`           | Métrica con valor, tendencia (`up`/`down`), texto de apoyo (`hint`) e icono.                                                                                                                                                            |
+| `StatusBadge`        | Estado de un registro: `success`, `warning`, `destructive`, `info`, `default`, `secondary`.                                                                                                                                             |
+| `EmptyState`         | Cuando no hay datos: título, descripción y hasta dos acciones.                                                                                                                                                                          |
+| `ErrorState`         | Error de página (`page`) o de bloque (`inline`) con botón de reintento.                                                                                                                                                                 |
+| `LoadingState`       | Carga con `spinner` o `skeleton`.                                                                                                                                                                                                       |
+| `ConfirmDialog`      | Confirmar una acción normal (guardar, enviar).                                                                                                                                                                                          |
+| `DestructiveDialog`  | Confirmar una acción destructiva. Usa un verbo específico ("Eliminar participante"), nunca "Aceptar".                                                                                                                                   |
+| `FormDialog`         | Formulario dentro de un diálogo, con botones cancelar y enviar.                                                                                                                                                                         |
+| `InfoDialog`         | Mostrar información sin acción.                                                                                                                                                                                                         |
+| `LoginScreen`        | **Login completo**: panel de marca + card con logo, botón de Google, error, estado de carga y enlaces legales. Solo pasas textos y la función de ingreso.                                                                               |
+| `AppShell`           | **Dashboard completo**: sidebar con marca/menú/usuario/cierre de sesión + header con breadcrumb, idioma y notificaciones. Solo pasas menú, usuario y contenido.                                                                         |
+| `AuthLayout`         | Base de `LoginScreen` (panel de marca + tu propia card). Úsalo solo si necesitas un login distinto. `brandTone` permite `primary` o `secondary`.                                                                                        |
+| Familia `Dashboard*` | Base de `AppShell`. Úsala solo si necesitas un shell distinto: sidebar con sidebar responsive, logo institucional, usuario/logout, versión, header, notificaciones y main libre. `sidebarTone` permite `primary`, `secondary` o `base`. |
+| `LanguageSwitcher`   | Menú compacto de idiomas por códigos ISO/BCP 47. Puede notificar a tu i18n o, temporalmente, escribir la cookie de Google Translate.                                                                                                    |
 
 ### Primitives
 
@@ -178,7 +217,64 @@ Todos se importan de `official-uikit-iimp`. Los tipos incluyen la documentación
 
 ## 3. Recetas
 
-### Shell autenticado
+### Login y dashboard (armazón)
+
+```tsx
+// app/page.tsx — login
+import { LoginScreen } from "official-uikit-iimp";
+
+<LoginScreen
+  systemName="IIMP Tesorería"
+  systemTagline="Instituto de Ingenieros de Minas del Perú"
+  eyebrow="Sistema de Constancias de Detracciones"
+  headline="Del PDF masivo de SUNAT a la constancia individual, en minutos."
+  description="Carga el reporte, valida cada registro y envía las constancias."
+  features={[
+    "Parser estándar",
+    "Confirmación humana",
+    "Despacho institucional",
+  ]}
+  subtitle="Ingresa utilizando tu correo corporativo (@iimp.org.pe)."
+  action={loginAction} // o onSignIn={...}
+  legal={{ privacyHref: "/politica-privacidad", termsHref: "/terminos-uso" }}
+/>;
+```
+
+```tsx
+// app/(app)/layout.tsx — dashboard
+import { AppShell, LanguageSwitcher } from "official-uikit-iimp";
+
+<AppShell
+  brand={{ title: "IIMP Tesorería", subtitle: "0.1.0" }}
+  navigation={[
+    { items: [{ title: "Dashboard", href: "/", icon: <SquaresFour /> }] },
+    {
+      label: "Detracciones SUNAT",
+      items: [
+        { title: "Procesamientos", href: "/procesamientos", icon: <Files /> },
+        { title: "Constancias", href: "/constancias", icon: <Certificate /> },
+      ],
+    },
+  ]}
+  currentPath={pathname}
+  user={{ name: user.name, email: user.email }}
+  signOutAction={logout}
+  breadcrumbs={[
+    { label: "Tesorería", href: "/" },
+    { label: "Dashboard general" },
+  ]}
+  languageSwitcher={<LanguageSwitcher languages={["es", "en"]} />}
+  LinkComponent={Link} // next/link
+>
+  {children}
+</AppShell>;
+```
+
+`AppShell` marca como activo el ítem con la ruta más específica, cierra el menú en móvil al navegar, muestra el cierre de sesión solo si pasas `signOutAction` u `onSignOut`, y deja el `main` vacío si no pasas `children`.
+
+### Shell a medida (avanzado)
+
+Si `AppShell` no alcanza, compón las piezas base:
 
 ```tsx
 import {
@@ -227,7 +323,7 @@ import {
 </DashboardLayout>;
 ```
 
-`AppSidebar` compone los primitives `Sidebar*` oficiales. Routing, permisos, sesión, navegación y logout permanecen en la app. Ver receta completa en `docs/03_UX_RULES.md`.
+Routing, permisos, sesión y logout permanecen en la app. Ver receta completa en `docs/03_UX_RULES.md`.
 
 `DashboardSidebarBrand` usa por defecto el logo PNG institucional en un recuadro blanco. Si un producto autorizado necesita otra marca, pasa `logoSrc` y `logoAlt`; no hace falta crear ni mantener iconos por sistema.
 

@@ -70,21 +70,26 @@ No copies primitives shadcn dentro de la aplicación. Si falta un componente o p
 
 Tailwind se utiliza principalmente para layout. La identidad visual proviene de tokens semánticos y de los componentes oficiales.
 
-## Personalización del dashboard y login
+## Login y dashboard ya montados
 
-`AuthLayout` y `DashboardLayout` son shells visuales. La aplicación pasa su contenido, acciones, navegación y autenticación mediante props/children; actualizar el paquete no sobrescribe ese código.
+El proyecto arranca con dos pantallas listas: **login** en `/` y **dashboard** en `/dashboard` (sidebar + header + `main` vacío). Solo configuras el menú y el contenido.
 
-El header puede mostrar la versión pública de la aplicación con `DashboardVersion`:
+| Quieres…                                     | Edita                           |
+| -------------------------------------------- | ------------------------------- |
+| Nombre, tagline y versión                    | `src/config/app.ts`             |
+| El menú del sidebar (grupos, íconos, badges) | `src/config/navigation.tsx`     |
+| Textos del login y tu autenticación          | `src/components/login-form.tsx` |
+| Contenido de cada vista                      | `src/app/(app)/<ruta>/page.tsx` |
+
+Para **agregar una vista**: crea `src/app/(app)/mi-vista/page.tsx` y añade un ítem en `src/config/navigation.tsx`:
 
 ```tsx
-import { DashboardHeader, DashboardVersion } from "official-uikit-iimp"
-import { appVersion } from "@/lib/project"
-
-;<DashboardHeader
-  navigation={<AppBreadcrumb />}
-  status={<DashboardVersion version={appVersion} />}
-/>
+{ title: "Mi vista", href: "/mi-vista", icon: <FilesIcon /> }
 ```
+
+El ítem activo, el breadcrumb y el menú móvil se actualizan solos. El sidebar, el header (idioma y notificaciones), el usuario y el responsive vienen de `AppShell` y `LoginScreen` del UI Kit: no los copies ni los modifiques.
+
+El ingreso (`handleSignIn` en `login-form.tsx`) y el cierre de sesión (`src/lib/auth-actions.ts`) son _placeholders_: conecta tu proveedor de autenticación ahí. La versión pública (`v0.0.1`) aparece bajo el nombre del sistema y se sincroniza con `package.json`.
 
 ## Skills
 

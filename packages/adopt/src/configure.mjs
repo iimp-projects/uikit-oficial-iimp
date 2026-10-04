@@ -6,7 +6,7 @@ import {
   renameSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, sep } from "node:path";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import { STRICT_COMPILER_OPTIONS, UI_KIT_VERSION } from "./constants.mjs";
 import { ensureBitacora } from "./bitacora.mjs";
@@ -165,6 +165,13 @@ function configureStyles(cwd) {
     imports.push('@import "tailwindcss";');
   if (!current.includes("official-uikit-iimp/theme.css"))
     imports.push('@import "official-uikit-iimp/theme.css";');
+  if (!current.includes("official-uikit-iimp/dist")) {
+    // Tailwind no escanea node_modules: sin esto faltan utilidades (lg:grid, lg:flex...) de los patterns.
+    const toRoot = relative(dirname(path), join(cwd, "node_modules"));
+    imports.push(
+      `/* Tailwind no escanea node_modules: sin esto faltan las utilidades de los patterns del kit. */\n@source "${toRoot.split(sep).join("/")}/official-uikit-iimp/dist";`,
+    );
+  }
   if (imports.length) write(path, `${imports.join("\n")}\n${current}`);
 
   const postcssPath = join(cwd, "postcss.config.mjs");
