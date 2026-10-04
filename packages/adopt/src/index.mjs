@@ -7,7 +7,11 @@ export {
 } from "./constants.mjs";
 export { parseArguments, runCli } from "./cli.mjs";
 export { migrateSafeNativeControls } from "./migrate-ui.mjs";
-export { appendBitacora, ensureBitacora } from "./bitacora.mjs";
+export {
+  appendBitacora,
+  ensureBitacora,
+  findDuplicateBitacoras,
+} from "./bitacora.mjs";
 export {
   discoverRecommendedSkills,
   isSkillInstalled,

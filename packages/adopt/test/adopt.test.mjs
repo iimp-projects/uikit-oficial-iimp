@@ -4,12 +4,17 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { appendBitacora, ensureBitacora } from "../src/bitacora.mjs";
+import {
+  appendBitacora,
+  ensureBitacora,
+  findDuplicateBitacoras,
+} from "../src/bitacora.mjs";
 import { applyConfiguration, dependencyCommands } from "../src/configure.mjs";
 import { BASELINE_SKILLS } from "../src/constants.mjs";
 import { migrateSafeNativeControls } from "../src/migrate-ui.mjs";
 import { analyzeProject, recommendationQueries } from "../src/analyze.mjs";
 import {
+  installSkills,
   isRelevantSkill,
   missingBaselineSkills,
   parseSkillSearch,
@@ -211,4 +216,50 @@ test("las recomendaciones salen solo de las dependencias del proyecto", () => {
     ),
     false,
   );
+});
+
+test("una skill inexistente no aborta la instalación de las demás", () => {
+  const calls = [];
+  const run = (_command, args) => {
+    calls.push(args);
+    const names = args.slice(
+      args.indexOf("--skill") + 1,
+      args.indexOf("--agent"),
+    );
+    if (names.includes("fantasma")) throw new Error("No matching skills");
+  };
+  const failed = installSkills(
+    "/tmp",
+    [
+      { source: "https://github.com/a/b", name: "buena" },
+      { source: "https://github.com/a/b", name: "fantasma" },
+    ],
+    run,
+  );
+  assert.deepEqual(failed, [
+    { source: "https://github.com/a/b", name: "fantasma" },
+  ]);
+  assert.ok(
+    calls.some((args) => args.includes("buena") && !args.includes("fantasma")),
+  );
+});
+
+test("las recomendaciones también leen README y docs del proyecto", () => {
+  const queries = recommendationQueries({
+    dependencies: { next: "16" },
+    docsText: "Usamos Prisma con PostgreSQL y Redis. Nada de nextjs aquí.",
+    detected: {},
+  });
+  assert.deepEqual(
+    queries.map(({ query }) => query),
+    ["nextjs", "prisma", "postgresql"],
+  );
+});
+
+test("detecta una segunda bitácora en docs/", async () => {
+  const cwd = await mkdtemp(join(tmpdir(), "iimp-bitacora-"));
+  ensureBitacora(cwd);
+  mkdirSync(join(cwd, "docs"));
+  writeFileSync(join(cwd, "docs", "BITACORA.md"), "# otra\n");
+  assert.deepEqual(findDuplicateBitacoras(cwd), ["docs/BITACORA.md"]);
 });

@@ -110,7 +110,7 @@ Volver a analizar recomendaciones:
 npx @nrivera-iimp/adopt@latest --skills-only --recommend-skills
 ```
 
-`find-skills` se instala al final del baseline. Las recomendaciones se generan desde las dependencias del `package.json` (Next, React, Tailwind, Zod, Vitest, Prisma, Supabase, AWS, Terraform, etc.). Solo se ofrecen skills cuyo nombre corresponde a una tecnología detectada y se descartan las de otros stacks (Expo, Cloudflare, Clerk si no se usa, etc.); no se hacen búsquedas genéricas. Nunca se instala nada sin elegirlo.
+`find-skills` se instala al final del baseline. Las recomendaciones se generan desde las dependencias del `package.json` y desde lo que mencionan `README.md` y `docs/*.md` (útil cuando la tecnología está planificada pero aún no instalada) (Next, React, Tailwind, Zod, Vitest, Prisma, Supabase, AWS, Terraform, etc.). Solo se ofrecen skills cuyo nombre corresponde a una tecnología detectada y se descartan las de otros stacks (Expo, Cloudflare, Clerk si no se usa, etc.); no se hacen búsquedas genéricas. Nunca se instala nada sin elegirlo.
 
 ## Next.js
 

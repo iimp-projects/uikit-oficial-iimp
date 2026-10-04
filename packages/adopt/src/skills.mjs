@@ -7,6 +7,7 @@ import { BASELINE_SKILLS } from "./constants.mjs";
 import { foreignKeywords, recommendationQueries } from "./analyze.mjs";
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, "g");
+const MAX_PER_QUERY = 3;
 const SKILL_AGENTS = ["claude-code", "codex", "gemini-cli"];
 const SKILL_DIRECTORIES = [
   ".agents/skills",
@@ -35,28 +36,48 @@ function groupedBySource(skills) {
   return groups;
 }
 
-export function installSkills(cwd, skills) {
+function addSkills(run, cwd, source, names) {
+  run(
+    "npx",
+    [
+      "-y",
+      "skills",
+      "add",
+      source,
+      "--skill",
+      ...names,
+      "--agent",
+      ...SKILL_AGENTS,
+      "--copy",
+      "-y",
+    ],
+    { cwd, stdio: "inherit" },
+  );
+}
+
+export function installSkills(cwd, skills, run = execFileSync) {
+  const failed = [];
   for (const [source, names] of groupedBySource(skills)) {
-    execFileSync(
-      "npx",
-      [
-        "-y",
-        "skills",
-        "add",
-        source,
-        "--skill",
-        ...names,
-        "--agent",
-        ...SKILL_AGENTS,
-        "--copy",
-        "-y",
-      ],
-      {
-        cwd,
-        stdio: "inherit",
-      },
-    );
+    try {
+      addSkills(run, cwd, source, names);
+    } catch {
+      for (const name of names) {
+        try {
+          addSkills(run, cwd, source, [name]);
+        } catch {
+          failed.push({ source, name });
+        }
+      }
+    }
   }
+  if (failed.length) {
+    console.warn(
+      `\nNo se pudieron instalar ${failed.length} skill(s) (el registro puede listar skills que el repositorio ya no publica):`,
+    );
+    for (const { source, name } of failed)
+      console.warn(`  - ${name} (${source})`);
+  }
+  return failed;
 }
 
 function installsToNumber(value, suffix) {
@@ -104,6 +125,7 @@ export function discoverRecommendedSkills(cwd, analysis) {
   const queries = recommendationQueries(analysis);
   const excluded = foreignKeywords(queries);
   for (const { query, keywords } of queries) {
+    const perQuery = [];
     let result = "";
     try {
       result = execFileSync("npx", ["-y", "skills", "find", query], {
@@ -121,14 +143,20 @@ export function discoverRecommendedSkills(cwd, analysis) {
         BASELINE_SKILLS.some(({ name }) => name === skill.name)
       )
         continue;
-      const previous = found.get(skill.name);
-      if (!previous || previous.installs < skill.installs)
-        found.set(skill.name, skill);
+      perQuery.push(skill);
     }
+    perQuery
+      .sort((a, b) => b.installs - a.installs)
+      .slice(0, MAX_PER_QUERY)
+      .forEach((skill) => {
+        const previous = found.get(skill.name);
+        if (!previous || previous.installs < skill.installs)
+          found.set(skill.name, skill);
+      });
   }
   return [...found.values()]
     .sort((a, b) => b.installs - a.installs)
-    .slice(0, 12);
+    .slice(0, 15);
 }
 
 export async function selectRecommendedSkills(recommendations) {

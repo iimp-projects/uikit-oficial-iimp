@@ -14,7 +14,7 @@ import {
   missingBaselineSkills,
   selectRecommendedSkills,
 } from "./skills.mjs";
-import { appendBitacora } from "./bitacora.mjs";
+import { appendBitacora, findDuplicateBitacoras } from "./bitacora.mjs";
 
 function help() {
   console.log(
@@ -123,6 +123,12 @@ export async function runCli(args) {
     const selected = await selectRecommendedSkills(recommendations);
     if (selected.length) installSkills(options.cwd, selected);
   }
+
+  const duplicates = findDuplicateBitacoras(options.cwd);
+  if (duplicates.length)
+    console.warn(
+      `\nAviso: existe más de una bitácora (${duplicates.join(", ")}). La oficial es bitacora.md en la raíz: traslada su contenido allí y actualiza las referencias en AGENTS.md y README.md.`,
+    );
 
   appendBitacora(
     options.cwd,

@@ -1,4 +1,9 @@
-import { appendFileSync, existsSync, writeFileSync } from "node:fs";
+import {
+  appendFileSync,
+  existsSync,
+  readdirSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 
 export const BITACORA_FILE = "bitacora.md";
@@ -36,4 +41,22 @@ export function appendBitacora(cwd, summary, now = new Date()) {
   const path = ensureBitacora(cwd);
   appendFileSync(path, `- ${timestamp(now)} America/Lima — ${summary}\n`);
   return path;
+}
+
+function listNames(directory) {
+  try {
+    return readdirSync(directory);
+  } catch {
+    return [];
+  }
+}
+
+export function findDuplicateBitacoras(cwd) {
+  const found = [];
+  for (const name of listNames(join(cwd, "docs")))
+    if (name.toLowerCase() === "bitacora.md") found.push(`docs/${name}`);
+  for (const name of listNames(cwd))
+    if (name.toLowerCase() === "bitacora.md" && name !== BITACORA_FILE)
+      found.push(name);
+  return found;
 }

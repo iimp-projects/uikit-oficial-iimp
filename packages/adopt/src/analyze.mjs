@@ -39,6 +39,20 @@ function collectSourceFiles(directory, files = []) {
   return files;
 }
 
+const MAX_DOC_BYTES = 200_000;
+
+export function readProjectDocs(cwd) {
+  const files = [join(cwd, "README.md")];
+  const docs = join(cwd, "docs");
+  if (existsSync(docs))
+    for (const entry of readdirSync(docs))
+      if (entry.toLowerCase().endsWith(".md")) files.push(join(docs, entry));
+  return files
+    .filter((file) => existsSync(file))
+    .map((file) => readFileSync(file, "utf8").slice(0, MAX_DOC_BYTES))
+    .join("\n");
+}
+
 export function detectPackageManager(cwd) {
   if (existsSync(join(cwd, "pnpm-lock.yaml"))) return "pnpm";
   if (existsSync(join(cwd, "yarn.lock"))) return "yarn";
@@ -97,6 +111,7 @@ export function analyzeProject(cwd) {
     packageJson,
     dependencies,
     detected,
+    docsText: readProjectDocs(cwd),
     nativeUsage,
     hasTsconfig: existsSync(join(cwd, "tsconfig.json")),
     hasEslint: [
@@ -113,7 +128,12 @@ export function analyzeProject(cwd) {
 }
 
 const DEPENDENCY_SIGNALS = [
-  { deps: ["next"], query: "nextjs", keywords: ["next"] },
+  {
+    deps: ["next"],
+    query: "nextjs",
+    keywords: ["next"],
+    mentions: ["next.js", "nextjs"],
+  },
   { deps: ["react"], query: "react", keywords: ["react"] },
   { deps: ["tailwindcss"], query: "tailwind", keywords: ["tailwind"] },
   { deps: ["zod"], query: "zod", keywords: ["zod"] },
@@ -128,6 +148,7 @@ const DEPENDENCY_SIGNALS = [
     deps: ["next-auth", "@auth/core"],
     query: "nextjs authentication",
     keywords: ["auth"],
+    mentions: ["next-auth", "nextauth", "auth.js"],
   },
   { deps: ["@clerk/nextjs"], query: "clerk", keywords: ["clerk"] },
   { deps: ["better-auth"], query: "better-auth", keywords: ["better-auth"] },
@@ -137,7 +158,12 @@ const DEPENDENCY_SIGNALS = [
     keywords: ["prisma"],
   },
   { deps: ["drizzle-orm"], query: "drizzle", keywords: ["drizzle"] },
-  { deps: ["pg", "postgres"], query: "postgresql", keywords: ["postgres"] },
+  {
+    deps: ["pg", "postgres"],
+    query: "postgresql",
+    keywords: ["postgres"],
+    mentions: ["postgres", "postgresql"],
+  },
   { deps: ["mysql", "mysql2"], query: "mysql", keywords: ["mysql"] },
   {
     deps: ["@supabase/supabase-js"],
@@ -147,20 +173,34 @@ const DEPENDENCY_SIGNALS = [
   { deps: ["firebase"], query: "firebase", keywords: ["firebase"] },
   { deps: ["stripe"], query: "stripe", keywords: ["stripe"] },
   { deps: ["@sentry/nextjs"], query: "sentry", keywords: ["sentry"] },
-  { prefix: "@aws-sdk/", query: "aws serverless", keywords: ["aws"] },
+  {
+    prefix: "@aws-sdk/",
+    query: "aws serverless",
+    keywords: ["aws"],
+    mentions: ["aws", "amazon s3", "lambda"],
+  },
 ];
+
+function mentioned(text, terms) {
+  return terms.some((term) => {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, "i").test(text);
+  });
+}
 
 export function recommendationQueries(analysis) {
   const names = Object.keys(analysis.dependencies ?? {});
+  const docs = analysis.docsText ?? "";
   const queries = [];
   for (const signal of DEPENDENCY_SIGNALS) {
-    const present = signal.prefix
+    const inDependencies = signal.prefix
       ? names.some((name) => name.startsWith(signal.prefix))
       : signal.deps.some((name) => names.includes(name));
-    if (present)
+    const inDocs = mentioned(docs, signal.mentions ?? signal.keywords);
+    if (inDependencies || inDocs)
       queries.push({ query: signal.query, keywords: signal.keywords });
   }
-  if (analysis.detected?.terraform)
+  if (analysis.detected?.terraform || mentioned(docs, ["terraform"]))
     queries.push({ query: "terraform", keywords: ["terraform"] });
   return queries;
 }
