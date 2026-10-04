@@ -112,18 +112,77 @@ export function analyzeProject(cwd) {
   };
 }
 
+const DEPENDENCY_SIGNALS = [
+  { deps: ["next"], query: "nextjs", keywords: ["next"] },
+  { deps: ["react"], query: "react", keywords: ["react"] },
+  { deps: ["tailwindcss"], query: "tailwind", keywords: ["tailwind"] },
+  { deps: ["zod"], query: "zod", keywords: ["zod"] },
+  { deps: ["vitest"], query: "vitest", keywords: ["vitest"] },
+  {
+    deps: ["@tanstack/react-query"],
+    query: "tanstack query",
+    keywords: ["tanstack", "react-query"],
+  },
+  { deps: ["@trpc/server", "@trpc/client"], query: "trpc", keywords: ["trpc"] },
+  {
+    deps: ["next-auth", "@auth/core"],
+    query: "nextjs authentication",
+    keywords: ["auth"],
+  },
+  { deps: ["@clerk/nextjs"], query: "clerk", keywords: ["clerk"] },
+  { deps: ["better-auth"], query: "better-auth", keywords: ["better-auth"] },
+  {
+    deps: ["prisma", "@prisma/client"],
+    query: "prisma",
+    keywords: ["prisma"],
+  },
+  { deps: ["drizzle-orm"], query: "drizzle", keywords: ["drizzle"] },
+  { deps: ["pg", "postgres"], query: "postgresql", keywords: ["postgres"] },
+  { deps: ["mysql", "mysql2"], query: "mysql", keywords: ["mysql"] },
+  {
+    deps: ["@supabase/supabase-js"],
+    query: "supabase",
+    keywords: ["supabase"],
+  },
+  { deps: ["firebase"], query: "firebase", keywords: ["firebase"] },
+  { deps: ["stripe"], query: "stripe", keywords: ["stripe"] },
+  { deps: ["@sentry/nextjs"], query: "sentry", keywords: ["sentry"] },
+  { prefix: "@aws-sdk/", query: "aws serverless", keywords: ["aws"] },
+];
+
 export function recommendationQueries(analysis) {
-  const queries = [
-    "nextjs react typescript",
-    "web security",
-    "testing quality assurance",
-  ];
-  if (analysis.detected.auth) queries.push("nextjs authentication");
-  if (analysis.detected.prisma) queries.push("prisma database");
-  if (analysis.detected.drizzle) queries.push("drizzle database");
-  if (analysis.detected.postgres) queries.push("postgresql");
-  if (analysis.detected.mysql) queries.push("mysql");
-  if (analysis.detected.aws) queries.push("aws serverless");
-  if (analysis.detected.terraform) queries.push("terraform");
+  const names = Object.keys(analysis.dependencies ?? {});
+  const queries = [];
+  for (const signal of DEPENDENCY_SIGNALS) {
+    const present = signal.prefix
+      ? names.some((name) => name.startsWith(signal.prefix))
+      : signal.deps.some((name) => names.includes(name));
+    if (present)
+      queries.push({ query: signal.query, keywords: signal.keywords });
+  }
+  if (analysis.detected?.terraform)
+    queries.push({ query: "terraform", keywords: ["terraform"] });
   return queries;
+}
+
+const OTHER_STACKS = [
+  "expo",
+  "native",
+  "cloudflare",
+  "gsap",
+  "flutter",
+  "angular",
+  "vue",
+  "svelte",
+  "nuxt",
+  "remix",
+  "astro",
+];
+
+export function foreignKeywords(queries) {
+  const own = new Set(queries.flatMap(({ keywords }) => keywords));
+  const all = DEPENDENCY_SIGNALS.flatMap(({ keywords }) => keywords);
+  return [...new Set([...all, ...OTHER_STACKS])].filter(
+    (keyword) => !own.has(keyword),
+  );
 }

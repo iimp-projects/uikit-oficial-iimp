@@ -191,7 +191,7 @@ function configurePrettier(cwd) {
   if (!existsSync(join(cwd, ".prettierignore")))
     write(
       join(cwd, ".prettierignore"),
-      ".next\ncoverage\ndist\nnode_modules\npublic\n",
+      ".next\ncoverage\ndist\nnext-env.d.ts\nnode_modules\npublic\n",
     );
 }
 

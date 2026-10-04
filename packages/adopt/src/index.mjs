@@ -12,5 +12,6 @@ export {
   discoverRecommendedSkills,
   isSkillInstalled,
   missingBaselineSkills,
+  isRelevantSkill,
   parseSkillSearch,
 } from "./skills.mjs";

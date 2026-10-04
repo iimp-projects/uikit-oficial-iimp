@@ -10,7 +10,7 @@ Todos los proyectos nuevos parten de una base Next.js reproducible. Los proyecto
 | -------------------------------------------------------------------------- | ------------------------------------------------- | --------------------------- | --------------------------------------------------------- |
 | [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.8.9`).        | [README raíz](../README.md)                               |
 | `templates/next-starter`                                                   | Boilerplate para aplicaciones Next.js nuevas.     | Parte de este repositorio.  | [README del starter](../templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI de adopción para aplicaciones existentes.     | Publicado en npm (`0.1.4`). | [README del CLI](../packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI de adopción para aplicaciones existentes.     | Publicado en npm (`0.1.5`). | [README del CLI](../packages/adopt/README.md)             |
 
 No son tres shells visuales. `AuthLayout` y `DashboardLayout` son patterns del primer artefacto; el starter y el CLI son mecanismos de distribución/adopción.
 
@@ -75,7 +75,7 @@ El starter y la adopción completa crean una `bitacora.md` en la raíz. Es el re
 npm run bitacora -- "Se añadió la validación de RUC; npm run check pasó."
 ```
 
-La regla está disponible en `AGENTS.md` y se enlaza explícitamente desde `CLAUDE.md` y `GEMINI.md`. Las skills base se agregan con `skills add --agent "*" --copy`: el instalador las deja disponibles para los agentes compatibles y detecta antes las rutas `.agents/skills`, `.codex/skills`, `.claude/skills` y `.gemini/skills` para no duplicar una skill ya instalada.
+La regla está disponible en `AGENTS.md` y se enlaza explícitamente desde `CLAUDE.md` y `GEMINI.md`. Las skills base se agregan con `skills add --agent claude-code codex gemini-cli --copy`: el instalador las deja disponibles para Claude, Codex y Gemini sin crear carpetas de otros agentes y detecta antes las rutas `.agents/skills`, `.codex/skills`, `.claude/skills` y `.gemini/skills` para no duplicar una skill ya instalada.
 
 ## Zero errors
 

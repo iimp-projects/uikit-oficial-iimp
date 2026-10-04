@@ -4,9 +4,10 @@ import { join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { BASELINE_SKILLS } from "./constants.mjs";
-import { recommendationQueries } from "./analyze.mjs";
+import { foreignKeywords, recommendationQueries } from "./analyze.mjs";
 
 const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, "g");
+const SKILL_AGENTS = ["claude-code", "codex", "gemini-cli"];
 const SKILL_DIRECTORIES = [
   ".agents/skills",
   ".codex/skills",
@@ -46,7 +47,7 @@ export function installSkills(cwd, skills) {
         "--skill",
         ...names,
         "--agent",
-        "*",
+        ...SKILL_AGENTS,
         "--copy",
         "-y",
       ],
@@ -80,9 +81,29 @@ export function parseSkillSearch(outputText) {
   return results;
 }
 
+function nameTokens(name) {
+  return name
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+function matchesKeyword(tokens, keyword) {
+  return tokens.some((token) => token === keyword || token === `${keyword}js`);
+}
+
+export function isRelevantSkill(skill, keywords, excluded = []) {
+  const tokens = nameTokens(skill.name);
+  const origin = [...tokens, ...nameTokens(skill.source)];
+  if (excluded.some((keyword) => matchesKeyword(origin, keyword))) return false;
+  return keywords.some((keyword) => matchesKeyword(tokens, keyword));
+}
+
 export function discoverRecommendedSkills(cwd, analysis) {
   const found = new Map();
-  for (const query of recommendationQueries(analysis)) {
+  const queries = recommendationQueries(analysis);
+  const excluded = foreignKeywords(queries);
+  for (const { query, keywords } of queries) {
     let result = "";
     try {
       result = execFileSync("npx", ["-y", "skills", "find", query], {
@@ -94,6 +115,7 @@ export function discoverRecommendedSkills(cwd, analysis) {
       result = `${error?.stdout ?? ""}\n${error?.stderr ?? ""}`;
     }
     for (const skill of parseSkillSearch(result)) {
+      if (!isRelevantSkill(skill, keywords, excluded)) continue;
       if (
         isSkillInstalled(cwd, skill.name) ||
         BASELINE_SKILLS.some(({ name }) => name === skill.name)

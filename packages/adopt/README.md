@@ -80,7 +80,7 @@ La instalación es idempotente. Se busca cada skill en:
 
 Si una skill ya existe, se conserva. No se actualiza ni sobrescribe silenciosamente.
 
-Para instalar una skill nueva, el CLI delega en `npx skills add --agent "*" --copy`. Así se replica en los agentes compatibles (incluidos Codex, Claude y Gemini) sin depender de un nombre de agente particular.
+Para instalar una skill nueva, el CLI delega en `npx skills add --agent claude-code codex gemini-cli --copy`. Solo se crean los directorios de esos agentes (`.agents/skills` y `.claude/skills`); no se generan carpetas para los más de 50 agentes que soporta `skills`.
 
 ## Bitácora
 
@@ -110,7 +110,7 @@ Volver a analizar recomendaciones:
 npx @nrivera-iimp/adopt@latest --skills-only --recommend-skills
 ```
 
-`find-skills` se instala al final del baseline. Las recomendaciones se generan desde dependencias y archivos detectados —por ejemplo Prisma, PostgreSQL, AWS o Terraform—; el usuario no tiene que escoger categorías previamente.
+`find-skills` se instala al final del baseline. Las recomendaciones se generan desde las dependencias del `package.json` (Next, React, Tailwind, Zod, Vitest, Prisma, Supabase, AWS, Terraform, etc.). Solo se ofrecen skills cuyo nombre corresponde a una tecnología detectada y se descartan las de otros stacks (Expo, Cloudflare, Clerk si no se usa, etc.); no se hacen búsquedas genéricas. Nunca se instala nada sin elegirlo.
 
 ## Next.js
 

@@ -1,3 +1,8 @@
 import iimpNextStrict from "official-uikit-iimp/eslint/next-strict"
 
-export default iimpNextStrict
+const config = [
+  { ignores: [".agents/**", ".claude/**", ".iimp/**"] },
+  ...iimpNextStrict,
+]
+
+export default config

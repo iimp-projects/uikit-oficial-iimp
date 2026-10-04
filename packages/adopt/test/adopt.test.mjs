@@ -4,12 +4,16 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { analyzeProject } from "../src/analyze.mjs";
 import { appendBitacora, ensureBitacora } from "../src/bitacora.mjs";
 import { applyConfiguration, dependencyCommands } from "../src/configure.mjs";
 import { BASELINE_SKILLS } from "../src/constants.mjs";
 import { migrateSafeNativeControls } from "../src/migrate-ui.mjs";
-import { missingBaselineSkills, parseSkillSearch } from "../src/skills.mjs";
+import { analyzeProject, recommendationQueries } from "../src/analyze.mjs";
+import {
+  isRelevantSkill,
+  missingBaselineSkills,
+  parseSkillSearch,
+} from "../src/skills.mjs";
 
 async function fixture() {
   const cwd = await mkdtemp(join(tmpdir(), "iimp-adopt-"));
@@ -178,4 +182,33 @@ test("convierte solamente controles HTML seguros", async () => {
   );
   assert.match(content, /<Button>Guardar<\/Button>/);
   assert.match(content, /<input type="checkbox"/);
+});
+
+test("las recomendaciones salen solo de las dependencias del proyecto", () => {
+  const queries = recommendationQueries({
+    dependencies: { next: "16", react: "19", zod: "4" },
+    detected: {},
+  });
+  assert.deepEqual(
+    queries.map(({ query }) => query),
+    ["nextjs", "react", "zod"],
+  );
+  const react = queries.find(({ query }) => query === "react");
+  assert.equal(
+    isRelevantSkill(
+      {
+        source: "vercel-labs/agent-skills",
+        name: "vercel-react-best-practices",
+      },
+      react.keywords,
+    ),
+    true,
+  );
+  assert.equal(
+    isRelevantSkill(
+      { source: "microsoft/azure-skills", name: "azure-compliance" },
+      react.keywords,
+    ),
+    false,
+  );
 });
