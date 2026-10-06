@@ -23,6 +23,7 @@
     "check": "npm run format:check && npm run version:check && npm run typecheck && npm run lint && npm run test && npm run build",
     "bitacora": "node scripts/append-bitacora.mjs",
     "security:audit": "node scripts/security-gate.mjs audit",
+    "security:import": "node scripts/security-gate.mjs import",
     "security:verify": "node scripts/security-gate.mjs verify",
     "setup": "iimp-adopt --skills-only",
     "skills:recommend": "iimp-adopt --skills-only --recommend-skills"

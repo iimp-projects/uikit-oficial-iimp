@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Gate de seguridad del build.
+//   npm run security:import -- <run-dir> -> registra una auditoría hecha a mano en Claude Code
 //   npm run security:audit   -> lanza la skill `security-audit` (agente sin interfaz) y guarda la evidencia en .security/
 //   npm run security:verify  -> lo corre `prebuild`: falla si no hay auditoría vigente y limpia.
 // La skill es un flujo de agente (usa tokens); por eso la auditoría es un paso explícito y el build
@@ -42,6 +43,8 @@ const EVIDENCE = [
   "run-metadata.json",
   "coverage-ledger.json",
   "REPORT.md",
+  "FINDINGS-DETAIL.md",
+  "NEEDS-VALIDATION.md",
 ]
 
 export function hashSource(cwd) {
@@ -207,6 +210,11 @@ function audit(cwd = process.cwd()) {
   }
   const runDir =
     /RUN_DIR=(\S+)/.exec(result.stdout ?? "")?.[1] ?? latestRunDir(base)
+  return collect(cwd, runDir)
+}
+
+/** Copia la evidencia de una corrida de la skill a .security/ y verifica el resultado. */
+function collect(cwd, runDir) {
   if (!runDir || !existsSync(join(runDir, "findings.json"))) {
     console.error(
       "No se encontró findings.json en el directorio de la auditoría.",
@@ -241,7 +249,15 @@ if (
 ) {
   const command = process.argv[2] ?? "verify"
   if (command === "audit") process.exitCode = audit()
-  else if (process.argv.includes("--warn")) {
+  else if (command === "import") {
+    const runDir = process.argv[3]
+    process.exitCode = runDir
+      ? collect(process.cwd(), runDir)
+      : (console.error(
+          "Uso: npm run security:import -- <directorio-de-la-corrida>",
+        ),
+        1)
+  } else if (process.argv.includes("--warn")) {
     // predev: muestra el estado de la auditoría sin bloquear el servidor de desarrollo.
     const errors = skipped() ? [] : verify()
     if (errors.length > 0) {

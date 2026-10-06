@@ -39,15 +39,102 @@ El ítem activo, el breadcrumb y el menú móvil se actualizan solos.
 
 Ver el armazón en Storybook: **Armazón → Login** y **Armazón → Dashboard** (`npm run storybook`).
 
-## Empieza aquí — elige solo una ruta
+## Empieza aquí: instalación según tu caso
 
-No necesitas instalar todo manualmente ni copiar archivos de este repositorio.
+Hay **tres paquetes** que se complementan. No necesitas copiar archivos de este repositorio.
 
-1. **Vas a crear un proyecto nuevo:** usa el [starter oficial](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter). Crea el proyecto, ejecuta `npm run setup` una vez y luego trabaja normalmente.
-2. **Ya tienes un proyecto Next.js:** ejecuta el [CLI de adopción en npm](https://www.npmjs.com/package/@nrivera-iimp/adopt) primero con `--dry-run`. Te dice qué cambiaría antes de tocar archivos.
-3. **Solo necesitas componentes o tokens en una app existente:** instala el [UI Kit en npm](https://www.npmjs.com/package/official-uikit-iimp).
+| Paquete / pieza                                | Para qué sirve                                                                                | Se instala con                           |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `official-uikit-iimp` (UI Kit)                 | Componentes, tokens, patterns, reglas ESLint y TypeScript strict.                             | `npm install official-uikit-iimp`        |
+| `@nrivera-iimp/adopt` (CLI de adopción)        | Aplica el estándar completo a un proyecto Next.js **que ya existe** (scripts, ESLint, gate…). | `npx @nrivera-iimp/adopt@latest`         |
+| Starter (boilerplate `templates/next-starter`) | Proyecto Next.js **nuevo** con login, dashboard, CI y todo lo anterior ya configurado.        | `npx create-next-app@latest --example …` |
 
-Este repositorio es la fuente de verdad: [ver código, documentación y starter en GitHub](https://github.com/iimp-projects/uikit-oficial-iimp).
+**Requisitos comunes:** Node.js 22 o superior (el starter exige 22.22.2+; el CLI funciona desde 20.9), npm 10+, Git. React 19 y Next.js (App Router) para el starter/adopt. Para la auditoría de seguridad: [Claude Code](https://claude.com/claude-code) instalado y con sesión iniciada (`claude --version`).
+
+### Caso A — Proyecto nuevo (recomendado)
+
+```bash
+# 1. Crear el proyecto desde el starter
+npx create-next-app@latest \
+  --example "https://github.com/iimp-projects/uikit-oficial-iimp" \
+  --example-path templates/next-starter \
+  mi-proyecto
+cd mi-proyecto
+
+# 2. Una sola vez: instala las skills de agentes (incluida security-audit)
+npm run setup
+
+# 3. Verifica que todo está sano (en un proyecto recién creado el gate de seguridad aún no tiene auditoría)
+IIMP_SECURITY_GATE=skip npm run check
+
+# 4. Trabaja
+npm run dev
+```
+
+Qué recibes: login (`/`) y dashboard (`/dashboard`) listos, TypeScript estricto, ESLint con las reglas del kit, tests, CI, bitácora y el gate de seguridad. Detalle de qué editar en [El armazón](#el-armazón-login--dashboard-ya-hechos).
+
+### Caso B — Ya tengo un proyecto Next.js y quiero adoptar el estándar
+
+Trabaja siempre en una rama limpia para poder revertir:
+
+```bash
+cd mi-proyecto-existente
+git checkout -b chore/adoptar-estandar-iimp
+
+# 1. Analiza SIN modificar nada (lee el reporte que imprime)
+npx @nrivera-iimp/adopt@latest --dry-run
+
+# 2. Aplica (pide confirmación antes de escribir)
+npx @nrivera-iimp/adopt@latest
+
+# 3. Limpia caché y valida
+rm -rf .next
+npm run check
+```
+
+Opciones del CLI:
+
+| Opción                                         | Qué hace                                                                                                             |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `--dry-run`                                    | Analiza e imprime el plan; no escribe archivos ni instala nada.                                                      |
+| `--yes`                                        | Aplica sin preguntar (CI o ejecución no interactiva).                                                                |
+| `--cwd <ruta>`                                 | Proyecto a analizar (por defecto el directorio actual).                                                              |
+| `--fix-safe`                                   | Convierte controles HTML inequívocos (`<button>`, `<input>`, `<label>`, `<hr>`, `<textarea>`) a componentes del kit. |
+| `--skills-only`                                | Solo instala las skills; no toca la configuración.                                                                   |
+| `--skip-skills` / `--skip-deps`                | No instala skills base / no instala dependencias npm.                                                                |
+| `--recommend-skills` / `--no-recommend-skills` | Busca (u omite) recomendaciones de skills al terminar.                                                               |
+| `--upgrade-next`                               | Actualiza Next/React de forma explícita (por defecto conserva tu versión mayor).                                     |
+
+Qué cambia en tu proyecto: instala `official-uikit-iimp` y las herramientas de calidad (TypeScript, ESLint, Prettier, Tailwind v4, Vitest, Playwright); activa `tsconfig` strict; compone tu ESLint con el estándar (guarda el anterior como `eslint.config.pre-iimp.*`); agrega los scripts `lint`, `typecheck`, `format:check`, `check`, `prebuild`, `predev`, `security:audit`, `security:verify`, `security:import`; copia `scripts/security-gate.mjs`; crea `bitacora.md`, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`, el workflow de CI y `.iimp/ADOPTION_REPORT.md`; instala las skills base.
+
+**Después de adoptar (checklist):**
+
+1. `npm run check`. Aparecerán errores nuevos de ESLint: son esperados y señalan lo que migrar (botones solo icono sin `aria-label`, botones seguidos sin `ButtonGroup`, campos en `grid-cols-N`, descripciones sueltas, filtros apilados…). Cada mensaje dice qué componente usar.
+2. Migra formularios a `FormGrid` + `FormField` y filtros a `FilterBar` (ver [Reglas obligatorias](#reglas-obligatorias-del-kit)).
+3. Corre la auditoría de seguridad (siguiente sección) hasta que el build deje de bloquear.
+4. Haz commit de `.security/` y `.agents/skills/security-audit`.
+
+### Caso C — Solo quiero los componentes en una app existente (sin adopt)
+
+```bash
+npm install official-uikit-iimp
+```
+
+Importa los estilos **una sola vez** en la raíz (`import "official-uikit-iimp/style.css"`) y usa los componentes. Con Next.js, Vite y Tailwind v4 mira las secciones de [Instalación](#1-instalación) más abajo. Opcionalmente activa las reglas: `import { iimpGuardrails } from "official-uikit-iimp/eslint"` ([Guardrails de ESLint](#6-guardrails-de-eslint-recomendado)).
+
+### Caso D — Actualizar el kit en un proyecto que ya lo usa
+
+```bash
+git checkout -b chore/uikit-ultima-version
+npm install official-uikit-iimp@latest --save-exact
+npx @nrivera-iimp/adopt@latest      # trae scripts y reglas nuevas del estándar
+rm -rf .next
+npm run check
+```
+
+Actualizar el paquete solo reemplaza `node_modules`; no modifica tus archivos. Las reglas nuevas pueden hacer fallar `lint` hasta que migres (es lo esperado). Cambios por versión: [Actualizar una aplicación existente](#actualizar-una-aplicación-existente).
+
+Este repositorio es la fuente de verdad: [código, documentación y starter en GitHub](https://github.com/iimp-projects/uikit-oficial-iimp).
 
 ## Guía de punta a punta: del proyecto nuevo al deploy
 
@@ -72,17 +159,63 @@ npm run check      # formato, versión, typecheck, lint, tests, build
 npm run build      # lo que corre Vercel/CI al desplegar
 ```
 
-| Comando                   | Qué hace                                                                                                              | ¿Bloquea?                                                 |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| `npm run setup`           | Instala las skills base que falten (caveman, TDD, Playwright, shadcn, `security-audit`…). Idempotente.                | No                                                        |
-| `npm run dev`             | Servidor de desarrollo. Antes corre `predev`: imprime un aviso si la auditoría falta, está vencida o tiene hallazgos. | **No**: solo avisa, para no frenar el trabajo diario      |
-| `npm run security:audit`  | Lanza la skill `security-audit` con un agente sin interfaz (`claude -p`), guarda la evidencia en `.security/`.        | Es el paso explícito; consume tokens de tu cuenta         |
-| `npm run security:verify` | Verifica la evidencia sin IA (determinista, segundos).                                                                | Sí: sale con error si algo falla                          |
-| `npm run build`           | Antes corre `prebuild` = `typecheck` + `lint` + `security:verify`; después `next build`.                              | **Sí**: no compila con errores de tipos, lint o seguridad |
-| `npm run check`           | Quality gate completo (el mismo que corre el CI).                                                                     | Sí                                                        |
-| `npm run bitacora -- ""`  | Agrega una entrada con fecha/hora a `bitacora.md`.                                                                    | No                                                        |
+| Comando                                | Qué hace                                                                                                              | ¿Bloquea?                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `npm run setup`                        | Instala las skills base que falten (caveman, TDD, Playwright, shadcn, `security-audit`…). Idempotente.                | No                                                        |
+| `npm run dev`                          | Servidor de desarrollo. Antes corre `predev`: imprime un aviso si la auditoría falta, está vencida o tiene hallazgos. | **No**: solo avisa, para no frenar el trabajo diario      |
+| `npm run security:audit`               | Lanza la skill `security-audit` con un agente sin interfaz (`claude -p`), guarda la evidencia en `.security/`.        | Es el paso explícito; consume tokens de tu cuenta         |
+| `npm run security:import -- <run-dir>` | Registra en `.security/` una auditoría hecha a mano en Claude Code (alternativa a `security:audit`).                  | No                                                        |
+| `npm run security:verify`              | Verifica la evidencia sin IA (determinista, segundos).                                                                | Sí: sale con error si algo falla                          |
+| `npm run build`                        | Antes corre `prebuild` = `typecheck` + `lint` + `security:verify`; después `next build`.                              | **Sí**: no compila con errores de tipos, lint o seguridad |
+| `npm run check`                        | Quality gate completo (el mismo que corre el CI).                                                                     | Sí                                                        |
+| `npm run bitacora -- ""`               | Agrega una entrada con fecha/hora a `bitacora.md`.                                                                    | No                                                        |
 
 > **¿`security:audit` se ejecuta dentro de `npm run build`?** No. Son pasos separados: `npm run security:audit` es la auditoría (lenta, usa IA) y se corre a mano; `npm run build` solo ejecuta `security:verify`, que comprueba en segundos que la evidencia exista, esté limpia y corresponda al código actual. Si no es así, el build se detiene y te dice que corras la auditoría.
+
+### Cómo correr la auditoría de seguridad, paso a paso
+
+La auditoría usa la skill [`security-audit`](https://github.com/cloudflare/security-audit-skill) de Cloudflare: un agente de IA que revisa el código fuente, intenta refutar cada hallazgo con agentes independientes y escribe un reporte. Es **lenta y gasta tokens de tu cuenta**, por eso es un paso explícito y no parte de cada build.
+
+**Requisitos:** (1) `npm run setup` ya ejecutado (instala la skill en `.agents/skills/security-audit`); (2) [Claude Code](https://claude.com/claude-code) instalado y con sesión iniciada (`claude --version` debe responder); (3) cambios de código ya guardados (cualquier cambio posterior invalida la auditoría).
+
+```bash
+# 1. Lanza la auditoría (puede tardar varios minutos)
+npm run security:audit
+
+# 2. Lee el reporte; cada hallazgo "confirmed" debe parcharse
+cat .security/REPORT.md          # detalle en FINDINGS-DETAIL.md; pendientes en NEEDS-VALIDATION.md
+
+# 3. Corrige el código y repite el paso 1 hasta ver:
+#    "Security gate OK: auditoría vigente, sin hallazgos abiertos."
+
+# 4. Versiona la evidencia (el CI y Vercel la necesitan para compilar)
+git add .security .agents/skills/security-audit
+git commit -m "chore: auditoría de seguridad vigente"
+```
+
+**¿Qué hace `npm run security:audit` por dentro?** Ejecuta `claude -p` con la instrucción de correr la skill en modo `standard`, deja su salida en `~/security-audit-skill/<proyecto>/run-N/` (fuera del repo), copia a `.security/` los archivos `findings.json`, `run-metadata.json`, `coverage-ledger.json`, `REPORT.md`, `FINDINGS-DETAIL.md` y `NEEDS-VALIDATION.md`, escribe `attestation.json` con un hash del código y verifica el resultado.
+
+**Si el comando automático falla** (permisos, `claude` no encontrado, etc.), corre la skill a mano y registra el resultado:
+
+```bash
+# En Claude Code, dentro del proyecto, pide:
+#   "Usa la skill security-audit en modo full audit, profile standard, sobre este repositorio."
+# Cuando termine, toma la carpeta que indica (…/security-audit-skill/<proyecto>/run-N) y:
+npm run security:import -- ~/security-audit-skill/mi-proyecto/run-1
+```
+
+También puedes reemplazar el comando del agente con `IIMP_SECURITY_AUDIT_CMD="mi-comando"` (debe imprimir `RUN_DIR=<ruta>`).
+
+**Errores frecuentes:**
+
+| Mensaje del gate                                          | Qué hacer                                                                                       |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `No hay auditoría de seguridad (.security/findings.json)` | Corre `npm run security:audit`.                                                                 |
+| `El código cambió después de la última auditoría`         | Volviste a editar `src/`, `app/`, `pages/`, `next.config.*` o el lockfile: repite la auditoría. |
+| `Vulnerabilidad confirmada sin parchar`                   | Corrige el código y repite; no se puede aceptar.                                                |
+| `Hallazgo pendiente de validar`                           | Resuélvelo o regístralo en `.security/accepted.json` (ver más abajo).                           |
+| `No está instalada la skill security-audit`               | Corre `npm run setup` y versiona `.agents/skills/security-audit`.                               |
+| `La auditoría no terminó (run_status = incomplete)`       | La corrida se cortó: repítela.                                                                  |
 
 ### Seguridad: cuándo aparece la auditoría
 
@@ -129,17 +262,18 @@ La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuev
 
 Estas reglas ya vienen aplicadas por los componentes y, donde se puede, las exige ESLint con `--max-warnings=0`.
 
-| Regla                                                                                                                                                                    | Dónde se aplica                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| **Cabeceras de tabla:** Manrope 600, 13px, MAYÚSCULAS, tracking amplio y color muted. No se sobrescriben en `<TableHead>`.                                               | `TableHead` (y `DataTable`); regla ESLint; e2e                    |
-| **Logo del sidebar:** 35px de alto y ancho automático (`h-[35px] w-auto`), centrado en su recuadro.                                                                      | `DashboardSidebarBrand` / `AppShell`; e2e                         |
-| **Botón solo icono:** `size="icon"` (`icon-sm`/`icon-lg`) + `aria-label`; si no es obvio, `Tooltip`. Con espacio, icono + texto.                                         | Regla `iimp/icon-button-label`                                    |
-| **2 o más botones seguidos del mismo nivel:** van dentro de `<ButtonGroup>`. Excepciones: footers de dialog/card y Primary + otra variante.                              | Regla `iimp/prefer-button-group`                                  |
-| **Pares de color:** todo `bg-secondary`/`bg-primary` lleva su `text-*-foreground`.                                                                                       | Componentes; test `close-button.test.tsx`                         |
-| **Formularios con varios campos:** van dentro de `<FormGrid>` (columnas según el ancho real del contenedor, sin huecos). Nada de `grid-cols-N` a mano ni anchos `w-1/4`. | `FormGrid`; regla `iimp/form-grid`; e2e `form-grid.spec.ts`       |
-| **Filtros:** buscador, selects y botón van en `<FilterBar>` (una fila que envuelve); nunca un control por fila ni estirados al 100 %.                                    | `FilterBar`; regla `iimp/filter-layout`; e2e `filter-bar.spec.ts` |
-| **Cero errores:** `strictTypeChecked`, sin `any`, promesas esperadas, `--max-warnings=0`; el build ejecuta `typecheck` + `lint` + `security:verify`.                     | `official-uikit-iimp/eslint/next-strict`, `prebuild`              |
-| **Seguridad:** auditoría vigente y sin hallazgos para compilar.                                                                                                          | `security:verify` en `prebuild`                                   |
+| Regla                                                                                                                                                                    | Dónde se aplica                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| **Cabeceras de tabla:** Manrope 600, 13px, MAYÚSCULAS, tracking amplio y color muted. No se sobrescriben en `<TableHead>`.                                               | `TableHead` (y `DataTable`); regla ESLint; e2e                       |
+| **Logo del sidebar:** 35px de alto y ancho automático (`h-[35px] w-auto`), centrado en su recuadro.                                                                      | `DashboardSidebarBrand` / `AppShell`; e2e                            |
+| **Botón solo icono:** `size="icon"` (`icon-sm`/`icon-lg`) + `aria-label`; si no es obvio, `Tooltip`. Con espacio, icono + texto.                                         | Regla `iimp/icon-button-label`                                       |
+| **2 o más botones seguidos del mismo nivel:** van dentro de `<ButtonGroup>`. Excepciones: footers de dialog/card y Primary + otra variante.                              | Regla `iimp/prefer-button-group`                                     |
+| **Pares de color:** todo `bg-secondary`/`bg-primary` lleva su `text-*-foreground`.                                                                                       | Componentes; test `close-button.test.tsx`                            |
+| **Formularios con varios campos:** van dentro de `<FormGrid>` (columnas según el ancho real del contenedor, sin huecos). Nada de `grid-cols-N` a mano ni anchos `w-1/4`. | `FormGrid`; regla `iimp/form-grid`; e2e `form-grid.spec.ts`          |
+| **Descripciones de campo:** van en la prop `description` de `<FormField>` (icono de ayuda `?`), nunca como un `<p>` o `FieldDescription` suelto junto al input.          | `FormField`; regla `iimp/field-description`; e2e `form-grid.spec.ts` |
+| **Filtros:** buscador, selects y botón van en `<FilterBar>` (una fila que envuelve); nunca un control por fila ni estirados al 100 %.                                    | `FilterBar`; regla `iimp/filter-layout`; e2e `filter-bar.spec.ts`    |
+| **Cero errores:** `strictTypeChecked`, sin `any`, promesas esperadas, `--max-warnings=0`; el build ejecuta `typecheck` + `lint` + `security:verify`.                     | `official-uikit-iimp/eslint/next-strict`, `prebuild`                 |
+| **Seguridad:** auditoría vigente y sin hallazgos para compilar.                                                                                                          | `security:verify` en `prebuild`                                      |
 
 Ejemplos:
 
@@ -484,6 +618,7 @@ import { FormField, FormGrid, Input, Textarea } from "official-uikit-iimp";
 - **La descripción va en un icono de ayuda (`?`) junto a la etiqueta**, no como un párrafo entre la etiqueta y el input: al pasar el mouse se muestra, con clic/tap/Enter queda fijada (se cierra con otro clic, Escape o clic afuera). Así ningún campo agrega altura y **los controles quedan alineados en la fila** (también si una etiqueta se parte en dos líneas o un vecino muestra un error). El texto sigue disponible para lectores de pantalla vía `aria-describedby`. `FormField` usa subgrid con tres filas fijas (etiqueta + ayuda, control, error); fuera de un `FormGrid` se comporta como una pila normal.
 - **Todos los controles llenan su celda:** dentro de `FormField`, el `Select` ocupa el 100 % del ancho (antes quedaba como una caja chica) y `Input`, `Textarea`, `NativeSelect` y `InputGroup` ya lo hacían.
 - **Filtros:** `<FilterBar>` pone el buscador, los selects y el botón en una sola fila que se envuelve según el ancho; la regla `iimp/filter-layout` falla si apilas 2 o más controles sueltos (`Input`, `Select`, `Combobox`…) uno bajo otro con `flex-col` o sin maqueta, que es lo que dejaba cada filtro en su propia fila al 100 %.
+- **¿Y las descripciones que ya tenía escritas a mano?** Las que ya usan la prop `description` de `FormField` pasan solas al icono de ayuda al actualizar el kit (misma API). Las que escribiste como `<p className="text-sm text-muted-foreground">` o `<FieldDescription>` junto a un `Label` + control las marca la regla `iimp/field-description` con el mensaje de qué hacer: mueve ese texto a `description="…"` de `<FormField>` (cambio mecánico de una línea por campo).
 - La regla `iimp/form-grid` también falla si un control dentro de `FormField` lleva un ancho fijo (`w-40`, `w-fit`, `w-[200px]`, `max-w-*`): el ancho lo decide `FormGrid`, no el control.
 - La regla `iimp/form-grid` falla si pones 2 o más `FormField` en un contenedor con `grid-cols-N`/`flex` en fila, o si asignas anchos como `w-1/4`, `w-[25%]` o `basis-*` a un `FormField` o a su contenedor (eso es lo que dejaba el hueco al costado).
 

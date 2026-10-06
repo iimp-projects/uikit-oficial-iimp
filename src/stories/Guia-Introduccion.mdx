@@ -1,0 +1,31 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guía/1. Introducción" />
+
+# official-uikit-iimp
+
+UI Kit oficial de Eventos IIMP, basado en shadcn/ui y Tailwind CSS v4. Incluye **primitives** (Button, Input, Select, Dialog…) y **patterns** (FormField, FormGrid, DataTable, FilterBar, AuthLayout, AppShell…) ya alineados con los tokens, la accesibilidad y el theming de IIMP.
+
+> Regla principal: las apps **componen** con este kit. No crean un sistema visual paralelo ni usan `button`, `input`, `select`, `textarea` o `table` nativos.
+
+## Las tres piezas
+
+- **`official-uikit-iimp`** (UI Kit): componentes, tokens, patterns, reglas ESLint y TypeScript strict. Se instala con `npm install official-uikit-iimp`.
+- **`@nrivera-iimp/adopt`** (CLI de adopción): aplica el estándar completo a un proyecto Next.js que **ya existe**. Se ejecuta con `npx @nrivera-iimp/adopt@latest`.
+- **Starter** (`templates/next-starter`): proyecto Next.js **nuevo** con login, dashboard, CI y todo configurado. Se crea con `create-next-app --example`.
+
+## Qué te da el estándar
+
+- **Zero errors:** TypeScript estricto, ESLint con `--max-warnings=0`, y un `prebuild` que ejecuta `typecheck`, `lint` y el gate de seguridad antes de cada `build`.
+- **Reglas de diseño aplicadas por código:** tablas, logo del sidebar, botones con icono, grupos de botones, formularios en `FormGrid`, filtros en `FilterBar`, descripciones en el icono de ayuda.
+- **Seguridad:** auditoría con la skill `security-audit` que el build exige vigente y limpia.
+- **Armazón listo:** login y dashboard con sidebar, header, notificaciones y cierre de sesión.
+
+## Cómo seguir
+
+1. **Instalación según tu caso:** mira la página `Guía/2. Instalación por caso`.
+2. **Auditoría de seguridad:** `Guía/3. Auditoría de seguridad`.
+3. **Reglas obligatorias con ejemplos:** `Guía/4. Reglas obligatorias`.
+4. Los componentes están en `Primitives`, `Patterns` y `Armazón`.
+
+Código, documentación y starter: https://github.com/iimp-projects/uikit-oficial-iimp

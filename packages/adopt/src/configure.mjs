@@ -81,6 +81,7 @@ function configurePackageJson(cwd) {
     predev:
       parsed.scripts?.predev ?? "node scripts/security-gate.mjs verify --warn",
     "security:audit": "node scripts/security-gate.mjs audit",
+    "security:import": "node scripts/security-gate.mjs import",
     "security:verify": "node scripts/security-gate.mjs verify",
     "format:check": "prettier --check .",
     test: parsed.scripts?.test ?? "vitest run --passWithNoTests",

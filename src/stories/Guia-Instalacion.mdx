@@ -1,0 +1,97 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guía/2. Instalación por caso" />
+
+# Instalación por caso
+
+**Requisitos comunes:** Node.js 22 o superior (el starter exige 22.22.2+; el CLI funciona desde 20.9), npm 10+, Git. React 19 y Next.js (App Router) para el starter y el CLI. Para la auditoría de seguridad: Claude Code instalado y con sesión iniciada (`claude --version`).
+
+## Caso A — Proyecto nuevo (recomendado)
+
+```bash
+npx create-next-app@latest \
+  --example "https://github.com/iimp-projects/uikit-oficial-iimp" \
+  --example-path templates/next-starter \
+  mi-proyecto
+cd mi-proyecto
+
+# Una sola vez: instala las skills de agentes (incluida security-audit)
+npm run setup
+
+# En un proyecto recién creado aún no hay auditoría: omite el gate solo para esta verificación local
+IIMP_SECURITY_GATE=skip npm run check
+
+npm run dev
+```
+
+Recibes login (`/`) y dashboard (`/dashboard`) listos, TypeScript estricto, ESLint con las reglas del kit, tests, CI, bitácora y el gate de seguridad. Lo único que editas: `src/config/app.ts` (nombre y versión), `src/config/navigation.tsx` (menú), `src/components/login-form.tsx` (conectar tu autenticación) y las páginas en `src/app/(app)/`.
+
+## Caso B — Proyecto Next.js existente: adoptar el estándar
+
+Trabaja en una rama limpia para poder revertir.
+
+```bash
+cd mi-proyecto-existente
+git checkout -b chore/adoptar-estandar-iimp
+
+# 1. Analiza SIN modificar nada y lee el reporte
+npx @nrivera-iimp/adopt@latest --dry-run
+
+# 2. Aplica (pide confirmación antes de escribir)
+npx @nrivera-iimp/adopt@latest
+
+# 3. Limpia caché y valida
+rm -rf .next
+npm run check
+```
+
+Opciones del CLI:
+
+- `--dry-run`: analiza e imprime el plan; no escribe ni instala.
+- `--yes`: aplica sin preguntar (CI).
+- `--cwd <ruta>`: proyecto a analizar.
+- `--fix-safe`: convierte controles HTML inequívocos (button, input, label, hr, textarea) a componentes del kit.
+- `--skills-only`: solo instala skills; `--skip-skills` / `--skip-deps` omiten skills o dependencias.
+- `--upgrade-next`: actualiza Next/React de forma explícita (por defecto conserva tu versión mayor).
+
+Qué cambia: instala el kit y las herramientas de calidad, activa `tsconfig` strict, compone tu ESLint con el estándar (guarda el anterior como `eslint.config.pre-iimp.*`), agrega los scripts `lint`, `typecheck`, `format:check`, `check`, `prebuild`, `predev`, `security:audit`, `security:verify` y `security:import`, copia `scripts/security-gate.mjs`, crea `bitacora.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, el workflow de CI y `.iimp/ADOPTION_REPORT.md`, e instala las skills base.
+
+**Checklist después de adoptar**
+
+1. `npm run check`: los errores nuevos de ESLint son esperados y dicen qué componente usar.
+2. Migra formularios a `FormGrid` + `FormField` y filtros a `FilterBar`.
+3. Corre la auditoría de seguridad hasta que el build deje de bloquear.
+4. Haz commit de `.security/` y `.agents/skills/security-audit`.
+
+## Caso C — Solo los componentes, sin adopt
+
+```bash
+npm install official-uikit-iimp
+```
+
+```tsx
+// Next.js: app/layout.tsx · Vite: main.tsx · una sola vez en la raíz
+import "official-uikit-iimp/style.css";
+```
+
+Si tu app usa Tailwind v4, importa también los tokens en tu CSS global: `@import "official-uikit-iimp/theme.css";`. Para activar las reglas de ESLint: `import { iimpGuardrails } from "official-uikit-iimp/eslint"` y `...iimpGuardrails` en tu `eslint.config`.
+
+## Caso D — Actualizar el kit en un proyecto que ya lo usa
+
+```bash
+git checkout -b chore/uikit-ultima-version
+npm install official-uikit-iimp@latest --save-exact
+npx @nrivera-iimp/adopt@latest     # trae scripts y reglas nuevas
+rm -rf .next
+npm run check
+```
+
+Actualizar el paquete solo reemplaza `node_modules`; no modifica tus archivos. Las reglas nuevas pueden hacer fallar `lint` hasta que migres: es lo esperado.
+
+## Comandos del día a día
+
+- `npm run dev`: servidor de desarrollo. Avisa (sin bloquear) si falta la auditoría de seguridad.
+- `npm run check`: quality gate completo (formato, versión, typecheck, lint, tests, build); es el mismo que corre el CI.
+- `npm run build`: antes corre `prebuild` = typecheck + lint + verificación de seguridad.
+- `npm run bitacora -- "descripción"`: agrega una entrada con fecha a `bitacora.md`.
+- `npm run setup`: instala las skills que falten (idempotente).

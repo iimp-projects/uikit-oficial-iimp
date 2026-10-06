@@ -5,6 +5,11 @@ import { IimpThemeProvider } from "../src/theme/IimpThemeProvider"
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: ["Guía", "Engineering", "Armazón", "Patterns", "Primitives"],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

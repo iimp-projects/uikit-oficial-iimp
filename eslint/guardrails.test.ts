@@ -124,4 +124,18 @@ describe("iimp guardrails", () => {
     expect(await lint('export const A = () => <div className="flex flex-wrap gap-2"><Input /><Select><SelectTrigger /></Select></div>')).toEqual([])
     expect(await lint('export const A = () => <div className="grid grid-cols-3 gap-2"><Input /><Input /></div>')).toEqual([])
   })
+  it("flags a hand-written description next to a labelled control and points to FormField", async () => {
+    const msgs = await lint(
+      'export const A = () => <div><Label htmlFor="c">Código</Label><p className="text-sm text-muted-foreground">Opcional. Único.</p><Input id="c" /></div>'
+    )
+    expect(msgs.some((m) => m.includes("FormField") && m.includes("icono de ayuda"))).toBe(true)
+    const shadcn = await lint(
+      'export const A = () => <Field><FieldLabel>Código</FieldLabel><FieldDescription>Único.</FieldDescription><Input /></Field>'
+    )
+    expect(shadcn.some((m) => m.includes("Descripción suelta"))).toBe(true)
+  })
+  it("does not flag FormField, muted text without a control, or switch rows", async () => {
+    expect(await lint('export const A = () => <FormField label="Código" description="Único."><Input /></FormField>')).toEqual([])
+    expect(await lint('export const A = () => <div><Label>Tema</Label><p className="text-muted-foreground">Texto</p></div>')).toEqual([])
+  })
 })

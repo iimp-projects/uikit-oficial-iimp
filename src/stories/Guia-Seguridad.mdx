@@ -1,0 +1,70 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guía/3. Auditoría de seguridad" />
+
+# Auditoría de seguridad
+
+El `prebuild` de la app ejecuta `typecheck`, `lint` y `npm run security:verify`. Sin una auditoría vigente y limpia, `npm run build` no compila, y por lo tanto tampoco un deploy en Vercel o en el CI.
+
+La auditoría usa la skill `security-audit` de Cloudflare: un agente de IA revisa el código, intenta refutar cada hallazgo con agentes independientes y escribe un reporte. Es **lenta y gasta tokens de tu cuenta**, por eso es un paso explícito: `npm run build` no la ejecuta, solo **verifica** su evidencia en segundos y sin IA.
+
+## Cuándo aparece
+
+- `npm run dev`: aviso en consola, **no bloquea**.
+- `npm run build` y deploy: **bloquea** hasta que la auditoría esté vigente y limpia.
+- Pull request y `main`: el workflow de CI corre `npm run check` con `IIMP_SECURITY_GATE_LOCK=1`, que impide saltarse el gate.
+
+## Paso a paso
+
+Requisitos: `npm run setup` ya ejecutado, Claude Code instalado con sesión iniciada (`claude --version`) y los cambios de código guardados.
+
+```bash
+# 1. Lanza la auditoría (puede tardar varios minutos)
+npm run security:audit
+
+# 2. Lee el reporte y parcha cada hallazgo "confirmed"
+cat .security/REPORT.md
+
+# 3. Repite el paso 1 hasta ver:
+#    Security gate OK: auditoría vigente, sin hallazgos abiertos.
+
+# 4. Versiona la evidencia (el CI y Vercel la necesitan)
+git add .security .agents/skills/security-audit
+git commit -m "chore: auditoría de seguridad vigente"
+```
+
+Si el comando automático falla, corre la skill a mano en Claude Code ("Usa la skill security-audit en modo full audit, profile standard, sobre este repositorio") y registra el resultado:
+
+```bash
+npm run security:import -- ~/security-audit-skill/mi-proyecto/run-1
+```
+
+## Qué hace fallar el gate
+
+- No existe `.security/findings.json`.
+- `findings.json` no pasa el validador de la skill.
+- `run_status` no es `complete` (la corrida se cortó).
+- El código cambió después de auditar (hash de `src/`, `app/`, `pages/`, `next.config.*` y `package-lock.json`).
+- Hay un hallazgo `confirmed`. **Nunca** se acepta: se parcha y se vuelve a auditar.
+- Hay un `needs_validation` sin aceptar.
+
+Un `needs_validation` solo se acepta en `.security/accepted.json`, con motivo y aprobador:
+
+```json
+[
+  {
+    "fingerprint": "idor-pedidos-2",
+    "reason": "Requiere probar contra el entorno productivo; verificado por revisión manual.",
+    "approvedBy": "ana.perez"
+  }
+]
+```
+
+## Variables de entorno
+
+- `IIMP_SECURITY_GATE=skip`: omite el gate **solo en local** y lo avisa en voz alta. El CI lo anula con `IIMP_SECURITY_GATE_LOCK=1`.
+- `IIMP_SECURITY_AUDIT_CMD="mi-comando"`: reemplaza el comando del agente (debe imprimir `RUN_DIR=ruta`).
+
+## Límite honesto
+
+Es una revisión asistida por IA: que no encuentre nada no prueba que no existan vulnerabilidades. Complementa, no reemplaza, `npm audit`, el escaneo de secretos y CodeQL.

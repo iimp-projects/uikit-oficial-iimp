@@ -247,7 +247,40 @@ const filterLayoutRule = {
   },
 }
 
-const iimpPlugin = { rules: { "icon-button-label": iconButtonRule, "prefer-button-group": buttonGroupRule, "form-grid": formGridRule, "filter-layout": filterLayoutRule } }
+// Descripciones sueltas: texto de ayuda escrito a mano junto a un campo en vez de usar FormField.
+const FIELD_LABELS = /^(?:Label|FieldLabel)$/
+const MUTED_TEXT = /(^|\s)(?:[a-z0-9-]+:)*text-muted-foreground(\s|$)/
+const TEXT_TAGS = /^(?:p|span|small|div|FieldDescription)$/
+
+const fieldDescriptionRule = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      loose:
+        'Descripción suelta junto a un campo. Pásala como `description="..."` a <FormField>: el kit la muestra en el icono de ayuda (?) junto a la etiqueta, sin agregar una fila ni desalinear los controles del grid.',
+    },
+  },
+  create(context) {
+    return {
+      JSXElement(node) {
+        const name = jsxName(node) ?? ""
+        if (LAYOUT_PARENT_EXEMPT.test(name) && name !== "Field" && name !== "FieldContent") return
+        const kids = node.children.filter((child) => child.type === "JSXElement")
+        const hasLabel = kids.some((child) => FIELD_LABELS.test(jsxName(child) ?? ""))
+        const hasControl = kids.some((child) => LOOSE_CONTROLS.test(jsxName(child) ?? ""))
+        if (!hasLabel || !hasControl) return
+        for (const child of kids) {
+          const childName = jsxName(child) ?? ""
+          const loose = childName === "FieldDescription" || (TEXT_TAGS.test(childName) && MUTED_TEXT.test(staticClassName(child)))
+          if (loose) context.report({ node: child.openingElement, messageId: "loose" })
+        }
+      },
+    }
+  },
+}
+
+const iimpPlugin = { rules: { "icon-button-label": iconButtonRule, "prefer-button-group": buttonGroupRule, "form-grid": formGridRule, "filter-layout": filterLayoutRule, "field-description": fieldDescriptionRule } }
 
 const iimpGuardrails = [
   {
@@ -258,6 +291,7 @@ const iimpGuardrails = [
       "iimp/prefer-button-group": "error",
       "iimp/form-grid": "error",
       "iimp/filter-layout": "error",
+      "iimp/field-description": "error",
       "no-restricted-syntax": ["error", ...nativeElementRules, bareBorderRule, tableHeadTypographyRule, ...officialLayoutImportRules],
       "no-restricted-imports": [
         "error",
