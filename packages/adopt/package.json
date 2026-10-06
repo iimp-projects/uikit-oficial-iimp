@@ -1,7 +1,8 @@
 {
   "name": "@nrivera-iimp/adopt",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Adopta los estándares oficiales IIMP en proyectos Next.js existentes",
+  "homepage": "https://uikit-oficial-iimp.vercel.app/",
   "type": "module",
   "bin": {
     "iimp-adopt": "bin/iimp-adopt.mjs"

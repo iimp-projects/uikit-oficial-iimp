@@ -2,6 +2,8 @@
 
 Estas reglas son obligatorias para cualquier agente o desarrollador que modifique este proyecto.
 
+Catálogo de componentes, guías y reglas con ejemplos (Storybook): https://uikit-oficial-iimp.vercel.app/
+
 ## Quality gate
 
 - Ejecutar `npm run check` antes de finalizar.

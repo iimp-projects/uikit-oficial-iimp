@@ -2,6 +2,8 @@
 
 Este documento es obligatorio para cualquier agente que modifique UI.
 
+Catálogo visual, guías y reglas con ejemplos: https://uikit-oficial-iimp.vercel.app/
+
 ## Source of truth
 
 Orden de autoridad:

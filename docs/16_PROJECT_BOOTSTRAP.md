@@ -1,5 +1,7 @@
 # Bootstrap y adopción de proyectos IIMP
 
+Catálogo visual y guías: [Storybook publicado](https://uikit-oficial-iimp.vercel.app/).
+
 ## Objetivo
 
 Todos los proyectos nuevos parten de una base Next.js reproducible. Los proyectos existentes adoptan el mismo contrato mediante un CLI que analiza antes de escribir.
@@ -8,9 +10,9 @@ Todos los proyectos nuevos parten de una base Next.js reproducible. Los proyecto
 
 | Artefacto                                                                  | Función                                           | Estado actual               | README                                                    |
 | -------------------------------------------------------------------------- | ------------------------------------------------- | --------------------------- | --------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.9.2`).        | [README raíz](../README.md)                               |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.9.3`).        | [README raíz](../README.md)                               |
 | `templates/next-starter`                                                   | Boilerplate para aplicaciones Next.js nuevas.     | Parte de este repositorio.  | [README del starter](../templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI de adopción para aplicaciones existentes.     | Publicado en npm (`0.1.9`). | [README del CLI](../packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI de adopción para aplicaciones existentes.     | Publicado en npm (`0.1.10`). | [README del CLI](../packages/adopt/README.md)             |
 
 No son tres shells visuales. `AuthLayout` y `DashboardLayout` son patterns del primer artefacto; el starter y el CLI son mecanismos de distribución/adopción.
 

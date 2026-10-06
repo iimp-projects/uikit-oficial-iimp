@@ -1,5 +1,7 @@
 # @nrivera-iimp/adopt
 
+**Catálogo de componentes y guías (Storybook): [https://uikit-oficial-iimp.vercel.app/](https://uikit-oficial-iimp.vercel.app/)**
+
 CLI oficial para incorporar las reglas de ingeniería IIMP en un proyecto Next.js existente sin copiar el boilerplate sobre su código.
 
 > **Estado de distribución:** publicado en npm como [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt).

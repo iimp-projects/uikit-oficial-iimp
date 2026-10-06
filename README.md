@@ -2,6 +2,8 @@
 
 UI Kit oficial de Eventos IIMP. Basado en shadcn/ui y Tailwind CSS. Incluye **primitives** (Button, Input, Select, Dialog…) y **patterns** (FormField, DataTable, ConfirmDialog…) ya alineados con los tokens, la accesibilidad (targets de 44px) y el theming de IIMP.
 
+**Storybook en vivo (catálogo de componentes, guías y reglas): [https://uikit-oficial-iimp.vercel.app/](https://uikit-oficial-iimp.vercel.app/)**
+
 > Regla principal: las apps **componen** con este kit. No crean un sistema visual paralelo ni usan `<button>`, `<input>`, `<select>` o `<textarea>` nativos.
 
 ## El armazón: login + dashboard ya hechos
@@ -37,7 +39,7 @@ El ítem activo, el breadcrumb y el menú móvil se actualizan solos.
 
 **Conectar tu autenticación:** el login (`handleSignIn`) y el cierre de sesión (`src/lib/auth-actions.ts`) son _placeholders_. Reemplázalos por tu proveedor (NextAuth, Server Action, Google Workspace…). El kit no hace autenticación.
 
-Ver el armazón en Storybook: **Armazón → Login** y **Armazón → Dashboard** (`npm run storybook`).
+Ver el armazón en el [Storybook publicado](https://uikit-oficial-iimp.vercel.app/): **Armazón → Login** y **Armazón → Dashboard** (o en local con `npm run storybook`).
 
 ## Empieza aquí: instalación según tu caso
 
@@ -134,16 +136,11 @@ npm run check
 
 Actualizar el paquete solo reemplaza `node_modules`; no modifica tus archivos. Las reglas nuevas pueden hacer fallar `lint` hasta que migres (es lo esperado). Cambios por versión: [Actualizar una aplicación existente](#actualizar-una-aplicación-existente).
 
-### Publicar el Storybook en Vercel
+### Storybook publicado
 
-El repositorio trae un `vercel.json` que ya define cómo compilar el Storybook (no hay que configurar nada a mano).
+El catálogo vive en **[https://uikit-oficial-iimp.vercel.app/](https://uikit-oficial-iimp.vercel.app/)**: todos los componentes y patterns con ejemplos, y la sección **Guía** (instalación por caso, auditoría de seguridad, reglas obligatorias). Se republica solo con cada push a `main`.
 
-1. En Vercel: **Add New → Project → Import** el repositorio `uikit-oficial-iimp`.
-2. Vercel detecta dos proyectos. Elige **`app` (Vite, raíz `/`)** — es el Storybook del UI Kit. **No elijas `next-starter`**: es solo la plantilla para proyectos nuevos.
-3. Revisa que aparezca: Build Command `npm run build-storybook`, Output Directory `storybook-static`, Install Command `npm ci` (vienen de `vercel.json`). Pulsa **Deploy**.
-4. Cada push a `main` vuelve a publicar. La URL queda en `https://<proyecto>.vercel.app`; puedes enlazarla desde este README.
-
-Nota: la URL de producción es pública salvo que actives protección en Vercel (Settings → Deployment Protection).
+Para crear tu propio despliegue en Vercel: **Add New → Project → Import** del repositorio y elige **`app` (Vite, raíz `/`)** — no `next-starter`, que es solo la plantilla. El `vercel.json` del repositorio ya define el build (`npm run build-storybook`), la salida (`storybook-static`) y la instalación (`npm ci`). La URL de producción es pública salvo que actives Deployment Protection en Vercel.
 
 Este repositorio es la fuente de verdad: [código, documentación y starter en GitHub](https://github.com/iimp-projects/uikit-oficial-iimp).
 
@@ -259,13 +256,13 @@ Cómo se corrige: abre `.security/REPORT.md`, parcha cada hallazgo `confirmed`, 
 
 ## Mapa de artefactos y documentación
 
-El estándar se distribuye en tres piezas complementarias; no son tres shells visuales:
+El estándar se distribuye en tres piezas complementarias; no son tres shells visuales. Catálogo visual y guías: [Storybook](https://uikit-oficial-iimp.vercel.app/).
 
 | Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.2`).                                            | Este README                                              |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.3`).                                            | Este README                                              |
 | [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.9`).                                            | [README del CLI](./packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.10`).                                           | [README del CLI](./packages/adopt/README.md)             |
 
 La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
 
@@ -341,9 +338,11 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.9.2 --save-exact
+npm install official-uikit-iimp@0.9.3 --save-exact
 npm run check
 ```
+
+**0.9.3** — Storybook publicado en https://uikit-oficial-iimp.vercel.app/ y enlazado desde los README, AGENTS, docs y `homepage` de los paquetes.
 
 **0.9.2** — `FormField`: la descripción ahora va en un icono de ayuda (popover al pasar el mouse o hacer clic) junto a la etiqueta; ya no agrega una fila. Corrige la cabecera de tabla (la v0.9.1 cambiaba la fuente a serif por un `font-[bolder]` mal interpretado): ahora es Manrope 600, 13px, mayúsculas, tracking amplio y color muted, con e2e que verifica la familia. Nueva regla `iimp/filter-layout` (filtros en `FilterBar`, no un control por fila).
 
