@@ -31,13 +31,13 @@
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
     "next": "16.3.8",
-    "official-uikit-iimp": "0.9.3",
+    "official-uikit-iimp": "0.9.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
-    "@nrivera-iimp/adopt": "0.1.10",
+    "@nrivera-iimp/adopt": "0.1.11",
     "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",

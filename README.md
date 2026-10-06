@@ -224,6 +224,8 @@ También puedes reemplazar el comando del agente con `IIMP_SECURITY_AUDIT_CMD="m
 | `Hallazgo pendiente de validar`                           | Resuélvelo o regístralo en `.security/accepted.json` (ver más abajo).                           |
 | `No está instalada la skill security-audit`               | Corre `npm run setup` y versiona `.agents/skills/security-audit`.                               |
 | `La auditoría no terminó (run_status = incomplete)`       | La corrida se cortó: repítela.                                                                  |
+| `La auditoría no terminó correctamente`                   | Revisa la salida del agente y la ruta de la corrida parcial que el comando imprime.             |
+| `Faltan artefactos de la auditoría`                       | Repite la auditoría o importa una corrida completa; no copies archivos sueltos.                 |
 
 ### Seguridad: cuándo aparece la auditoría
 
@@ -235,7 +237,7 @@ También puedes reemplazar el comando del agente con `IIMP_SECURITY_AUDIT_CMD="m
 
 Cómo se corrige: abre `.security/REPORT.md`, parcha cada hallazgo `confirmed`, vuelve a correr `npm run security:audit` hasta que el reporte quede limpio y haz commit de `.security/`. Reglas exactas:
 
-- **Falla** si no existe `.security/findings.json`, si no pasa `validate-findings.cjs` de la skill, si `run_status` no es `complete`, si el código cambió después de auditar (hash de `src/`, `app/`, `pages/`, `next.config.*` y `package-lock.json`), si hay algún hallazgo `confirmed` o un `needs_validation` sin aceptar.
+- **Falla** si falta cualquier artefacto de la corrida (`findings.json`, metadata, ledger o reportes), si `findings.json` no pasa `validate-findings.cjs` de la skill, si `run_status` no es `complete`, si el código cambió después de auditar (hash de `src/`, `app/`, `pages/`, `next.config.*` y `package-lock.json`), si hay algún hallazgo `confirmed` o un `needs_validation` sin aceptar.
 - Un `confirmed` **nunca** se acepta: se parcha y se vuelve a auditar.
 - Un `needs_validation` solo se acepta en `.security/accepted.json`, con motivo y aprobador:
 
@@ -260,9 +262,9 @@ El estándar se distribuye en tres piezas complementarias; no son tres shells vi
 
 | Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.3`).                                            | Este README                                              |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.4`).                                            | Este README                                              |
 | [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.10`).                                           | [README del CLI](./packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.11`).                                           | [README del CLI](./packages/adopt/README.md)             |
 
 La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
 
@@ -338,9 +340,11 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.9.3 --save-exact
+npm install official-uikit-iimp@0.9.4 --save-exact
 npm run check
 ```
+
+**0.9.4** — Corrige `iimp/prefer-button-group` para analizar fragmentos React (`<>…</>`) sin lanzar una excepción. El gate de seguridad ahora muestra la salida y el código de terminación del agente, señala la carpeta de una corrida parcial y rechaza auditorías que no incluyan todos los artefactos (`REPORT.md`, detalle, pendientes y ledger de cobertura). El CLI de adopción equivalente es `@nrivera-iimp/adopt@0.1.11`.
 
 **0.9.3** — Storybook publicado en https://uikit-oficial-iimp.vercel.app/ y enlazado desde los README, AGENTS, docs y `homepage` de los paquetes.
 

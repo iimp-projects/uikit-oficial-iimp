@@ -8,11 +8,11 @@ Todos los proyectos nuevos parten de una base Next.js reproducible. Los proyecto
 
 ## Artefactos
 
-| Artefacto                                                                  | Función                                           | Estado actual               | README                                                    |
-| -------------------------------------------------------------------------- | ------------------------------------------------- | --------------------------- | --------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.9.3`).        | [README raíz](../README.md)                               |
-| `templates/next-starter`                                                   | Boilerplate para aplicaciones Next.js nuevas.     | Parte de este repositorio.  | [README del starter](../templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI de adopción para aplicaciones existentes.     | Publicado en npm (`0.1.10`). | [README del CLI](../packages/adopt/README.md)             |
+| Artefacto                                                                  | Función                                           | Estado actual                | README                                                    |
+| -------------------------------------------------------------------------- | ------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp) | Paquete npm de UI, tokens y configuración strict. | Publicado (`0.9.4`).         | [README raíz](../README.md)                               |
+| `templates/next-starter`                                                   | Boilerplate para aplicaciones Next.js nuevas.     | Parte de este repositorio.   | [README del starter](../templates/next-starter/README.md) |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt) | CLI de adopción para aplicaciones existentes.     | Publicado en npm (`0.1.11`). | [README del CLI](../packages/adopt/README.md)             |
 
 No son tres shells visuales. `AuthLayout` y `DashboardLayout` son patterns del primer artefacto; el starter y el CLI son mecanismos de distribución/adopción.
 

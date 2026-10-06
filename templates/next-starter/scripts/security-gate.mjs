@@ -144,6 +144,11 @@ export function verify(cwd = process.cwd()) {
     return [
       "No hay auditoría de seguridad (.security/findings.json). Corre npm run security:audit antes de compilar.",
     ]
+  const missing = EVIDENCE.filter((name) => !existsSync(join(dir, name)))
+  if (missing.length > 0)
+    return [
+      `Faltan artefactos de la auditoría en .security/: ${missing.join(", ")}. Vuelve a correr npm run security:audit o importa una corrida completa.`,
+    ]
   const validator = findValidator(cwd)
   if (!validator)
     return ["No está instalada la skill security-audit. Corre npm run setup."]
@@ -185,7 +190,7 @@ function audit(cwd = process.cwd()) {
         cwd,
         shell: true,
         encoding: "utf8",
-        stdio: ["ignore", "pipe", "inherit"],
+        stdio: ["ignore", "pipe", "pipe"],
       })
     : spawnSync(
         "claude",
@@ -199,13 +204,38 @@ function audit(cwd = process.cwd()) {
           "--allowedTools",
           "Read,Grep,Glob,Write,Edit,Agent,Bash(node:*)",
         ],
-        { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
+        { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
       )
   if (result.error || result.status !== 0) {
-    console.error(
-      "La auditoría no terminó correctamente.",
-      result.error?.message ?? "",
-    )
+    const reason =
+      result.error?.message ??
+      (result.signal
+        ? `El proceso terminó por la señal ${result.signal}.`
+        : `El proceso terminó con código ${String(result.status)}.`)
+    console.error(`La auditoría no terminó correctamente. ${reason}`)
+    const output = [result.stdout, result.stderr]
+      .map((value) => String(value ?? "").trim())
+      .filter(Boolean)
+      .join("\n")
+    if (output)
+      console.error(
+        `Salida del agente (últimos 6000 caracteres):\n${output.slice(-6000)}`,
+      )
+    const partialRunDir = latestRunDir(base)
+    if (partialRunDir) {
+      let runStatus = "desconocido"
+      try {
+        runStatus = String(
+          readJson(join(partialRunDir, "run-metadata.json"))?.run_status ??
+            runStatus,
+        )
+      } catch {
+        runStatus = "metadata inválida"
+      }
+      console.error(
+        `Corrida parcial conservada en ${partialRunDir} (run_status = ${runStatus}).`,
+      )
+    }
     return 1
   }
   const runDir =
@@ -215,9 +245,16 @@ function audit(cwd = process.cwd()) {
 
 /** Copia la evidencia de una corrida de la skill a .security/ y verifica el resultado. */
 function collect(cwd, runDir) {
-  if (!runDir || !existsSync(join(runDir, "findings.json"))) {
+  if (!runDir) {
     console.error(
       "No se encontró findings.json en el directorio de la auditoría.",
+    )
+    return 1
+  }
+  const missing = EVIDENCE.filter((name) => !existsSync(join(runDir, name)))
+  if (missing.length > 0) {
+    console.error(
+      `La corrida está incompleta; faltan estos artefactos: ${missing.join(", ")}. Directorio: ${runDir}`,
     )
     return 1
   }

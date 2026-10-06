@@ -1,4 +1,4 @@
-export const UI_KIT_VERSION = "0.9.3";
+export const UI_KIT_VERSION = "0.9.4";
 
 export const STRICT_COMPILER_OPTIONS = {
   allowJs: false,
