@@ -176,6 +176,10 @@ El `prebuild` de la app corre `typecheck`, `lint` y `npm run security:verify`. S
 
 Los campos en la misma fila van en `<FormGrid>`: las columnas salen del ancho del contenedor (1 en un drawer, varias en una página) y los campos llenan la fila sin huecos. `FormField` alinea sus controles por filas aunque un vecino tenga descripción, error o etiqueta de dos líneas. Los controles dentro de `FormField` llenan su celda (el `Select` incluido) y no llevan anchos fijos (`w-40`, `w-fit`, `max-w-*`). Prohibido: `grid-cols-N`/`flex` en fila con `FormField` hermanos y anchos fraccionarios (`w-1/4`, `w-[25%]`, `basis-*`) en el campo o su contenedor; un campo que necesita fila propia usa `className="col-span-full"`. Reglas ESLint `iimp/form-grid`; ver `README.md` → "Formulario con varios campos".
 
+## Filtros
+
+Un filtro va en `<FilterBar>`: buscador, selects y botón en **una fila que se envuelve** según el ancho disponible. No apiles los controles uno por fila ni los estires al 100 % (`flex-col`, `w-full` en cada uno). Para un formulario usa `FormField` dentro de `FormGrid`. Regla ESLint `iimp/filter-layout`; ver `README.md` → "Reglas obligatorias del kit".
+
 ## Dialogs
 
 - crear/editar/configurar → `FormDialog`

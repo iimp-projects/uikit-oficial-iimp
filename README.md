@@ -119,9 +119,9 @@ El estándar se distribuye en tres piezas complementarias; no son tres shells vi
 
 | Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.1`).                                            | Este README                                              |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.2`).                                            | Este README                                              |
 | [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.8`).                                            | [README del CLI](./packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.9`).                                            | [README del CLI](./packages/adopt/README.md)             |
 
 La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
 
@@ -129,21 +129,22 @@ La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuev
 
 Estas reglas ya vienen aplicadas por los componentes y, donde se puede, las exige ESLint con `--max-warnings=0`.
 
-| Regla                                                                                                                                                                    | Dónde se aplica                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| **Cabeceras de tabla:** `font-size: 12px` y `font-weight: bolder`. No se sobrescriben en `<TableHead>`.                                                                  | `TableHead` (y `DataTable`); regla ESLint; e2e              |
-| **Logo del sidebar:** 35px de alto y ancho automático (`h-[35px] w-auto`), centrado en su recuadro.                                                                      | `DashboardSidebarBrand` / `AppShell`; e2e                   |
-| **Botón solo icono:** `size="icon"` (`icon-sm`/`icon-lg`) + `aria-label`; si no es obvio, `Tooltip`. Con espacio, icono + texto.                                         | Regla `iimp/icon-button-label`                              |
-| **2 o más botones seguidos del mismo nivel:** van dentro de `<ButtonGroup>`. Excepciones: footers de dialog/card y Primary + otra variante.                              | Regla `iimp/prefer-button-group`                            |
-| **Pares de color:** todo `bg-secondary`/`bg-primary` lleva su `text-*-foreground`.                                                                                       | Componentes; test `close-button.test.tsx`                   |
-| **Formularios con varios campos:** van dentro de `<FormGrid>` (columnas según el ancho real del contenedor, sin huecos). Nada de `grid-cols-N` a mano ni anchos `w-1/4`. | `FormGrid`; regla `iimp/form-grid`; e2e `form-grid.spec.ts` |
-| **Cero errores:** `strictTypeChecked`, sin `any`, promesas esperadas, `--max-warnings=0`; el build ejecuta `typecheck` + `lint` + `security:verify`.                     | `official-uikit-iimp/eslint/next-strict`, `prebuild`        |
-| **Seguridad:** auditoría vigente y sin hallazgos para compilar.                                                                                                          | `security:verify` en `prebuild`                             |
+| Regla                                                                                                                                                                    | Dónde se aplica                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| **Cabeceras de tabla:** Manrope 600, 13px, MAYÚSCULAS, tracking amplio y color muted. No se sobrescriben en `<TableHead>`.                                               | `TableHead` (y `DataTable`); regla ESLint; e2e                    |
+| **Logo del sidebar:** 35px de alto y ancho automático (`h-[35px] w-auto`), centrado en su recuadro.                                                                      | `DashboardSidebarBrand` / `AppShell`; e2e                         |
+| **Botón solo icono:** `size="icon"` (`icon-sm`/`icon-lg`) + `aria-label`; si no es obvio, `Tooltip`. Con espacio, icono + texto.                                         | Regla `iimp/icon-button-label`                                    |
+| **2 o más botones seguidos del mismo nivel:** van dentro de `<ButtonGroup>`. Excepciones: footers de dialog/card y Primary + otra variante.                              | Regla `iimp/prefer-button-group`                                  |
+| **Pares de color:** todo `bg-secondary`/`bg-primary` lleva su `text-*-foreground`.                                                                                       | Componentes; test `close-button.test.tsx`                         |
+| **Formularios con varios campos:** van dentro de `<FormGrid>` (columnas según el ancho real del contenedor, sin huecos). Nada de `grid-cols-N` a mano ni anchos `w-1/4`. | `FormGrid`; regla `iimp/form-grid`; e2e `form-grid.spec.ts`       |
+| **Filtros:** buscador, selects y botón van en `<FilterBar>` (una fila que envuelve); nunca un control por fila ni estirados al 100 %.                                    | `FilterBar`; regla `iimp/filter-layout`; e2e `filter-bar.spec.ts` |
+| **Cero errores:** `strictTypeChecked`, sin `any`, promesas esperadas, `--max-warnings=0`; el build ejecuta `typecheck` + `lint` + `security:verify`.                     | `official-uikit-iimp/eslint/next-strict`, `prebuild`              |
+| **Seguridad:** auditoría vigente y sin hallazgos para compilar.                                                                                                          | `security:verify` en `prebuild`                                   |
 
 Ejemplos:
 
 ```tsx
-// Tabla: no pongas tipografía en la cabecera, ya es 12px / bolder
+// Tabla: no pongas tipografía en la cabecera, ya es Manrope 600 / 13px / mayúsculas
 <TableHead className="w-32 text-right">Monto</TableHead>   // ✅
 <TableHead className="text-sm font-medium">Monto</TableHead> // ❌ ESLint lo bloquea
 
@@ -195,11 +196,13 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.9.1 --save-exact
+npm install official-uikit-iimp@0.9.2 --save-exact
 npm run check
 ```
 
-**0.9.1** — Nuevo `FormGrid` (columnas automáticas por ancho de contenedor, controles alineados por fila con subgrid en `FormField`) y regla `iimp/form-grid`; Cabeceras de tabla fijas en 12px / `bolder` (`TableHead`, `DataTable`) con regla ESLint; logo del sidebar en 35px de alto y ancho automático por defecto (ya no depende de un override que el CSS sin capa del kit podía anular); reglas `iimp/icon-button-label` y `iimp/prefer-button-group`; `prebuild` con `typecheck` + `lint` + gate de seguridad (`security:audit` / `security:verify`) y aviso en `predev`; `iimp-adopt` instala el gate y los scripts en proyectos existentes.
+**0.9.2** — Corrige la cabecera de tabla (la v0.9.1 cambiaba la fuente a serif por un `font-[bolder]` mal interpretado): ahora es Manrope 600, 13px, mayúsculas, tracking amplio y color muted, con e2e que verifica la familia. Nueva regla `iimp/filter-layout` (filtros en `FilterBar`, no un control por fila).
+
+**0.9.1** — Nuevo `FormGrid` (columnas automáticas por ancho de contenedor, controles alineados por fila con subgrid en `FormField`) y regla `iimp/form-grid`; Cabeceras de tabla con la tipografía oficial (Manrope 600, 13px, mayúsculas; `TableHead`, `DataTable`) con regla ESLint; logo del sidebar en 35px de alto y ancho automático por defecto (ya no depende de un override que el CSS sin capa del kit podía anular); reglas `iimp/icon-button-label` y `iimp/prefer-button-group`; `prebuild` con `typecheck` + `lint` + gate de seguridad (`security:audit` / `security:verify`) y aviso en `predev`; `iimp-adopt` instala el gate y los scripts en proyectos existentes.
 
 **0.9.0** — Nuevo armazón completo: `LoginScreen` (login) y `AppShell` (sidebar + header + main) que se configuran solo con el menú, el usuario y el contenido; el starter los trae listos. Corrige `SidebarMenuButton`/`SidebarMenuSubButton`: ya no marcan todos los ítems como activos (`data-active` solo se renderiza cuando es verdadero).
 
@@ -480,6 +483,7 @@ import { FormField, FormGrid, Input, Textarea } from "official-uikit-iimp";
 - `minFieldWidth` (por defecto `14rem`) es el ancho mínimo cómodo de un campo; `<FormGrid minFieldWidth="10rem">` permite más columnas para campos cortos (serie, número, fecha).
 - **Los controles quedan alineados en la fila** aunque un campo tenga descripción, error o una etiqueta que se parte en dos líneas: `FormField` usa subgrid con cuatro filas fijas (etiqueta, descripción, control, error). Fuera de un `FormGrid` se comporta como una pila normal.
 - **Todos los controles llenan su celda:** dentro de `FormField`, el `Select` ocupa el 100 % del ancho (antes quedaba como una caja chica) y `Input`, `Textarea`, `NativeSelect` y `InputGroup` ya lo hacían.
+- **Filtros:** `<FilterBar>` pone el buscador, los selects y el botón en una sola fila que se envuelve según el ancho; la regla `iimp/filter-layout` falla si apilas 2 o más controles sueltos (`Input`, `Select`, `Combobox`…) uno bajo otro con `flex-col` o sin maqueta, que es lo que dejaba cada filtro en su propia fila al 100 %.
 - La regla `iimp/form-grid` también falla si un control dentro de `FormField` lleva un ancho fijo (`w-40`, `w-fit`, `w-[200px]`, `max-w-*`): el ancho lo decide `FormGrid`, no el control.
 - La regla `iimp/form-grid` falla si pones 2 o más `FormField` en un contenedor con `grid-cols-N`/`flex` en fila, o si asignas anchos como `w-1/4`, `w-[25%]` o `basis-*` a un `FormField` o a su contenedor (eso es lo que dejaba el hueco al costado).
 

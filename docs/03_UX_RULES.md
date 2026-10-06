@@ -14,9 +14,13 @@ El `prebuild` de la app corre `typecheck`, `lint` y `npm run security:verify`. S
 
 Los campos en la misma fila van en `<FormGrid>`: las columnas salen del ancho del contenedor (1 en un drawer, varias en una página) y los campos llenan la fila sin huecos. `FormField` alinea sus controles por filas aunque un vecino tenga descripción, error o etiqueta de dos líneas. Prohibido: `grid-cols-N`/`flex` en fila con `FormField` hermanos y anchos fraccionarios (`w-1/4`, `w-[25%]`, `basis-*`) en el campo o su contenedor; un campo que necesita fila propia usa `className="col-span-full"`. Reglas ESLint `iimp/form-grid`; ver `README.md` → "Formulario con varios campos".
 
+## Filtros
+
+Un filtro va en `<FilterBar>`: buscador, selects y botón en **una fila que se envuelve** según el ancho disponible. No apiles los controles uno por fila ni los estires al 100 % (`flex-col`, `w-full` en cada uno). Para un formulario usa `FormField` dentro de `FormGrid`. Regla ESLint `iimp/filter-layout`; ver `README.md` → "Reglas obligatorias del kit".
+
 ## Tablas y logo del sidebar
 
-- **Cabeceras de tabla:** `font-size: 12px` y `font-weight: bolder` en todas las tablas. Viven en `TableHead`; `DataTable` no las redefine y ESLint bloquea sobrescribirlas en `<TableHead>`. Se verifica en `e2e/table-head.spec.ts`.
+- **Cabeceras de tabla:** Manrope (misma familia del cuerpo), `font-size: 13px`, `font-weight: 600`, MAYÚSCULAS, `tracking-wider` y color `muted-foreground` en todas las tablas. Viven en `TableHead`; `DataTable` no las redefine y ESLint bloquea sobrescribirlas en `<TableHead>`. Se verifica en `e2e/table-head.spec.ts`.
 - **Logo del sidebar:** `DashboardSidebarBrand` muestra el logo a 35px de alto y ancho automático (`h-[35px] w-auto`), dentro del recuadro de 48px. No uses `!important` ni CSS global sobre `[data-slot="dashboard-sidebar-brand"] img`. `logoClassName` puede reemplazar la altura (ej. `h-10`).
 - El CSS precompilado del kit no usa `@layer`, así que gana al CSS en capa de Tailwind de la app: por eso estos valores se fijan en el componente y no con overrides externos.
 
@@ -378,7 +382,7 @@ El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, ic
 - **Radio 10px** (`--radius: 0.625rem`) en controles y contenedores. Los controles genuinamente circulares (Avatar, Switch, Radio, el segmented control de Tabs) siguen `rounded-full`; eso es forma, no esquina, y no cambia con el radio. Cards y diálogos usan un radio algo mayor (14px) derivado del mismo token.
 - **Campos de formulario** (Input, Textarea, Select, Combobox, NativeSelect, InputOTP) con fondo blanco sólido, borde sutil (`border-input`) y `shadow-sm`; antes eran translúcidos.
 - **Sombra base `shadow-sm`** en superficies en reposo (Card). Los menús flotantes mantienen `shadow-lg` y los modales `shadow-xl`: necesitan más elevación visual para separarse del contenido de atrás; aplanarlos a todos a `shadow-sm` los haría ver pegados a la página.
-- **Tipografía de cuerpo:** `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif` (resuelve a San Francisco en Mac/iOS, Segoe UI en Windows). Los títulos siguen en SF Pro Display, mínimo 20px; el texto mínimo del kit es 13px, con una excepción deliberada: las cabeceras de tabla (`TableHead`) usan `font-size: 12px` y `font-weight: bolder`, sin sobrescribirse.
+- **Tipografía de cuerpo:** `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif` (resuelve a San Francisco en Mac/iOS, Segoe UI en Windows). Los títulos siguen en SF Pro Display, mínimo 20px; el texto mínimo del kit es 13px, y las cabeceras de tabla (`TableHead`) fijan su tipografía oficial sin sobrescribirse.
 - **Todo control interactivo mide mínimo 40px de alto** (Button, Input, Select, Combobox, Toggle, Tabs, Menubar, NavigationMenu, Sidebar, Breadcrumb). Checkbox/Radio/Switch mantienen su caja visual pequeña (así se ven en cualquier sistema), pero exponen un área de clic invisible de 40px o más.
 - **Iconos: mínimo 24×24px.** Excepciones documentadas, siempre por una razón física (no cabrían) o semántica (son chrome decorativo junto a texto, no "un icono"): el check dentro de Checkbox/Radio, el icono de un `Badge`, `Kbd`, el caret de disclosure de `NavigationMenuTrigger`/el dropdown de mes-año del `Calendar`, el separador/ellipsis de `Breadcrumb`, la acción de `SidebarMenuAction` (20px) y el glifo `icon-xs` de `Button`/`InputGroupButton` (nace para vivir dentro de un campo o chip ya de 40px).
 - `IimpThemeProvider` cambia primary/secondary/radio en runtime.

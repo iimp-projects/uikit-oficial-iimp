@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test"
 
-// Regla del kit: toda cabecera de tabla usa font-size 12px y font-weight bolder.
-test("table headers are 12px and bolder than the body text", async ({ page, request }) => {
+// Regla del kit: toda cabecera de tabla usa la tipografía oficial: misma familia que el cuerpo
+// (Manrope, nunca una fuente de respaldo como serif), 13px, peso 600, MAYÚSCULAS y color muted.
+test("table headers are uppercase Manrope 600 / 13px, same family as the body", async ({ page, request }) => {
   const index = await (await request.get("/index.json")).json()
   const ids = (Object.values(index.entries) as { id: string; type: string }[])
     .filter((e) => e.type === "story" && /^(primitives-table|patterns-datatable)/.test(e.id))
@@ -13,13 +14,15 @@ test("table headers are 12px and bolder than the body text", async ({ page, requ
     const heads = await page.$$eval("[data-slot=table-head]", (els) =>
       els.map((el) => {
         const cs = getComputedStyle(el)
-        const cell = el.closest("table")?.querySelector("[data-slot=table-cell]")
-        return { size: cs.fontSize, weight: parseInt(cs.fontWeight, 10), cellWeight: cell ? parseInt(getComputedStyle(cell).fontWeight, 10) : 400 }
+        return { size: cs.fontSize, weight: cs.fontWeight, transform: cs.textTransform, family: cs.fontFamily, bodyFamily: getComputedStyle(document.body).fontFamily }
       })
     )
     for (const h of heads) {
-      expect(h.size, id).toBe("12px")
-      expect(h.weight, id).toBeGreaterThan(h.cellWeight)
+      expect(h.family, id).toContain("Manrope")
+      expect(h.family, id).toBe(h.bodyFamily)
+      expect(h.size, id).toBe("13px")
+      expect(h.weight, id).toBe("600")
+      expect(h.transform, id).toBe("uppercase")
     }
   }
 })

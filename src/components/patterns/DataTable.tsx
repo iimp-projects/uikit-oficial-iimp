@@ -45,7 +45,7 @@ function DataTable<TData extends Record<string, unknown>>({
           {columns.map((column) => (
             <TableHead
               key={column.key}
-              className={cn("h-12 tracking-wider text-muted-foreground uppercase", column.className)}
+              className={column.className}
             >
               {column.header}
             </TableHead>

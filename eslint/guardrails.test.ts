@@ -83,8 +83,8 @@ describe("iimp guardrails", () => {
     expect(await lint('export const A = () => <div><Button>Guardar</Button><Button variant="outline">Cancelar</Button></div>')).toEqual([])
   })
   it("flags overriding TableHead font size or weight", async () => {
-    expect((await lint('export const A = () => <TableHead className="text-sm">x</TableHead>'))[0]).toContain("12px")
-    expect((await lint('export const A = () => <TableHead className="font-medium">x</TableHead>'))[0]).toContain("bolder")
+    expect((await lint('export const A = () => <TableHead className="text-sm">x</TableHead>'))[0]).toContain("Manrope 600")
+    expect((await lint('export const A = () => <TableHead className="font-medium">x</TableHead>'))[0]).toContain("Manrope 600")
     expect(await lint('export const A = () => <TableHead className="text-muted-foreground w-24">x</TableHead>')).toEqual([])
   })
   it("asks for FormGrid instead of manual columns of FormFields", async () => {
@@ -111,5 +111,17 @@ describe("iimp guardrails", () => {
     expect((await lint('export const A = () => <FormField label="a"><Input className="w-40" /></FormField>'))[0]).toContain("llenar su celda")
     expect((await lint('export const A = () => <FormField label="a"><Select><SelectTrigger className="w-fit" /></Select></FormField>'))[0]).toContain("llenar su celda")
     expect(await lint('export const A = () => <FormField label="a"><Select><SelectTrigger className="w-full" /><SelectContent className="w-72" /></Select></FormField>')).toEqual([])
+  })
+  it("flags stacked loose controls (the filter laid out one per row)", async () => {
+    const msgs = await lint(
+      'export const A = () => <div className="flex flex-col gap-3"><Input placeholder="Buscar" /><Select><SelectTrigger /></Select><Select><SelectTrigger /></Select></div>'
+    )
+    expect(msgs[0]).toContain("FilterBar")
+    expect((await lint('export const A = () => <div><Input /><Input /></div>'))[0]).toContain("FilterBar")
+  })
+  it("allows controls in FilterBar, FormGrid or a row layout", async () => {
+    expect(await lint('export const A = () => <FilterBar><Input /><Select><SelectTrigger /></Select></FilterBar>')).toEqual([])
+    expect(await lint('export const A = () => <div className="flex flex-wrap gap-2"><Input /><Select><SelectTrigger /></Select></div>')).toEqual([])
+    expect(await lint('export const A = () => <div className="grid grid-cols-3 gap-2"><Input /><Input /></div>')).toEqual([])
   })
 })

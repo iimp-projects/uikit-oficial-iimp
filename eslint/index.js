@@ -44,7 +44,7 @@ const tableHeadTypographyRule = {
   selector:
     "JSXOpeningElement[name.name='TableHead'] > JSXAttribute[name.name='className'] Literal[value=/(^|\\s)([a-z0-9-]+:)*(text-(xs|sm|base|lg|xl|[0-9]xl|\\[[0-9])|font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black|\\[))/]",
   message:
-    "Las cabeceras de tabla ya traen font-size 12px y font-weight bolder. No las sobrescribas en <TableHead>: la regla es del kit.",
+    "Las cabeceras de tabla ya traen la tipografía oficial (Manrope 600, 13px, mayúsculas, tracking amplio, color muted). No la sobrescribas en <TableHead>: la regla es del kit.",
 }
 
 const officialLayoutImportRules = [
@@ -219,7 +219,35 @@ const formGridRule = {
   },
 }
 
-const iimpPlugin = { rules: { "icon-button-label": iconButtonRule, "prefer-button-group": buttonGroupRule, "form-grid": formGridRule } }
+// Controles sueltos (sin FormField) apilados uno bajo otro: típico de un filtro mal armado.
+const LOOSE_CONTROLS = /^(?:Input|Select|NativeSelect|Combobox|SearchField)$/
+const LAYOUT_PARENT_EXEMPT = /^(?:FilterBar|FormGrid|FormField|Field\w*|ButtonGroup\w*|InputGroup\w*|ToggleGroup\w*|\w+Content|\w+Footer|\w+Header)$/
+const isRowLayout = (classes) =>
+  /(^|\s)(?:[a-z0-9-]+:)*(grid-cols-(?:[2-9]|1[0-2]|\[)|flex-row|flex-wrap)(\s|$)/.test(classes) || hasManualFlexRow(classes)
+
+const filterLayoutRule = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      stacked:
+        "Hay {{count}} controles seguidos apilados (cada uno en su propia fila, a veces al 100 % de ancho). Un filtro va en <FilterBar> (una fila que envuelve y respeta el ancho de cada control); un formulario va en <FormField> dentro de <FormGrid>. No los apiles con flex-col ni los estires.",
+    },
+  },
+  create(context) {
+    return {
+      JSXElement(node) {
+        const name = jsxName(node) ?? ""
+        if (LAYOUT_PARENT_EXEMPT.test(name) || /^[A-Z]/.test(name)) return
+        const controls = node.children.filter((child) => child.type === "JSXElement" && LOOSE_CONTROLS.test(jsxName(child) ?? ""))
+        if (controls.length >= 2 && !isRowLayout(staticClassName(node)))
+          context.report({ node: node.openingElement, messageId: "stacked", data: { count: String(controls.length) } })
+      },
+    }
+  },
+}
+
+const iimpPlugin = { rules: { "icon-button-label": iconButtonRule, "prefer-button-group": buttonGroupRule, "form-grid": formGridRule, "filter-layout": filterLayoutRule } }
 
 const iimpGuardrails = [
   {
@@ -229,6 +257,7 @@ const iimpGuardrails = [
       "iimp/icon-button-label": "error",
       "iimp/prefer-button-group": "error",
       "iimp/form-grid": "error",
+      "iimp/filter-layout": "error",
       "no-restricted-syntax": ["error", ...nativeElementRules, bareBorderRule, tableHeadTypographyRule, ...officialLayoutImportRules],
       "no-restricted-imports": [
         "error",
