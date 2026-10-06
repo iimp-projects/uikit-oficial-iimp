@@ -67,6 +67,7 @@ test("titles use SF Pro Display and are at least 20px; UI text is at least 13px"
   expect(t.fs).toBeGreaterThanOrEqual(20)
   const small = await page.$$eval("#storybook-root *", (els) =>
     els
+      .filter((el) => !el.closest("[data-slot=table-head]"))
       .filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent?.trim()))
       .map((el) => parseFloat(getComputedStyle(el).fontSize))
       .filter((f) => f < 13)

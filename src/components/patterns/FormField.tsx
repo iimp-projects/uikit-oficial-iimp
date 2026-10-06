@@ -33,19 +33,25 @@ function FormField({
   } as React.HTMLAttributes<HTMLElement>)
 
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label htmlFor={controlId}>
+    // Four fixed rows (label, description, control, error). Inside a FormGrid the field becomes a
+    // subgrid, so neighbouring fields share these rows and their controls line up even when one
+    // has a description, a wrapped label or an error. Outside a grid it behaves like a plain stack.
+    <div
+      data-slot="form-field"
+      className={cn("grid min-w-0 grid-rows-subgrid row-span-4 gap-y-0", className)}
+    >
+      <Label htmlFor={controlId} className="row-start-1 mb-1.5">
         {label}
         {required ? <span className="text-destructive">*</span> : null}
       </Label>
       {description ? (
-        <p id={descriptionId} className="text-sm text-muted-foreground">
+        <p id={descriptionId} className="row-start-2 mb-1.5 text-sm text-muted-foreground">
           {description}
         </p>
       ) : null}
-      {control}
+      <div className="row-start-3 min-w-0 [&>[data-slot=select-trigger]]:w-full">{control}</div>
       {error ? (
-        <p id={errorId} role="alert" className="text-sm text-destructive">
+        <p id={errorId} role="alert" className="row-start-4 mt-1.5 text-sm text-destructive">
           {error}
         </p>
       ) : null}

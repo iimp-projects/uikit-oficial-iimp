@@ -49,17 +49,121 @@ No necesitas instalar todo manualmente ni copiar archivos de este repositorio.
 
 Este repositorio es la fuente de verdad: [ver código, documentación y starter en GitHub](https://github.com/iimp-projects/uikit-oficial-iimp).
 
+## Guía de punta a punta: del proyecto nuevo al deploy
+
+Esta es la ruta completa con el boilerplate (starter). Cada comando dice **qué hace** y **qué bloquea**.
+
+```bash
+# 1. Crear el proyecto
+npx create-next-app@latest --example "https://github.com/iimp-projects/uikit-oficial-iimp" --example-path templates/next-starter mi-proyecto
+cd mi-proyecto
+
+# 2. Una sola vez: instala las skills de agentes (incluida security-audit)
+npm run setup
+
+# 3. Desarrollar (no bloquea; avisa si falta la auditoría de seguridad)
+npm run dev
+
+# 4. Antes de compilar o desplegar: auditoría de seguridad y corrección de hallazgos
+npm run security:audit
+
+# 5. Validación completa y deploy
+npm run check      # formato, versión, typecheck, lint, tests, build
+npm run build      # lo que corre Vercel/CI al desplegar
+```
+
+| Comando                   | Qué hace                                                                                                              | ¿Bloquea?                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `npm run setup`           | Instala las skills base que falten (caveman, TDD, Playwright, shadcn, `security-audit`…). Idempotente.                | No                                                        |
+| `npm run dev`             | Servidor de desarrollo. Antes corre `predev`: imprime un aviso si la auditoría falta, está vencida o tiene hallazgos. | **No**: solo avisa, para no frenar el trabajo diario      |
+| `npm run security:audit`  | Lanza la skill `security-audit` con un agente sin interfaz (`claude -p`), guarda la evidencia en `.security/`.        | Es el paso explícito; consume tokens de tu cuenta         |
+| `npm run security:verify` | Verifica la evidencia sin IA (determinista, segundos).                                                                | Sí: sale con error si algo falla                          |
+| `npm run build`           | Antes corre `prebuild` = `typecheck` + `lint` + `security:verify`; después `next build`.                              | **Sí**: no compila con errores de tipos, lint o seguridad |
+| `npm run check`           | Quality gate completo (el mismo que corre el CI).                                                                     | Sí                                                        |
+| `npm run bitacora -- ""`  | Agrega una entrada con fecha/hora a `bitacora.md`.                                                                    | No                                                        |
+
+> **¿`security:audit` se ejecuta dentro de `npm run build`?** No. Son pasos separados: `npm run security:audit` es la auditoría (lenta, usa IA) y se corre a mano; `npm run build` solo ejecuta `security:verify`, que comprueba en segundos que la evidencia exista, esté limpia y corresponda al código actual. Si no es así, el build se detiene y te dice que corras la auditoría.
+
+### Seguridad: cuándo aparece la auditoría
+
+| Momento                  | Qué pasa                                                                                                                                     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`            | Aviso en consola (no bloquea) con los motivos pendientes y el comando para corregirlos.                                                      |
+| `npm run build` / deploy | **Bloquea** hasta que la auditoría esté vigente y limpia. Vercel y cualquier CI ejecutan `build`, así que no se puede desplegar sin auditar. |
+| Pull request / `main`    | El workflow `IIMP Quality` corre `npm run check` con `IIMP_SECURITY_GATE_LOCK=1`, que impide saltarse el gate.                               |
+
+Cómo se corrige: abre `.security/REPORT.md`, parcha cada hallazgo `confirmed`, vuelve a correr `npm run security:audit` hasta que el reporte quede limpio y haz commit de `.security/`. Reglas exactas:
+
+- **Falla** si no existe `.security/findings.json`, si no pasa `validate-findings.cjs` de la skill, si `run_status` no es `complete`, si el código cambió después de auditar (hash de `src/`, `app/`, `pages/`, `next.config.*` y `package-lock.json`), si hay algún hallazgo `confirmed` o un `needs_validation` sin aceptar.
+- Un `confirmed` **nunca** se acepta: se parcha y se vuelve a auditar.
+- Un `needs_validation` solo se acepta en `.security/accepted.json`, con motivo y aprobador:
+
+```json
+[
+  {
+    "fingerprint": "idor-pedidos-2",
+    "reason": "Requiere probar contra el entorno productivo; verificado por revisión manual.",
+    "approvedBy": "ana.perez"
+  }
+]
+```
+
+- `IIMP_SECURITY_GATE=skip npm run build` omite el gate **solo en local** y lo avisa en voz alta. El CI lo anula con `IIMP_SECURITY_GATE_LOCK=1`.
+- Versiona `.security/` y `.agents/skills/security-audit` (el validador vive ahí) para que el CI y Vercel puedan verificar.
+- `IIMP_SECURITY_AUDIT_CMD="mi comando"` reemplaza el comando del agente (debe imprimir `RUN_DIR=<ruta>`).
+- Límite honesto: es una revisión asistida por IA. Que no encuentre nada no prueba que no existan vulnerabilidades; complementa a `npm audit`, secret scanning y CodeQL, no los reemplaza.
+
 ## Mapa de artefactos y documentación
 
 El estándar se distribuye en tres piezas complementarias; no son tres shells visuales:
 
 | Artefacto                                                                                                        | Uso                                                              | Estado de distribución                                                 | Documentación                                            |
 | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.0`).                                            | Este README                                              |
+| [`official-uikit-iimp`](https://www.npmjs.com/package/official-uikit-iimp)                                       | Componentes, tokens, patterns y configuración strict compartida. | Publicado en npm (`0.9.1`).                                            | Este README                                              |
 | [`templates/next-starter`](https://github.com/iimp-projects/uikit-oficial-iimp/tree/main/templates/next-starter) | Boilerplate Git para aplicaciones Next.js nuevas.                | Vive en este repositorio y se consume con `create-next-app --example`. | [README del starter](./templates/next-starter/README.md) |
-| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.7`).                                            | [README del CLI](./packages/adopt/README.md)             |
+| [`@nrivera-iimp/adopt`](https://www.npmjs.com/package/@nrivera-iimp/adopt)                                       | CLI para adoptar el estándar en una aplicación existente.        | Publicado en npm (`0.1.8`).                                            | [README del CLI](./packages/adopt/README.md)             |
 
 La guía que conecta las tres piezas, sus límites y la ruta para proyectos nuevos o existentes está en [Bootstrap y adopción](https://github.com/iimp-projects/uikit-oficial-iimp/blob/main/docs/16_PROJECT_BOOTSTRAP.md). Las reglas visuales y técnicas viven en [`docs/`](./docs/).
+
+## Reglas obligatorias del kit
+
+Estas reglas ya vienen aplicadas por los componentes y, donde se puede, las exige ESLint con `--max-warnings=0`.
+
+| Regla                                                                                                                                                                    | Dónde se aplica                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Cabeceras de tabla:** `font-size: 12px` y `font-weight: bolder`. No se sobrescriben en `<TableHead>`.                                                                  | `TableHead` (y `DataTable`); regla ESLint; e2e              |
+| **Logo del sidebar:** 35px de alto y ancho automático (`h-[35px] w-auto`), centrado en su recuadro.                                                                      | `DashboardSidebarBrand` / `AppShell`; e2e                   |
+| **Botón solo icono:** `size="icon"` (`icon-sm`/`icon-lg`) + `aria-label`; si no es obvio, `Tooltip`. Con espacio, icono + texto.                                         | Regla `iimp/icon-button-label`                              |
+| **2 o más botones seguidos del mismo nivel:** van dentro de `<ButtonGroup>`. Excepciones: footers de dialog/card y Primary + otra variante.                              | Regla `iimp/prefer-button-group`                            |
+| **Pares de color:** todo `bg-secondary`/`bg-primary` lleva su `text-*-foreground`.                                                                                       | Componentes; test `close-button.test.tsx`                   |
+| **Formularios con varios campos:** van dentro de `<FormGrid>` (columnas según el ancho real del contenedor, sin huecos). Nada de `grid-cols-N` a mano ni anchos `w-1/4`. | `FormGrid`; regla `iimp/form-grid`; e2e `form-grid.spec.ts` |
+| **Cero errores:** `strictTypeChecked`, sin `any`, promesas esperadas, `--max-warnings=0`; el build ejecuta `typecheck` + `lint` + `security:verify`.                     | `official-uikit-iimp/eslint/next-strict`, `prebuild`        |
+| **Seguridad:** auditoría vigente y sin hallazgos para compilar.                                                                                                          | `security:verify` en `prebuild`                             |
+
+Ejemplos:
+
+```tsx
+// Tabla: no pongas tipografía en la cabecera, ya es 12px / bolder
+<TableHead className="w-32 text-right">Monto</TableHead>   // ✅
+<TableHead className="text-sm font-medium">Monto</TableHead> // ❌ ESLint lo bloquea
+
+// Acciones de fila: ButtonGroup + icono con nombre accesible
+<ButtonGroup>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button size="icon" variant="outline" aria-label="Ver detalle"><EyeIcon /></Button>
+    </TooltipTrigger>
+    <TooltipContent>Ver detalle</TooltipContent>
+  </Tooltip>
+  <Button size="icon" variant="outline" aria-label="Editar"><PencilIcon /></Button>
+</ButtonGroup>
+
+// Logo del sidebar: ya es 35px de alto; solo cambia el logo si hay otra marca autorizada
+<DashboardSidebarBrand title="IIMP Tesorería" description="0.1.0" />
+<DashboardSidebarBrand title="Otro sistema" logoSrc="/logo.png" logoAlt="Otro sistema" />
+```
+
+> **Si una clase tuya no tiene efecto sobre un componente del kit:** el CSS precompilado del kit (`style.css`) no usa `@layer`, y el de Tailwind en tu app sí (`@layer utilities`); el CSS sin capa gana al CSS con capa aunque tenga la misma especificidad. Por eso un override con la misma propiedad que una clase interna del kit (por ejemplo `h-[35px]` frente a `size-full`) puede no aplicar. Los componentes del kit ya traen los valores oficiales por defecto, así que normalmente no necesitas override; si lo necesitas, usa la prop del componente (`logoSrc`, `logoClassName`, `size`…) y no parches globales con `!important`.
 
 ## 1. Instalación
 
@@ -91,9 +195,11 @@ El starter depende de `@nrivera-iimp/adopt` para `npm run setup`. La dependencia
 Actualizar el paquete no modifica tus archivos de aplicación: solo reemplaza el contenido de `node_modules`. Actualiza en una rama, valida y adopta los nuevos patterns cuando tú lo decidas:
 
 ```bash
-npm install official-uikit-iimp@0.9.0 --save-exact
+npm install official-uikit-iimp@0.9.1 --save-exact
 npm run check
 ```
+
+**0.9.1** — Nuevo `FormGrid` (columnas automáticas por ancho de contenedor, controles alineados por fila con subgrid en `FormField`) y regla `iimp/form-grid`; Cabeceras de tabla fijas en 12px / `bolder` (`TableHead`, `DataTable`) con regla ESLint; logo del sidebar en 35px de alto y ancho automático por defecto (ya no depende de un override que el CSS sin capa del kit podía anular); reglas `iimp/icon-button-label` y `iimp/prefer-button-group`; `prebuild` con `typecheck` + `lint` + gate de seguridad (`security:audit` / `security:verify`) y aviso en `predev`; `iimp-adopt` instala el gate y los scripts en proyectos existentes.
 
 **0.9.0** — Nuevo armazón completo: `LoginScreen` (login) y `AppShell` (sidebar + header + main) que se configuran solo con el menú, el usuario y el contenido; el starter los trae listos. Corrige `SidebarMenuButton`/`SidebarMenuSubButton`: ya no marcan todos los ítems como activos (`data-active` solo se renderiza cuando es verdadero).
 
@@ -344,6 +450,39 @@ El componente añade el objetivo oculto que requiere Google, carga el script una
 
 Para excluir contenido de la traducción (RUCs, códigos, nombres propios), aplica `className="no-translate"` — mientras haya un `LanguageSwitcher` en la página, el componente lo marca automáticamente con lo que Google/el navegador realmente requieren (`translate="no"` + `notranslate`), incluso en contenido agregado después del montaje.
 
+### Formulario con varios campos (`FormGrid`)
+
+Para poner varios campos en una fila no uses `grid-cols-N`, `flex` ni anchos fraccionarios: usa `FormGrid`. Calcula cuántas columnas caben **según el ancho del contenedor** (no del viewport), así el mismo formulario funciona en un drawer de 360px (1 columna) y en una página ancha (varias), y estira los campos para llenar cada fila sin dejar huecos.
+
+```tsx
+import { FormField, FormGrid, Input, Textarea } from "official-uikit-iimp";
+
+<FormGrid>
+  <FormField label="RUC" required>
+    <Input />
+  </FormField>
+  <FormField label="Razón social">
+    <Input />
+  </FormField>
+  <FormField label="Correo(s)" description="Varios separados por coma.">
+    <Input />
+  </FormField>
+  <FormField label="Teléfono">
+    <Input />
+  </FormField>
+  {/* un campo que necesita su propia fila */}
+  <FormField label="Notas internas" className="col-span-full">
+    <Textarea />
+  </FormField>
+</FormGrid>;
+```
+
+- `minFieldWidth` (por defecto `14rem`) es el ancho mínimo cómodo de un campo; `<FormGrid minFieldWidth="10rem">` permite más columnas para campos cortos (serie, número, fecha).
+- **Los controles quedan alineados en la fila** aunque un campo tenga descripción, error o una etiqueta que se parte en dos líneas: `FormField` usa subgrid con cuatro filas fijas (etiqueta, descripción, control, error). Fuera de un `FormGrid` se comporta como una pila normal.
+- **Todos los controles llenan su celda:** dentro de `FormField`, el `Select` ocupa el 100 % del ancho (antes quedaba como una caja chica) y `Input`, `Textarea`, `NativeSelect` y `InputGroup` ya lo hacían.
+- La regla `iimp/form-grid` también falla si un control dentro de `FormField` lleva un ancho fijo (`w-40`, `w-fit`, `w-[200px]`, `max-w-*`): el ancho lo decide `FormGrid`, no el control.
+- La regla `iimp/form-grid` falla si pones 2 o más `FormField` en un contenedor con `grid-cols-N`/`flex` en fila, o si asignas anchos como `w-1/4`, `w-[25%]` o `basis-*` a un `FormField` o a su contenedor (eso es lo que dejaba el hueco al costado).
+
 ### Formulario
 
 ```tsx
@@ -572,6 +711,8 @@ El maquetado se hace **siempre con el componente equivalente del kit** (shadcn/u
 | `<progress>`                          | `Progress`                              |
 | `<dialog>`                            | `Dialog`, `ConfirmDialog`, `FormDialog` |
 | `<details>`                           | `Accordion` / `Collapsible`             |
+
+También incluye las reglas propias `iimp/icon-button-label` (botón solo icono exige `size="icon*"` + `aria-label`), `iimp/prefer-button-group` (2 o más botones contiguos del mismo nivel → `ButtonGroup`) y el bloqueo de tipografía en `<TableHead>`.
 
 Además bloquea `className` con bordes sin color (`border-b` a secas se pinta negro; usa `border-border` o `Separator`), imports directos de Radix/Base UI/shadcn, rutas internas del paquete e imports de copias locales de `AuthLayout` o la familia `Dashboard*` oficial.
 

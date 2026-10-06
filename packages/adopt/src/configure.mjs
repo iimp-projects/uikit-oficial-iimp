@@ -7,6 +7,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import { STRICT_COMPILER_OPTIONS, UI_KIT_VERSION } from "./constants.mjs";
 import { ensureBitacora } from "./bitacora.mjs";
@@ -76,6 +77,11 @@ function configurePackageJson(cwd) {
     ...(parsed.scripts ?? {}),
     lint: "eslint . --max-warnings=0",
     typecheck: "tsc --noEmit",
+    prebuild: "npm run typecheck && npm run lint && npm run security:verify",
+    predev:
+      parsed.scripts?.predev ?? "node scripts/security-gate.mjs verify --warn",
+    "security:audit": "node scripts/security-gate.mjs audit",
+    "security:verify": "node scripts/security-gate.mjs verify",
     "format:check": "prettier --check .",
     test: parsed.scripts?.test ?? "vitest run --passWithNoTests",
     check:
@@ -84,6 +90,27 @@ function configurePackageJson(cwd) {
     "skills:recommend": "iimp-adopt --skills-only --recommend-skills",
   };
   write(path, `${JSON.stringify(parsed, null, 2)}\n`);
+}
+
+function configureSecurityGate(cwd) {
+  const target = join(cwd, "scripts", "security-gate.mjs");
+  if (!existsSync(target))
+    write(
+      target,
+      readFileSync(
+        join(
+          dirname(fileURLToPath(import.meta.url)),
+          "..",
+          "templates",
+          "security-gate.mjs",
+        ),
+        "utf8",
+      ),
+    );
+  const ignore = join(cwd, ".prettierignore");
+  const current = existsSync(ignore) ? readFileSync(ignore, "utf8") : "";
+  if (!current.includes(".security/"))
+    write(ignore, `${current.trimEnd()}\n.security/\n`.trimStart());
 }
 
 function configureTsconfig(cwd) {
@@ -242,13 +269,14 @@ function configureWorkflow(cwd) {
   if (existsSync(path)) return;
   write(
     path,
-    `name: IIMP Quality\n\non:\n  pull_request:\n  push:\n    branches: [main]\n\njobs:\n  check:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n          cache: npm\n      - run: npm ci\n      - run: npm run check\n`,
+    `name: IIMP Quality\n\non:\n  pull_request:\n  push:\n    branches: [main]\n\njobs:\n  check:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n          cache: npm\n      - run: npm ci\n      - run: npm run check\n        env:\n          IIMP_SECURITY_GATE_LOCK: "1"\n`,
   );
 }
 
 export function applyConfiguration(cwd) {
   configurePackageJson(cwd);
   configureBitacoraScript(cwd);
+  configureSecurityGate(cwd);
   configureTsconfig(cwd);
   configureEslint(cwd);
   configureStyles(cwd);

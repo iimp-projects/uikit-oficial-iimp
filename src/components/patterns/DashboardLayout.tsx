@@ -92,7 +92,7 @@ type DashboardSidebarBrandProps = Omit<React.ComponentProps<typeof SidebarHeader
   logoSrc?: string
   /** Accessible text for logoSrc. Defaults to the title text when it is a string. */
   logoAlt?: string
-  /** Extra classes for the logo <img> (for example to cap its height inside the brand tile). */
+  /** Extra classes for the logo <img>. Default is 35px high with automatic width; a class like `h-10` replaces the height. */
   logoClassName?: string
   /** @deprecated Use the default logo or logoSrc. Kept only for backwards compatibility. */
   icon?: React.ReactNode
@@ -234,7 +234,7 @@ function DashboardSidebarBrand({
             <img
               src={logoSrc}
               alt={logoAlt ?? (typeof title === "string" ? title : "Logo institucional")}
-              className={cn("size-full object-contain", logoClassName)}
+              className={cn("h-[35px] w-auto max-w-full object-contain", logoClassName)}
             />
           )}
         </div>

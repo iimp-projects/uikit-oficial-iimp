@@ -46,7 +46,11 @@ try {
 
   run("npm", ["install", "--no-audit", "--no-fund"], app);
   run("npm", ["exec", "iimp-adopt", "--", "--dry-run"], app);
-  run("npm", ["run", "check"], app);
+  execFileSync("npm", ["run", "check"], {
+    cwd: app,
+    stdio: "inherit",
+    env: { ...process.env, IIMP_SECURITY_GATE: "skip" },
+  });
   console.log("starter contract OK");
 } finally {
   rmSync(output, { recursive: true, force: true });

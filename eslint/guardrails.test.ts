@@ -58,4 +58,58 @@ describe("iimp guardrails", () => {
       )
     ).toEqual([])
   })
+
+  it("flags icon-only Button without aria-label and without size icon", async () => {
+    const msgs = await lint('export const A = () => <Button variant="ghost"><EyeIcon /></Button>')
+    expect(msgs.some((m) => m.includes("aria-label"))).toBe(true)
+    expect(msgs.some((m) => m.includes('size="icon"'))).toBe(true)
+  })
+  it("allows icon-only Button with aria-label and size icon", async () => {
+    expect(await lint('export const A = () => <Button size="icon-sm" aria-label="Ver"><EyeIcon /></Button>')).toEqual([])
+  })
+  it("allows icon + text Button and icon + sr-only text", async () => {
+    expect(await lint("export const A = () => <Button><DownloadIcon /> Exportar</Button>")).toEqual([])
+    expect(await lint('export const A = () => <Button size="icon"><EyeIcon /><span className="sr-only">Ver</span></Button>')).toEqual([])
+  })
+  it("recommends ButtonGroup for 2+ adjacent buttons of the same level", async () => {
+    const msgs = await lint(
+      'export const A = () => <div><Button variant="outline">A</Button><Button variant="outline">B</Button></div>'
+    )
+    expect(msgs[0]).toContain("ButtonGroup")
+  })
+  it("does not flag buttons already inside ButtonGroup, footers or Primary + secondary-level combos", async () => {
+    expect(await lint('export const A = () => <ButtonGroup><Button variant="outline">A</Button><Button variant="outline">B</Button></ButtonGroup>')).toEqual([])
+    expect(await lint('export const A = () => <DialogFooter><Button variant="outline">A</Button><Button variant="outline">B</Button></DialogFooter>')).toEqual([])
+    expect(await lint('export const A = () => <div><Button>Guardar</Button><Button variant="outline">Cancelar</Button></div>')).toEqual([])
+  })
+  it("flags overriding TableHead font size or weight", async () => {
+    expect((await lint('export const A = () => <TableHead className="text-sm">x</TableHead>'))[0]).toContain("12px")
+    expect((await lint('export const A = () => <TableHead className="font-medium">x</TableHead>'))[0]).toContain("bolder")
+    expect(await lint('export const A = () => <TableHead className="text-muted-foreground w-24">x</TableHead>')).toEqual([])
+  })
+  it("asks for FormGrid instead of manual columns of FormFields", async () => {
+    const msgs = await lint(
+      'export const A = () => <div className="grid grid-cols-4 gap-4"><FormField label="a"><Input /></FormField><FormField label="b"><Input /></FormField></div>'
+    )
+    expect(msgs[0]).toContain("FormGrid")
+    const flexRow = await lint(
+      'export const A = () => <div className="flex gap-4"><FormField label="a"><Input /></FormField><FormField label="b"><Input /></FormField></div>'
+    )
+    expect(flexRow[0]).toContain("FormGrid")
+  })
+  it("allows FormGrid, stacked FormFields and a single field", async () => {
+    expect(await lint('export const A = () => <FormGrid><FormField label="a"><Input /></FormField><FormField label="b"><Input /></FormField></FormGrid>')).toEqual([])
+    expect(await lint('export const A = () => <div className="flex flex-col gap-4"><FormField label="a"><Input /></FormField><FormField label="b"><Input /></FormField></div>')).toEqual([])
+    expect(await lint('export const A = () => <div className="grid grid-cols-2"><FormField label="a"><Input /></FormField></div>')).toEqual([])
+  })
+  it("flags fractional widths on FormField or its wrapper (the 25% gap bug)", async () => {
+    expect((await lint('export const A = () => <FormField label="a" className="w-1/4"><Input /></FormField>'))[0]).toContain("hueco")
+    expect((await lint('export const A = () => <div className="w-[25%]"><FormField label="a"><Input /></FormField></div>'))[0]).toContain("hueco")
+    expect(await lint('export const A = () => <FormField label="a" className="col-span-full"><Input /></FormField>')).toEqual([])
+  })
+  it("flags fixed widths on controls inside FormField (they leave a gap)", async () => {
+    expect((await lint('export const A = () => <FormField label="a"><Input className="w-40" /></FormField>'))[0]).toContain("llenar su celda")
+    expect((await lint('export const A = () => <FormField label="a"><Select><SelectTrigger className="w-fit" /></Select></FormField>'))[0]).toContain("llenar su celda")
+    expect(await lint('export const A = () => <FormField label="a"><Select><SelectTrigger className="w-full" /><SelectContent className="w-72" /></Select></FormField>')).toEqual([])
+  })
 })

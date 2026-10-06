@@ -125,3 +125,9 @@ npm run release:major      # 0.0.1 → 1.0.0
 ```
 
 No se incrementa la versión en cada guardado o commit: eso genera versiones inútiles. El incremento ocurre al preparar una entrega y `npm version` actualiza el número, genera el tag Git y ejecuta el script que sincroniza `NEXT_PUBLIC_APP_VERSION`. El quality gate no permite un desajuste.
+
+## Guía rápida del starter y del gate de seguridad
+
+- `npm run dev` avisa (sin bloquear) si falta o venció la auditoría; `npm run build` y el CI la **exigen**.
+- `npm run security:audit` lanza la skill `security-audit` y guarda la evidencia en `.security/`; corrige los hallazgos y repite hasta que quede limpia. Versiona `.security/` y `.agents/skills/security-audit`.
+- Detalle completo, reglas de aceptación (`.security/accepted.json`) y límites en el [README raíz](../../README.md#guía-de-punta-a-punta-del-proyecto-nuevo-al-deploy).

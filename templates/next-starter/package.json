@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "predev": "node scripts/security-gate.mjs verify --warn",
     "dev": "next dev",
+    "prebuild": "npm run typecheck && npm run lint && npm run security:verify",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
@@ -20,19 +22,21 @@
     "release:major": "npm version major",
     "check": "npm run format:check && npm run version:check && npm run typecheck && npm run lint && npm run test && npm run build",
     "bitacora": "node scripts/append-bitacora.mjs",
+    "security:audit": "node scripts/security-gate.mjs audit",
+    "security:verify": "node scripts/security-gate.mjs verify",
     "setup": "iimp-adopt --skills-only",
     "skills:recommend": "iimp-adopt --skills-only --recommend-skills"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
     "next": "16.3.8",
-    "official-uikit-iimp": "0.9.0",
+    "official-uikit-iimp": "0.9.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
-    "@nrivera-iimp/adopt": "0.1.7",
+    "@nrivera-iimp/adopt": "0.1.8",
     "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",

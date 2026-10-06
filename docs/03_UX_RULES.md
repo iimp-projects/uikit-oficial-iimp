@@ -1,5 +1,47 @@
 # UX Rules
 
+## Gate de seguridad del build (`security-audit`)
+
+El `prebuild` de la app corre `typecheck`, `lint` y `npm run security:verify`. Sin una auditoría vigente y limpia, `npm run build` no compila.
+
+- `npm run security:audit` lanza la skill `security-audit` (Cloudflare) con un agente sin interfaz (`claude -p`; consume tokens de tu cuenta, por eso no corre en cada build) y copia la evidencia a `.security/` (`findings.json`, `run-metadata.json`, `coverage-ledger.json`, `REPORT.md`, `attestation.json`). Versiona `.security/` en git. Puedes reemplazar el comando con `IIMP_SECURITY_AUDIT_CMD`.
+- `npm run security:verify` es determinista y no usa IA. Falla si: no hay `findings.json`; no pasa `validate-findings.cjs` de la skill; `run_status` no es `complete`; el hash de `src/`, `app/`, `pages/`, `next.config.*` o `package-lock.json` cambió desde la auditoría; hay algún hallazgo `confirmed`; o hay `needs_validation` sin aceptar.
+- Un `confirmed` nunca se puede aceptar: se parcha y se vuelve a auditar. Un `needs_validation` solo se acepta en `.security/accepted.json` con `fingerprint`, `reason` (mínimo 10 caracteres) y `approvedBy`.
+- `IIMP_SECURITY_GATE=skip` omite el gate solo en local y avisa en voz alta. El workflow de CI define `IIMP_SECURITY_GATE_LOCK=1`, que anula el skip.
+- La skill es una revisión asistida por IA: que no encuentre nada no prueba que no haya vulnerabilidades. Complementa, no reemplaza, `npm audit`, secret scanning y CodeQL.
+
+## Formularios en varias columnas
+
+Los campos en la misma fila van en `<FormGrid>`: las columnas salen del ancho del contenedor (1 en un drawer, varias en una página) y los campos llenan la fila sin huecos. `FormField` alinea sus controles por filas aunque un vecino tenga descripción, error o etiqueta de dos líneas. Prohibido: `grid-cols-N`/`flex` en fila con `FormField` hermanos y anchos fraccionarios (`w-1/4`, `w-[25%]`, `basis-*`) en el campo o su contenedor; un campo que necesita fila propia usa `className="col-span-full"`. Reglas ESLint `iimp/form-grid`; ver `README.md` → "Formulario con varios campos".
+
+## Tablas y logo del sidebar
+
+- **Cabeceras de tabla:** `font-size: 12px` y `font-weight: bolder` en todas las tablas. Viven en `TableHead`; `DataTable` no las redefine y ESLint bloquea sobrescribirlas en `<TableHead>`. Se verifica en `e2e/table-head.spec.ts`.
+- **Logo del sidebar:** `DashboardSidebarBrand` muestra el logo a 35px de alto y ancho automático (`h-[35px] w-auto`), dentro del recuadro de 48px. No uses `!important` ni CSS global sobre `[data-slot="dashboard-sidebar-brand"] img`. `logoClassName` puede reemplazar la altura (ej. `h-10`).
+- El CSS precompilado del kit no usa `@layer`, así que gana al CSS en capa de Tailwind de la app: por eso estos valores se fijan en el componente y no con overrides externos.
+
+## Botones: iconos y grupos (reglas ESLint `iimp/*`)
+
+- Un `<Button>` con **solo icono** debe usar `size="icon"` (`icon-sm`/`icon-lg`) y llevar `aria-label`; si el significado no es obvio, envolverlo en `<Tooltip>`. Si hay espacio, preferir icono + texto. Regla `iimp/icon-button-label`.
+- **Dos o más** `<Button>` contiguos del mismo nivel deben ir dentro de `<ButtonGroup>`. Excepciones: footers (`DialogFooter`, `CardFooter`…) y combinaciones Primary + otra variante, que son jerarquías distintas. Regla `iimp/prefer-button-group`.
+- Ambas viven en `official-uikit-iimp/eslint` y fallan con `eslint . --max-warnings=0`. El `build` de las apps corre `prebuild` (`typecheck` + `lint`), así que un error de tipos o de estas reglas impide compilar.
+
+```tsx
+<ButtonGroup>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button size="icon" variant="outline" aria-label="Ver detalle">
+        <EyeIcon />
+      </Button>
+    </TooltipTrigger>
+    <TooltipContent>Ver detalle</TooltipContent>
+  </Tooltip>
+  <Button size="icon" variant="outline" aria-label="Editar">
+    <PencilIcon />
+  </Button>
+</ButtonGroup>
+```
+
 ## Principio
 
 El UI Kit no debe ser solo visual. Debe imponer ergonomía, jerarquía y comportamiento consistentes.
@@ -14,6 +56,7 @@ Estándar interno IIMP:
 ```
 
 Nota normativa:
+
 - WCAG 2.2 AA 2.5.8 define un mínimo de 24x24 CSS px con excepciones.
 - WCAG 2.2 AAA 2.5.5 utiliza 44x44 CSS px.
 - IIMP adopta 44px como estándar de producto para aumentar comodidad táctil.
@@ -38,14 +81,14 @@ Un contexto visual es una unidad de decisión comprensible por sí misma: un dia
 
 ### Variantes
 
-| Variante | Rol | Usar para | Ejemplos |
-|---|---|---|---|
-| `default` (Primary) | Acción que completa o hace avanzar el objetivo principal del contexto | La única acción dominante del contexto | Guardar, Crear, Continuar, Confirmar, Enviar, Publicar |
-| `secondary` | Acción importante, visible y subordinada a Primary | Una alternativa relevante que necesita más énfasis que Outline | Guardar borrador, Vista previa, Exportar cuando sea una acción relevante |
-| `outline` | Acción secundaria visible que no debe competir con Primary | Alternativas, volver, configurar o cancelar cuando la salida debe permanecer claramente visible | Editar, Volver, Filtrar, Configurar, Cancelar |
-| `ghost` | Acción terciaria, auxiliar o contextual | Toolbars, tablas, icon buttons, cerrar, mostrar más o cancelar con bajo énfasis | Cerrar, Mostrar más, Limpiar filtros |
-| `destructive` | Acción destructiva, irreversible o de alto impacto negativo | Eliminar, anular, revocar o desactivar definitivamente | Eliminar participante, Revocar acceso |
-| `link` | Navegación o acción que debe leerse como enlace | Navegar a contenido relacionado o revelar una ruta textual | Ver detalle, Consultar documentación |
+| Variante            | Rol                                                                   | Usar para                                                                                       | Ejemplos                                                                 |
+| ------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `default` (Primary) | Acción que completa o hace avanzar el objetivo principal del contexto | La única acción dominante del contexto                                                          | Guardar, Crear, Continuar, Confirmar, Enviar, Publicar                   |
+| `secondary`         | Acción importante, visible y subordinada a Primary                    | Una alternativa relevante que necesita más énfasis que Outline                                  | Guardar borrador, Vista previa, Exportar cuando sea una acción relevante |
+| `outline`           | Acción secundaria visible que no debe competir con Primary            | Alternativas, volver, configurar o cancelar cuando la salida debe permanecer claramente visible | Editar, Volver, Filtrar, Configurar, Cancelar                            |
+| `ghost`             | Acción terciaria, auxiliar o contextual                               | Toolbars, tablas, icon buttons, cerrar, mostrar más o cancelar con bajo énfasis                 | Cerrar, Mostrar más, Limpiar filtros                                     |
+| `destructive`       | Acción destructiva, irreversible o de alto impacto negativo           | Eliminar, anular, revocar o desactivar definitivamente                                          | Eliminar participante, Revocar acceso                                    |
+| `link`              | Navegación o acción que debe leerse como enlace                       | Navegar a contenido relacionado o revelar una ruta textual                                      | Ver detalle, Consultar documentación                                     |
 
 `destructive` no es el último peldaño de una escala visual: expresa riesgo. En una confirmación destructiva puede ser la acción dominante, pero nunca debe usarse como color decorativo o corporativo.
 
@@ -110,6 +153,7 @@ Error/Help
 ```
 
 Reglas:
+
 - label siempre visible cuando el contexto lo requiera;
 - placeholder no reemplaza label;
 - error debe explicar qué corregir;
@@ -134,7 +178,15 @@ La prop `brandTone="primary" | "secondary"` decide qué pareja semántica pinta 
 Receta mínima:
 
 ```tsx
-import { AuthLayout, GoogleSignInButton, Card, CardContent, CardDescription, CardHeader, CardTitle } from "official-uikit-iimp"
+import {
+  AuthLayout,
+  GoogleSignInButton,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "official-uikit-iimp";
 
 export default function LoginPage() {
   return (
@@ -151,7 +203,9 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle>Bienvenido de vuelta</CardTitle>
-          <CardDescription>Inicia sesión con tu cuenta institucional.</CardDescription>
+          <CardDescription>
+            Inicia sesión con tu cuenta institucional.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
           {/* Conecta tu propio proveedor de auth aquí */}
@@ -159,7 +213,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </AuthLayout>
-  )
+  );
 }
 ```
 
@@ -201,7 +255,7 @@ import {
   DashboardVersion,
   Sidebar,
   SidebarContent,
-} from "official-uikit-iimp"
+} from "official-uikit-iimp";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -225,22 +279,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <DashboardHeader
           navigation={<AppBreadcrumb />}
           status={<DashboardVersion version={appVersion} />}
-          languageSwitcher={<LanguageSwitcher languages={["es", "en", "qu"]} onValueChange={changeLocale} />}
-          notifications={<DashboardNotifications count={alerts.length}>{/* lista */}</DashboardNotifications>}
+          languageSwitcher={
+            <LanguageSwitcher
+              languages={["es", "en", "qu"]}
+              onValueChange={changeLocale}
+            />
+          }
+          notifications={
+            <DashboardNotifications count={alerts.length}>
+              {/* lista */}
+            </DashboardNotifications>
+          }
           actions={<PageActions />}
         />
       }
     >
       {children}
     </DashboardLayout>
-  )
+  );
 }
 ```
 
 Cambiar el color del sidebar no requiere otra implementación:
 
 ```tsx
-<DashboardLayout sidebarTone="secondary" sidebar={<AppSidebar />} header={<AppHeader />}>
+<DashboardLayout
+  sidebarTone="secondary"
+  sidebar={<AppSidebar />}
+  header={<AppHeader />}
+>
   {children}
 </DashboardLayout>
 ```
@@ -278,6 +345,7 @@ Agregar `compact` solo si existe una necesidad real de dashboard denso. No intro
 ## Feedback
 
 Toda acción asíncrona importante debe tener estado:
+
 - loading,
 - success,
 - error,
@@ -288,6 +356,7 @@ No permitir doble submit.
 ## Empty states
 
 Deben explicar:
+
 1. qué ocurre,
 2. por qué está vacío cuando sea útil,
 3. siguiente acción cuando exista.
@@ -309,7 +378,7 @@ El kit usa los componentes del preset de shadcn (estilo `luma`, base `stone`, ic
 - **Radio 10px** (`--radius: 0.625rem`) en controles y contenedores. Los controles genuinamente circulares (Avatar, Switch, Radio, el segmented control de Tabs) siguen `rounded-full`; eso es forma, no esquina, y no cambia con el radio. Cards y diálogos usan un radio algo mayor (14px) derivado del mismo token.
 - **Campos de formulario** (Input, Textarea, Select, Combobox, NativeSelect, InputOTP) con fondo blanco sólido, borde sutil (`border-input`) y `shadow-sm`; antes eran translúcidos.
 - **Sombra base `shadow-sm`** en superficies en reposo (Card). Los menús flotantes mantienen `shadow-lg` y los modales `shadow-xl`: necesitan más elevación visual para separarse del contenido de atrás; aplanarlos a todos a `shadow-sm` los haría ver pegados a la página.
-- **Tipografía de cuerpo:** `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif` (resuelve a San Francisco en Mac/iOS, Segoe UI en Windows). Los títulos siguen en SF Pro Display, mínimo 20px; el texto mínimo del kit es 13px.
+- **Tipografía de cuerpo:** `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif` (resuelve a San Francisco en Mac/iOS, Segoe UI en Windows). Los títulos siguen en SF Pro Display, mínimo 20px; el texto mínimo del kit es 13px, con una excepción deliberada: las cabeceras de tabla (`TableHead`) usan `font-size: 12px` y `font-weight: bolder`, sin sobrescribirse.
 - **Todo control interactivo mide mínimo 40px de alto** (Button, Input, Select, Combobox, Toggle, Tabs, Menubar, NavigationMenu, Sidebar, Breadcrumb). Checkbox/Radio/Switch mantienen su caja visual pequeña (así se ven en cualquier sistema), pero exponen un área de clic invisible de 40px o más.
 - **Iconos: mínimo 24×24px.** Excepciones documentadas, siempre por una razón física (no cabrían) o semántica (son chrome decorativo junto a texto, no "un icono"): el check dentro de Checkbox/Radio, el icono de un `Badge`, `Kbd`, el caret de disclosure de `NavigationMenuTrigger`/el dropdown de mes-año del `Calendar`, el separador/ellipsis de `Breadcrumb`, la acción de `SidebarMenuAction` (20px) y el glifo `icon-xs` de `Button`/`InputGroupButton` (nace para vivir dentro de un campo o chip ya de 40px).
 - `IimpThemeProvider` cambia primary/secondary/radio en runtime.

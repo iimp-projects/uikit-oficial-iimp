@@ -159,3 +159,7 @@ Etiquetas semánticas estructurales como `main`, `section`, `nav`, `header`, `fo
 ## Reversión
 
 Trabaja en una rama. Los archivos agregados pueden eliminarse y la configuración ESLint anterior queda preservada como `eslint.config.pre-iimp.*`. El CLI no ejecuta `git reset`, no borra código de negocio y no modifica rutas o lógica funcional.
+
+## Qué instala además: gate de seguridad y scripts de calidad
+
+`iimp-adopt` agrega `scripts/security-gate.mjs` y los scripts `prebuild` (`typecheck` + `lint` + `security:verify`), `predev` (aviso no bloqueante), `security:audit` y `security:verify`; añade `.security/` a `.prettierignore` y, si crea el workflow, fija `IIMP_SECURITY_GATE_LOCK=1`. Un `predev` existente se respeta. Después de adoptar, `npm run build` exige una auditoría vigente: corre `npm run security:audit`. Ver el [README raíz](../../README.md#guía-de-punta-a-punta-del-proyecto-nuevo-al-deploy).

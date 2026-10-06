@@ -206,7 +206,14 @@ describe("DashboardSidebarBrand logo", () => {
   })
 
   it("merges logoClassName onto the img", () => {
-    const img = renderBrand({ logoClassName: "h-[35px]" })
-    expect(img).toHaveClass("size-full", "object-contain", "h-[35px]")
+    const img = renderBrand({ logoClassName: "h-10" })
+    expect(img).toHaveClass("w-auto", "object-contain", "h-10")
+    expect(img).not.toHaveClass("h-[35px]")
+  })
+
+  it("defaults to 35px high with automatic width", () => {
+    const img = renderBrand()
+    expect(img).toHaveClass("h-[35px]", "w-auto")
+    expect(img).not.toHaveClass("size-full")
   })
 })

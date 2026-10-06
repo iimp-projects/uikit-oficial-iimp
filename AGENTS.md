@@ -158,6 +158,24 @@ Un contexto visual es un dialog, formulario, card, sección funcional, wizard st
 
 Para `Cancelar`/`Cerrar`, usar `outline` si la salida segura necesita visibilidad y `ghost` si es auxiliar. No decidir la variante solo por el texto. Antes de modificar una interfaz existente, señalar cualquier incumplimiento de jerarquía. Ver ejemplos y anti-patterns en `docs/03_UX_RULES.md` → “Jerarquía de acciones”.
 
+## Botones con iconos y grupos
+
+`<Button>` con solo icono: `size="icon"` + `aria-label` (+ `Tooltip` si no es obvio). Dos o más botones contiguos del mismo nivel: `<ButtonGroup>`. Lo exigen las reglas `iimp/icon-button-label` y `iimp/prefer-button-group`; el `prebuild` de la app corre `typecheck` + `lint`, por lo que el build no avanza con errores. Ver `docs/03_UX_RULES.md`.
+
+## Gate de seguridad del build (`security-audit`)
+
+El `prebuild` de la app corre `typecheck`, `lint` y `npm run security:verify`. Sin una auditoría vigente y limpia, `npm run build` no compila.
+
+- `npm run security:audit` lanza la skill `security-audit` (Cloudflare) con un agente sin interfaz (`claude -p`; consume tokens de tu cuenta, por eso no corre en cada build) y copia la evidencia a `.security/` (`findings.json`, `run-metadata.json`, `coverage-ledger.json`, `REPORT.md`, `attestation.json`). Versiona `.security/` en git. Puedes reemplazar el comando con `IIMP_SECURITY_AUDIT_CMD`.
+- `npm run security:verify` es determinista y no usa IA. Falla si: no hay `findings.json`; no pasa `validate-findings.cjs` de la skill; `run_status` no es `complete`; el hash de `src/`, `app/`, `pages/`, `next.config.*` o `package-lock.json` cambió desde la auditoría; hay algún hallazgo `confirmed`; o hay `needs_validation` sin aceptar.
+- Un `confirmed` nunca se puede aceptar: se parcha y se vuelve a auditar. Un `needs_validation` solo se acepta en `.security/accepted.json` con `fingerprint`, `reason` (mínimo 10 caracteres) y `approvedBy`.
+- `IIMP_SECURITY_GATE=skip` omite el gate solo en local y avisa en voz alta. El workflow de CI define `IIMP_SECURITY_GATE_LOCK=1`, que anula el skip.
+- La skill es una revisión asistida por IA: que no encuentre nada no prueba que no haya vulnerabilidades. Complementa, no reemplaza, `npm audit`, secret scanning y CodeQL.
+
+## Formularios en varias columnas
+
+Los campos en la misma fila van en `<FormGrid>`: las columnas salen del ancho del contenedor (1 en un drawer, varias en una página) y los campos llenan la fila sin huecos. `FormField` alinea sus controles por filas aunque un vecino tenga descripción, error o etiqueta de dos líneas. Los controles dentro de `FormField` llenan su celda (el `Select` incluido) y no llevan anchos fijos (`w-40`, `w-fit`, `max-w-*`). Prohibido: `grid-cols-N`/`flex` en fila con `FormField` hermanos y anchos fraccionarios (`w-1/4`, `w-[25%]`, `basis-*`) en el campo o su contenedor; un campo que necesita fila propia usa `className="col-span-full"`. Reglas ESLint `iimp/form-grid`; ver `README.md` → "Formulario con varios campos".
+
 ## Dialogs
 
 - crear/editar/configurar → `FormDialog`

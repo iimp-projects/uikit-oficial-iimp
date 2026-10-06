@@ -60,6 +60,15 @@ test("configura strict mode sin borrar comentarios ni scripts", async () => {
   assert.match(tsconfig, /legacy comment/);
   assert.match(tsconfig, /noUncheckedIndexedAccess/);
   assert.equal(packageJson.scripts.build, "next build");
+  assert.match(packageJson.scripts.prebuild, /security:verify/);
+  assert.equal(
+    packageJson.scripts["security:audit"],
+    "node scripts/security-gate.mjs audit",
+  );
+  assert.match(
+    readFileSync(join(cwd, "scripts", "security-gate.mjs"), "utf8"),
+    /Gate de seguridad/,
+  );
   assert.equal(packageJson.scripts.lint, "eslint . --max-warnings=0");
   assert.equal(
     packageJson.scripts.bitacora,
