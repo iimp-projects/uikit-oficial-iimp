@@ -1,5 +1,5 @@
 import * as React from "react"
-import { QuestionIcon } from "@phosphor-icons/react"
+import { QuestionMarkIcon } from "@phosphor-icons/react"
 import { Button } from "../ui/button"
 import { Label } from "../ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
@@ -54,8 +54,9 @@ function FieldHelp({ label, children }: { label: string; children: React.ReactNo
           size="icon-xs"
           data-slot="form-field-help"
           aria-label={`Ayuda sobre ${label}`}
-          // Visual size stays 24px; the invisible ::after extends the touch target to 40px.
-          className="relative text-muted-foreground after:absolute after:-inset-2.5 after:content-['']"
+          // Bare 16px box (no border, no background) so it sits centred on the label line; the
+          // invisible ::after extends the touch target to 40px.
+          className="relative size-4 min-h-0 rounded-full border-0 bg-transparent p-0 text-muted-foreground hover:bg-transparent hover:text-foreground dark:hover:bg-transparent after:absolute after:-inset-3 after:content-['']"
           onPointerEnter={hoverOpen}
           onPointerLeave={hoverClose}
           onClick={(event) => {
@@ -65,7 +66,7 @@ function FieldHelp({ label, children }: { label: string; children: React.ReactNo
             setOpen(next)
           }}
         >
-          <QuestionIcon weight="bold" className="size-3.5" aria-hidden="true" />
+          <QuestionMarkIcon weight="bold" className="size-3" aria-hidden="true" />
         </Button>
       </PopoverTrigger>
       <PopoverContent

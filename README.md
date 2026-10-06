@@ -134,6 +134,17 @@ npm run check
 
 Actualizar el paquete solo reemplaza `node_modules`; no modifica tus archivos. Las reglas nuevas pueden hacer fallar `lint` hasta que migres (es lo esperado). Cambios por versión: [Actualizar una aplicación existente](#actualizar-una-aplicación-existente).
 
+### Publicar el Storybook en Vercel
+
+El repositorio trae un `vercel.json` que ya define cómo compilar el Storybook (no hay que configurar nada a mano).
+
+1. En Vercel: **Add New → Project → Import** el repositorio `uikit-oficial-iimp`.
+2. Vercel detecta dos proyectos. Elige **`app` (Vite, raíz `/`)** — es el Storybook del UI Kit. **No elijas `next-starter`**: es solo la plantilla para proyectos nuevos.
+3. Revisa que aparezca: Build Command `npm run build-storybook`, Output Directory `storybook-static`, Install Command `npm ci` (vienen de `vercel.json`). Pulsa **Deploy**.
+4. Cada push a `main` vuelve a publicar. La URL queda en `https://<proyecto>.vercel.app`; puedes enlazarla desde este README.
+
+Nota: la URL de producción es pública salvo que actives protección en Vercel (Settings → Deployment Protection).
+
 Este repositorio es la fuente de verdad: [código, documentación y starter en GitHub](https://github.com/iimp-projects/uikit-oficial-iimp).
 
 ## Guía de punta a punta: del proyecto nuevo al deploy

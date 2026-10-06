@@ -72,3 +72,32 @@ test("description lives in a help icon next to the label: hover shows it, click 
   await page.keyboard.press("Escape")
   await expect(page.getByRole("dialog")).toBeHidden()
 })
+
+const transparent = /rgba\(0, 0, 0, 0\)|\/ 0\)/
+
+test("help icon is a small bare glyph, vertically centred on the label", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 800 })
+  await page.goto("/iframe.html?id=patterns-formgrid--with-select-and-descriptions&viewMode=story")
+  const help = page.getByRole("button", { name: "Ayuda sobre División" })
+  await help.waitFor()
+  const m = await help.evaluate((el) => {
+    const cs = getComputedStyle(el)
+    const label = el.closest("[data-slot=form-field]")!.querySelector("label")!
+    const lr = label.getBoundingClientRect()
+    const br = el.getBoundingClientRect()
+    const svg = el.querySelector("svg")!.getBoundingClientRect()
+    return {
+      border: parseFloat(cs.borderTopWidth),
+      bg: cs.backgroundColor,
+      glyph: Math.round(svg.width),
+      centerDelta: Math.abs(lr.top + lr.height / 2 - (br.top + br.height / 2)),
+    }
+  })
+  expect(m.border).toBe(0)
+  expect(m.bg).toMatch(transparent)
+  expect(m.glyph).toBeLessThanOrEqual(14)
+  expect(m.centerDelta).toBeLessThanOrEqual(1)
+  await help.hover()
+  const hoverBg = await help.evaluate((el) => getComputedStyle(el).backgroundColor)
+  expect(hoverBg).toMatch(transparent)
+})
