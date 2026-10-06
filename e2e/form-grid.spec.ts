@@ -48,3 +48,27 @@ test("Select fills its cell and controls align despite descriptions of different
   // every control, including the Select, fills the width of its cell
   m.controls.forEach((c, i) => expect(Math.abs(c.w - m.cells[i]!)).toBeLessThanOrEqual(1))
 })
+
+test("description lives in a help icon next to the label: hover shows it, click pins it, hit area is 40px", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 800 })
+  await page.goto("/iframe.html?id=patterns-formgrid--with-select-and-descriptions&viewMode=story")
+  const help = page.getByRole("button", { name: "Ayuda sobre División" })
+  await help.waitFor()
+  // the description is not shown (only a screen-reader copy exists) until the help is used
+  await expect(page.getByRole("dialog")).toBeHidden()
+  const after = await help.evaluate((el) => {
+    const cs = getComputedStyle(el, "::after")
+    return { w: parseFloat(cs.width), h: parseFloat(cs.height) }
+  })
+  expect(after.w).toBeGreaterThanOrEqual(40)
+  expect(after.h).toBeGreaterThanOrEqual(40)
+  await help.hover()
+  await expect(page.getByRole("dialog")).toContainText("Opcional. Ej.: III, II, I.")
+  await page.mouse.move(5, 5)
+  await expect(page.getByRole("dialog")).toBeHidden()
+  await help.click()
+  await page.mouse.move(5, 5)
+  await expect(page.getByRole("dialog")).toBeVisible()
+  await page.keyboard.press("Escape")
+  await expect(page.getByRole("dialog")).toBeHidden()
+})

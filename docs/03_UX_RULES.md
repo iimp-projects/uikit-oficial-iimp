@@ -12,7 +12,7 @@ El `prebuild` de la app corre `typecheck`, `lint` y `npm run security:verify`. S
 
 ## Formularios en varias columnas
 
-Los campos en la misma fila van en `<FormGrid>`: las columnas salen del ancho del contenedor (1 en un drawer, varias en una página) y los campos llenan la fila sin huecos. `FormField` alinea sus controles por filas aunque un vecino tenga descripción, error o etiqueta de dos líneas. Prohibido: `grid-cols-N`/`flex` en fila con `FormField` hermanos y anchos fraccionarios (`w-1/4`, `w-[25%]`, `basis-*`) en el campo o su contenedor; un campo que necesita fila propia usa `className="col-span-full"`. Reglas ESLint `iimp/form-grid`; ver `README.md` → "Formulario con varios campos".
+Los campos en la misma fila van en `<FormGrid>`: las columnas salen del ancho del contenedor (1 en un drawer, varias en una página) y los campos llenan la fila sin huecos. La descripción de un `FormField` va en un icono de ayuda junto a la etiqueta (popover al pasar el mouse o hacer clic; sigue disponible para lectores de pantalla), por lo que no agrega altura y los controles quedan alineados por filas aunque un vecino tenga error o etiqueta de dos líneas. Prohibido: `grid-cols-N`/`flex` en fila con `FormField` hermanos y anchos fraccionarios (`w-1/4`, `w-[25%]`, `basis-*`) en el campo o su contenedor; un campo que necesita fila propia usa `className="col-span-full"`. Reglas ESLint `iimp/form-grid`; ver `README.md` → "Formulario con varios campos".
 
 ## Filtros
 
